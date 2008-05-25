@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0037)http://www.delorie.com/pcb/teardrops/ -->
+<HTML><HEAD><TITLE>Teardrops Plug-in for PCB</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1252">
+<META content="MSHTML 6.00.2900.3020" name=GENERATOR></HEAD>
+<BODY>
+<CENTER>
+<TABLE cellSpacing=0 cellPadding=3 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=left bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; <A 
+      href="http://www.delorie.com/" target=_top>http://www.delorie.com/</A>/<A 
+      href="http://www.delorie.com/pcb/" target=_top>pcb</A>/<A 
+      href="http://www.delorie.com/pcb/teardrops/" 
+      target=_top>teardrops</A>/</B></FONT></SMALL></TD>
+    <TD vAlign=top align=right bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; <A 
+      href="http://www.delorie.com/search/">search</A> &nbsp; 
+    </B></FONT></SMALL></TD></TR></TBODY></TABLE><A 
+href="http://www.delorie.com/pcb/teardrops/bulktrap.html"></A><BIG><BIG><B>Teardrops 
+Plug-in for PCB</B></BIG></BIG></TD>
+<P></P></CENTER>
+<P><B>Download:</B> <TT><A 
+href="http://www.delorie.com/pcb/teardrops/teardrops.c">teardrops.c</A></TT> 
+(4k)</P>The Teardrops plug-in adds teardrops to the intersections between traces 
+and pins/vias. This is a simplistic test, so there are cases where you'd think 
+it would add them but doesn't: 
+<UL>
+  <LI>If the trace doesn't end at *exactly* the same point as the pin/via, it 
+  will be skipped. This often happens with metric parts on an English grid or 
+  visa-versa.
+  <P></P>
+  <LI>If a trace passes <EM>through</EM> a pin/via but doesn't end there, there 
+  won't be any teardrops. Use <TT>:djopt(none)</TT> to split those lines into 
+  two segments, each of which ends at the pin/via.
+  <P></P></LI></UL>
+<H2>Install</H2>Compile like this: <PRE>gcc -I$HOME/geda/pcb-cvs/src -I$HOME/geda/pcb-cvs -O2 -shared teardrops.c -o teardrops.so
+</PRE>
+<P>The resulting teardrops.so goes in <TT>$HOME/.pcb/plugins/teardrops.so</TT> - 
+note that the name is important; <TT>pcb</TT> uses the name to find the init 
+function.</P>
+<P>The plug-in is loaded when you restart <TT>pcb</TT>.</P>
+<H2>Usage</H2>
+<P>This plug-in exports a single action <TT>Teardrops()</TT> which takes no 
+parameters. To invoke it, use the command window, usually by typing <TT>:</TT>. 
+Example: <PRE>:Teardrops()
+</PRE>With the lesstif HID you can add this action to your menu or a hotkey by 
+editing <TT>$HOME/.pcb/pcb-menu.res</TT> (grab a copy from the <TT>pcb</TT> 
+source if you haven't one there yet). 
+<H2>Known Bugs</H2>
+<UL>
+  <LI>Square pins are teardropped too </LI></UL>
+<H2>Examples</H2><A href="http://www.delorie.com/pcb/teardrops/td-ex1.png"><IMG 
+src="td-ex1.jpg"></A> <A 
+href="http://www.delorie.com/pcb/teardrops/td-ex2.png"><IMG 
+src="td-ex2.jpg"></A> <A 
+href="http://www.delorie.com/pcb/teardrops/td-ex3.png"><IMG 
+src="td-ex3.jpg"></A> <A 
+href="http://www.delorie.com/pcb/teardrops/td-ex4.png"><IMG 
+src="td-ex4.jpg"></A> <A 
+href="http://www.delorie.com/pcb/teardrops/td-ex5.png"><IMG 
+src="td-ex5.jpg"></A> <BR clear=both>
+<P></P><A href="http://www.delorie.com/pcb/teardrops/bulktrap.html"></A>
+<TABLE cellSpacing=0 cellPadding=3 width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD vAlign=top align=left bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; <A 
+      href="http://www.delorie.com/users/dj/" target=_top>webmaster</A> &nbsp; 
+      <A href="http://www.delorie.com/donations.html" target=_top>donations</A> 
+      &nbsp; <A href="http://www.delorie.com/store/books/" 
+      target=_top>bookstore</A> &nbsp; </B></FONT></SMALL></TD>
+    <TD vAlign=top align=right bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; <A 
+      href="http://www.delorie.com/" target=_top>delorie software</A> &nbsp; <A 
+      href="http://www.delorie.com/privacy.html" target=_top>privacy</A> &nbsp; 
+      </B></FONT></SMALL></TD></TR>
+  <TR>
+    <TD vAlign=top align=left bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; <A 
+      href="http://www.delorie.com/copyright.html" target=_top>Copyright © 
+      2006</A> &nbsp; <A href="http://www.delorie.com/users/dj/" target=_top>by 
+      DJ Delorie</A> &nbsp; </B></FONT></SMALL></TD>
+    <TD vAlign=top align=right bgColor=#ffcc99><SMALL><FONT 
+      face="itc avant garde gothic,helvetica,arial"><B>&nbsp; Updated Dec 1 2006 
+      &nbsp; </B></FONT></SMALL></TD></TR></TBODY></TABLE>
+<CENTER><!-- BEGIN RICH-MEDIA BURST! CODE -->
+<SCRIPT language=JavaScript>
+rnum=Math.round(Math.random() * 100000);
+document.write('<scr'+'ipt src="http://www.burstnet.com/cgi-bin/ads/ba1954a.cgi/v=2.0S/sz=468x60B/'+rnum+'/RETURN-CODE/JS/"></scr'+'ipt>');
+</SCRIPT>
+<NOSCRIPT><A 
+href="http://www.burstnet.com/ads/ba1954a-map.cgi/ns/v=2.0S/sz=468x60B/" 
+target=_top><IMG alt="Click Here" 
+src="sz=468x60B.htm" border=0></A> </NOSCRIPT><!-- END BURST CODE --><BR><SMALL><I>Please take a moment to fill out 
+this <A 
+href="http://websurvey.burstmedia.com/surveyid1/surveysite.asp?Qhcode=ad1954a&amp;Qhcat=13">visitor 
+survey</A></I></SMALL> <BR><SMALL><I>You can help support this site by visiting 
+the advertisers that sponsor it! (only once each, though)</I></SMALL> 
+</CENTER></BODY></HTML>
