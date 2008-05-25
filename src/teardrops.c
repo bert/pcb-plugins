@@ -123,7 +123,7 @@ check_line_callback (const BoxType * box, void *cl)
     ax = lx - dy * adist;
     ay = ly + dx * adist;
 
-    arc = CreateNewArcOnLayer (lay, (int)ax, (int)ay, (int)radius,
+    arc = CreateNewArcOnLayer (lay, (int)ax, (int)ay, (int)radius, (int)radius,
 			       (int)theta+90+aoffset, delta-aoffset,
 			       l->Thickness, l->Clearance, l->Flags);
     if (arc)
@@ -132,7 +132,7 @@ check_line_callback (const BoxType * box, void *cl)
     ax = lx + dy * (x+t);
     ay = ly - dx * (x+t);
 
-    arc = CreateNewArcOnLayer (lay, (int)ax, (int)ay, (int)radius,
+    arc = CreateNewArcOnLayer (lay, (int)ax, (int)ay, (int)radius, (int)radius,
 			       (int)theta-90-aoffset, -delta+aoffset,
 			       l->Thickness, l->Clearance, l->Flags);
     if (arc)
