@@ -156,10 +156,12 @@ autocrop(int argc, char **argv, int x, int y)
 	LocationType dx, dy, pad;
 	BoxTypePtr box;
 
-	if (PCB->Data->ElementN == 0) {
-		return 0;	/* cropping nothing would just be annoying */
-	}
 	box = GetDataBoundingBox(PCB->Data);	/* handy! */
+
+	if (!box || (box->X1 == box->X2 || box->Y1 == box->Y2)) {
+		/* board would become degenerate */
+		return 0;
+	}
 
 	/*
 	 * Now X1/Y1 are the distance to move the left/top edge
