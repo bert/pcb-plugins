@@ -8,6 +8,8 @@
    2 or later.
 */
 
+/* $Id: jostle.c,v 1.9 2007/12/02 20:32:04 bjj Exp bjj $ */
+
 #include <stdio.h>
 #include <math.h>
 #include <values.h>
@@ -26,6 +28,8 @@
 #include "remove.h"
 #include "error.h"
 #include "set.h"
+
+//#define DEBUG_POLYAREA
 
 double vect_dist2 (Vector v1, Vector v2);
 #define Vcpy2(r,a)              {(r)[0] = (a)[0]; (r)[1] = (a)[1];}
@@ -213,7 +217,7 @@ POLYAREA_findXmostLine(POLYAREA *a, int side, Vector p, Vector q, BDimension cle
 		break;
 	default: {			/* diagonal case */
 		int kx, ky, minmax, dq, ckx, cky;
-		LocationType mm[2] = {INT_MAX, INT_MIN};
+		LocationType mm[2] = {MAX_COORD, -MAX_COORD};
 		Vector mmp[2];
 		VNODE *v;
 
@@ -305,15 +309,15 @@ CreateVectorLineOnLayer(LayerTypePtr layer, Vector a, Vector b, BDimension thick
 }
 
 static LineTypePtr
-MakeBypassLine(LayerTypePtr layer, Vector a, Vector b, LineTypePtr orig, POLYAREA **expand)
+MakeBypassLine(LayerTypePtr layer, Vector a, Vector b, LineTypePtr orig, POLYAREA **expandp)
 {
 	LineTypePtr line;
 
 	line = CreateVectorLineOnLayer(layer, a, b,
 		orig->Thickness, orig->Clearance, orig->Flags);
-	if (line && expand) {
+	if (line && expandp) {
 		POLYAREA *p = LinePoly(line, line->Thickness + line->Clearance);
-		poly_Boolean_free(*expand, p, expand, PBO_UNITE);
+		poly_Boolean_free(*expandp, p, expandp, PBO_UNITE);
 	}
 	return line;
 }
@@ -325,7 +329,7 @@ MakeBypassLine(LayerTypePtr layer, Vector a, Vector b, LineTypePtr orig, POLYARE
  * the brush on the named side.  Create them and remove the original.
  */
 static int
-MakeBypassingLines(POLYAREA *brush, LayerTypePtr layer, LineType *line, int side, POLYAREA **expand)
+MakeBypassingLines(POLYAREA *brush, LayerTypePtr layer, LineType *line, int side, POLYAREA **expandp)
 {
 	Vector pA, pB, flatA, flatB, qA, qB;
 	Vector lA, lB;
@@ -366,11 +370,10 @@ MakeBypassingLines(POLYAREA *brush, LayerTypePtr layer, LineType *line, int side
 	if (vect_dist2(lA, d) < vect_dist2(lA, a)) {
 		Vswp2(lA, lB);
 	}
-	*expand = NULL;
 	MakeBypassLine(layer, lA, a, line, NULL);
-	MakeBypassLine(layer, a, b, line, expand);
-	MakeBypassLine(layer, b, c, line, expand);
-	MakeBypassLine(layer, c, d, line, expand);
+	MakeBypassLine(layer, a, b, line, expandp);
+	MakeBypassLine(layer, b, c, line, expandp);
+	MakeBypassLine(layer, c, d, line, expandp);
 	MakeBypassLine(layer, d, lB, line, NULL);
 	RemoveLine(layer, line);
 	return 1;
@@ -551,6 +554,7 @@ fprintf(stderr, "search (%d,%d)->(%d,%d):\n", info.box.X1,info.box.Y1, info.box.
 		info.smallest = NULL;
 		found = r_search(info.layer->line_tree, &info.box, NULL, jostle_callback, &info);
 		if (found) {
+			expand = NULL;
 			MakeBypassingLines(info.smallest, info.layer,
 				info.line, info.side, &expand);
 			poly_Free(&info.smallest);
