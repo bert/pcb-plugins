@@ -1,0 +1,16 @@
+This is a collection of pcb plugins collected from the 
+geda mailing lists.
+
+WARNING: before using one of these plugins make sure you 
+         backup your previous work ! and make sure that 
+         you apply these in a safe sandbox (not having 
+         an influence on other work).
+
+There happens to be some doumentation included in both the
+source (files) and in the doc directory, the latter if this
+was available at the time of the publication.
+
+For more information inquire at the geda project user 
+mailing list (http://geda.seul.org/mailinglist/index.html)
+
+Kind regards, have fun and the usual YMMV disclaimers apply.
