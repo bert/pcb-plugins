@@ -1,0 +1,38 @@
+From: Ben Jackson <bjj@saturn.home.ben.com>
+To: geda-user@moria.seul.org
+Date: Sat, 24 Feb 2007 17:51:23 -0800
+Subject: A (premature) release of SmartDisperse plugin
+
+My first test board for PCB involved an array of LEDs, and even with just
+a few components it got really annoying searching for the resistors that
+went with each LED after the DisperseElements().
+
+My head was filled with grandiose schemes for improving Disperse without
+turning it into autoplace.  I've written something that does a better job
+than the stock function, with a better framework for changing the placement
+order if you come up with a better algorithm.  The actual placement
+algorithm is fairly weak, but it's still a dramatic improvement (compare
+a ratsnest after the two disperses).
+
+In the spirit of open source I cast this hack upon the waters for someone
+else to improve.  Ultimately I think the PCB data structures are so bad,
+especially from the perspective of a plugin, that a really good plugin would
+have to construct a whole new element/netlist representation internally.
+
+Get your copy from:
+
+        http://ad7gd.net/geda/smartdisperse.c
+
+Compile/install:
+
+        PCB=$(HOME)/cvs/pcb
+        gcc -I$(PCB) -I$(PCB)/src -g -O2 -shared autocrop.c -o autocrop.so
+        cp smartdisperse.so $(HOME)/.pcb/plugins/
+
+Run with :SmartDisperse() or :SmartDisperse(Selected)  (you can also
+say All, but it's the default).
+
+--
+Ben Jackson AD7GD
+<ben@ben.com>
+http://www.ben.com/
