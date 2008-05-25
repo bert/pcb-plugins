@@ -1,0 +1,39 @@
+From: Ben Jackson <bjj@saturn.home.ben.com>
+To: geda-user@moria.seul.org
+Date: Mon, 19 Feb 2007 13:30:58 -0800
+Subject: Autocrop() plugin for PCB
+
+As a "learn PCB internals" project I've written an Autocrop() plugin.
+It finds the extents of your existing board and resizes the board to
+contain only your parts plus a margin.
+
+There are some issues that I can't resolve from a plugin:
+
+1)  Board size has no Undo function, so while Undo will put your objects
+back where they started, the board size has to be replaced manually.
+
+2)  There is no 'edge clearance' DRC paramater, so I used 5*line spacing.
+
+3)  Moving a layout with lots of objects and polygons is slow due to the
+repeated clearing/unclearing of the polygons as things move.  Undo is
+slower than moving because every individual move is drawn (instead of
+one redraw at the end).
+
+The source is:
+
+http://ad7gd.net/geda/autocrop.c
+
+And you compile/install with:
+
+# set PCB to your PCB source directory
+PCB=$(HOME)/cvs/pcb
+gcc -I$(PCB) -I$(PCB)/src -O2 -shared autocrop.c -o autocrop.so
+cp autocrop.so ~/.pcb/plugins
+
+Run it by typing `:Autocrop()' in the gui, or by binding Autocrop() to a
+key.
+
+--
+Ben Jackson AD7GD
+<ben@ben.com>
+http://www.ben.com/
