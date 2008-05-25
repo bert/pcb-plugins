@@ -1,0 +1,73 @@
+From: Ben Jackson <bjj@saturn.home.ben.com>
+To: geda-user@moria.seul.org
+Date: Sat, 24 Feb 2007 22:13:51 -0800
+Subject: The amazing Align/Distribute plugin
+
+Ok, having "finished" the smartdisperse plugin, I moved on to phase 2 of
+my "I'm sick of moving LEDs by hand" master plan.
+
+Introducing Align() and Distribute(), which work much like the similarly
+named functions in Visio.  Given that PCB does not have the concept of
+"first selected object" to draw on, the reference points can be selected
+by arguments.
+
+Both functions always work on all selected elements[*]. Some examples:
+
+:Align(X)
+        Objects are moved left/right to align their Marks with
+        the Mark of the topmost selected object.  All objects remain
+        on or move to the current grid.
+
+:Align(Y,Centers)
+        Now objects are aligned up/down to their geometric centers
+        rather than their marks.  The reference point is the center
+        of the leftmost object.
+
+:Align(Y,Tops,Average,Gridless)
+        Feeling bold, you align the tops all selected objects to the
+        average of their top edges and let them wander off the grid
+        to exactly the average of their tops.
+
+:Align(X,Marks,Crosshair)
+        None of the objects are where you want them, so you move the
+        crosshair to a likely spot and cause them all to move their X
+        coordinates to your new X location.
+
+:Align(X,Marks,Last)
+        As above, but instead of the crosshair you just override the
+        default "First" to "Last" so the reference object is bottommost
+        instead of topmost.
+
+Now you have them in a neat line, but they're all clumped!
+
+:Distribute(Y)
+        Objects are spread out evenly from the first (uppermost) to last
+        using their marks as the reference point.
+
+:Distribute(X,Lefts,Crosshair,Last)
+        You move your crosshair to the left edge of the target area,
+        which will be the leftmost edge of the leftmost object.  The
+        objects are spread between your crosshair and the original
+        location of the Last (rightmost) object.
+
+:Distribute(Y,Gaps)
+        You have chosen to select many oddly sized objects, and instead
+        of their centers being spread out evenly, you want the space
+        (or "gaps") to be even.
+
+You get tricky and bind `Align(X,Marks,Crosshair)' to a key.  Now you
+can select an object and hit your key and the object will warp to the
+same X coordinate as your cursor.
+
+Source:  http://ad7gd.net/geda/distalign.c
+
+Same compile instructions as before.  Feedback is appreciated!
+
+[*] If it has any flaws, it is that you can't operate non-element objects,
+though some melding of autocrop (which knows how to do such things) and
+distalign could produce such a capability.
+
+--
+Ben Jackson AD7GD
+<ben@ben.com>
+http://www.ben.com/
