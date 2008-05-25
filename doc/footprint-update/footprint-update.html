@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><title>PCB Footprint Update Plug In &lt; Bourbon Street Software</title>
+
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="http://martian.octw.com/twiki/bin/view/BourbonStreetSoftware/WebRss?skin=rss&amp;contenttype=text/xml">
+
+<style type="text/css" media="all">
+	/* Default TWiki layout */
+	@import url("rsrc/TWiki/PublishSkin/layout.css");
+	/* Default TWiki style */
+	@import url("rsrc/TWiki/PublishSkin/style.css");
+	/* Custom overriding layout per web or per topic */
+	@import url("%USERLAYOUTURL%");
+	/* Custom overriding style per web or per topic */
+	@import url("%USERSTYLEURL%");
+	.twikiToc li {
+		list-style-image:url(http://martian.octw.com/twiki/pub/TWiki/PatternSkin/i_arrow_down.gif);
+	}	        
+	.twikiWebIndicator {
+		background-color:#D0D0D0;
+	}
+</style>
+<style type="text/css" media="all"></style>
+<script type="text/javascript">
+<!-- HIDE
+	function initPage() { }
+-->
+</script></head><body class="twikiViewPage" onload="initPage()"><a name="PageTop"></a>
+<div class="twikiHidden"><a href="#Content">Skip to topic</a> | <a href="#PageBottom">Skip to bottom</a><hr></div><div class="twikiTopBar"><div class="twikiTopBarContents"><h1><a href="http://www.bourbonstreetsoftware.com/Home.html">Bourbon Street Software</a></h1></div></div><div class="twikiMiddleContainer"><div class="twikiMain">
+<div class="twikiHidden"><hr></div><a name="Content"> </a><div class="twikiHidden">Start of topic | <a href="#Actions">Skip to actions</a><hr></div>
+<div class="twikiTopic">
+<h1><a name="PCB_Footprint_Update_Plug_in"> </a> PCB Footprint Update Plug-in </h1>
+<p>
+This PCB plug-in lets you replace existing footprints in your layout with updated footprints.  You can download the source code <a href="http://www.bourbonstreetsoftware.com/PCBFootprintUpdatePlugIn.html#TopicEnd">below</a>.
+</p><p>
+</p><h2><a name="Motivation"> </a> Motivation </h2>
+<p>
+Like some others, I found myself with a routed board and while
+inspecting the Gerber files decided several of my footprints needed
+tweaking. All my footprints are generated with <a href="http://www.gnu.org/software/make/" target="_top">Make</a> and <a href="http://www.gnu.org/software/guile/" target="_top">Guile</a>
+scripts, so updating the footprint files themselves was easy.
+Unfortunately there wasn't an easy way in PCB to update my layout to
+use my new footprints. (Some discussion of these problems can be found
+in the email archives <a href="http://archives.seul.org/geda/user/Jan-2005/msg00523.html" target="_top">here</a> and <a href="http://archives.seul.org/geda/user/Mar-2006/msg00136.html" target="_top">here</a>.)
+</p><p>
+</p><h2><a name="Plug_in"> </a> Plug-in </h2>
+<p>
+This PCB plug-in replaces existing footprints in your layout with
+updated footprints doing its best to preserve the existing footprint's:
+</p><ul>
+<li> position,
+</li>
+<li> rotation,
+</li>
+<li> side of the board it's on,
+</li>
+<li> component name and relative placement, scale, orientation, etc.,
+</li>
+<li> and pad and pin names.
+</li>
+</ul>Because PCB modifies its internal copies of the footprints any
+time they are moved, rotated, etc., the plug-in needs to use some guess
+work. The plug-in cannot always determine the correct orientation and
+in these cases it will skip the replacement. Even when it thinks it has
+determined the correct orientation, it might get it wrong.
+<p>
+The plug-in adds the <code>UpdateFootprintsFromBuffer</code>
+action to PCB. The action takes a footprint (i.e, element) that has
+been loaded into the buffer and uses it to replace existing footprints
+(i.e., elements) in the layout.
+</p><p>
+The action runs in one of two modes; "auto" or "manual".
+</p><p>In "auto" mode, the plug-in uses the buffer footprint
+description text to find corresponding layout footprints. In my
+workflow the description text always contains the footprint file name,
+e.g., "PHOENIX-PT-4-R.fp", so executing the action in "auto" mode will
+automatically replace all existing instances of the footprint in the
+layout.
+</p><p>In "manual" mode, the footprint description text is not used
+and the plug-in will try to replace the selected or named footprints.
+</p><p>
+Here's the usage:
+</p><dl>
+<dt> <code>UpdateFootprintsFromBuffer()</code> or <code>UpdateFootprintsFromBuffer(auto)</code> </dt><dd> Use the description field of the buffer element and try to replace any layout element that has a matching description field.
+</dd>
+<dt> <code>UpdateFootprintsFromBuffer(auto, selected)</code> </dt><dd> Like <code>UpdateFootprintsFromBuffer(auto)</code> but only consider selected layout elements.
+</dd>
+<dt> <code>UpdateFootprintsFromBuffer(auto, named, &lt;name1&gt;[, &lt;name2&gt;...])</code> </dt><dd> Like <code>UpdateFootprintsFromBuffer(auto)</code> but only consider elements that match the given element names.  For example, <code>UpdateFootprintsFromBuffer(auto, named, U101, U103, U105)</code>.
+</dd>
+<dt> <code>UpdateFootprintsFromBuffer(manual)</code> or <code>UpdateFootprintsFromBuffer(manual, selected)</code> </dt><dd> Like the "auto" version, but try to replace the selected layout elements regardless of their description field.
+</dd>
+<dt> <code>UpdateFootprintsFromBuffer(manual, named, &lt;name1&gt;[, &lt;name2&gt;...])</code> </dt><dd> Like the "auto" version, but try to replace the named layout elements regardless of their description field.
+</dd>
+</dl>
+<p>
+</p><h2><a name="Limitations"> </a> Limitations </h2>
+<p>
+Here are the limitations I now of:
+</p><ul>
+<li> The rotation of the new element is calculated using two
+non-coincident pads or pins from both the buffer element and the layout
+element. For elements consisting entirely of coincident pads and pins,
+or only a single pad or pin, the plug-in will only translate the
+replacement element from the buffer without regard to rotation.
+</li>
+<li> Element-specific attributes in the layout element, if it has any,
+are replaced with the buffer element's attributes; i.e., attributes in
+the layout element, if it has any, will be lost.
+</li>
+<li> The quality of the replacement is not evaluated by the plug-in. You may be unhappy with the results.
+</li>
+</ul>
+<p>Since this is my first trip into PCB's internals, and since the
+biggest layout I tested it on is a simple two layer board with about
+100 footprints, please use this plug-in with care and:
+</p><p>
+<strong>Definitely backup any design before you try out this plug-in!</strong>
+</p><p>
+If you find any problems with this plug-in or have any suggestions, feel free to contact me at <a href="mailto:dferreyra@igc.org">dferreyra@igc.org</a> .
+</p><p>
+</p><h2><a name="Action_Scripts"> </a> Action Scripts </h2>
+<p>
+To update all my footprints at once, I generated a PCB action script.  Here's what a piece of the script looks like:
+</p><pre>    ...
+    LoadFrom(ElementToBuffer, EDAC-RJ45-RA.fp)
+    UpdateFootprintsFromBuffer(auto)
+    LoadFrom(ElementToBuffer, LITEON-LTST-C195GEKT.fp)
+    UpdateFootprintsFromBuffer(auto)
+    LoadFrom(ElementToBuffer, LUMEX-LDD-C402NI.fp)
+    UpdateFootprintsFromBuffer(auto)
+    ...
+</pre>
+Then I execute the script with the <code>ExecuteFile()</code> action.  This allows me to update all 100 footprints on my small board automatically and at will.
+<p>
+</p><h2><a name="Building"> </a> Building </h2>
+<p>
+To build the plug-in:
+</p><ol>
+<li> Untar the distribution file; e.g.:
+<ul>
+<li> <code>tar -xzf footprint-update-1.00.tar.gz</code>
+</li>
+</ul>
+</li>
+<li> Edit the <code>Makefile</code>:
+<ul>
+<li> Change <code>PCB_CVS_DIR</code> to point to the directory containing the PCB source tree.
+</li>
+<li> Change <code>INSTALL_DIR</code> to point to the directory where you want the plug-in installed.
+</li>
+</ul>
+</li>
+<li> Run <code>make</code> to build the plug-in.  Run <code>make install</code> to install it.
+</li>
+</ol>
+<p>
+</p><h1><a name="References"> </a> References </h1>
+<p>
+</p><ul>
+<li> <a href="http://pcb.sourceforge.net/" target="_top">PCB</a>
+</li>
+</ul>
+<p>
+-- <a class="twikiLink" href="http://www.bourbonstreetsoftware.com/twiki/bin/view/Main/DeanFerreyra">DeanFerreyra</a> - 30 Apr 2008
+<br class="twikiClear">
+<a name="TopicEnd"></a>
+<span class="twikiRight twikiPageNav twikiGrayText"><a href="#PageTop">to&nbsp;top</a></span><br class="twikiClear">
+</p></div><div class="twikiHidden"><hr>End of topic<br><a href="#Actions">Skip to action links</a> | <a href="#PageTop">Back&nbsp;to&nbsp;top</a><hr></div>
+<!---->
+<!---->
+<div class="twikiAttachments"><p></p>
+<table border="0" cellpadding="0" cellspacing="0">
+<tbody><tr><th colspan="2" class="twikiFirstCol" bgcolor="#99cccc"> <strong>Attachment</strong> </th><th bgcolor="#99cccc"> <strong>Size</strong> </th><th bgcolor="#99cccc"> <strong>Date</strong> </th><th bgcolor="#99cccc"> <strong>Comment</strong> </th></tr>
+<tr><td class="twikiFirstCol" bgcolor="#ffffff"> <img src="else.gif" alt="" align="top" border="0" height="16" width="16"> </td><td bgcolor="#ffffff"> <a href="http://www.bourbonstreetsoftware.com/rsrc/BourbonStreetSoftware/PCBFootprintUpdatePlugIn/footprint-update-1.01.tar.gz">footprint-update-1.01.tar.gz</a> </td><td align="right" bgcolor="#ffffff"> 23.6&nbsp;K </td><td bgcolor="#ffffff"> 25 May 2008 - 00:17 </td><td bgcolor="#ffffff"> Footprint-Update plug-in for PCB </td></tr>
+</tbody></table>
+</div>
+<p>
+</p><p>
+</p><div class="twikiTopicFooter"><span class="twikiLeft"><span class="twikiHomePath">You are here: <a href="http://www.bourbonstreetsoftware.com/Home.html">Bourbon Street Software</a>  <span class="twikiSeparator">&gt;</span> PCB Footprint Update Plug In </span></span><span class="twikiHidden"><br><br></span><span class="twikiRight twikiPageNav twikiGrayText"><a href="#PageTop">to&nbsp;top</a></span><br class="twikiClear"><span class="twikiHidden"><br></span></div>
+<div class="twikiRevInfo"><span class="twikiGrayText"><span class="twikiRight">BourbonStreetSoftware.PCBFootprintUpdatePlugIn r1.10 - 25 May 2008 - 00:19</span></span></div>
+<a name="PageBottom"></a> 
+</div></div>
+</body></html>
