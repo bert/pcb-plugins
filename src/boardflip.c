@@ -81,11 +81,22 @@ boardflip (int argc, char **argv, int x, int y)
 
     POLYGON_LOOP (layer);
     {
+      int i, j;
       POLYGONPOINT_LOOP (polygon);
       {
 	FLIP (point->Y);
       }
       END_LOOP;
+      i = 0;
+      j = polygon->PointN - 1;
+      while (i < j)
+	{
+	  PointType p = polygon->Points[i];
+	  polygon->Points[i] = polygon->Points[j];
+	  polygon->Points[j] = p;
+	  i++;
+	  j--;
+	}
     }
     END_LOOP;
 
