@@ -17,3 +17,5 @@ renumberblock.c by DJ Delorie <dj@delorie.com> to be found at: http://www.delori
 teardrops.c by DJ Delorie <dj@delorie.com> to be found at: http://www.delorie.com/pcb/teardrops.c
 
 footprint-update by Dean Ferreyra <dferreyra@igc.org> to be found at: http://www.bourbonstreetsoftware.com/PCBFootprintUpdatePlugIn.html
+
+lockelements.c by Bert Timmerman <bert.timmerman@xs4all.nl> to be found at: http://www.xs4all.nl/~ljh4timm/downloads/lockelements.c
