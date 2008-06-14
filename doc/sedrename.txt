@@ -1,0 +1,30 @@
+From: Peter Clifton <pcjc2@cam.ac.uk>
+To: geda-dev <geda-dev@seul.org>
+Date: Tue, 10 Jun 2008 22:09:49 +0100
+Subject: gEDA-dev: sedrename action for PCB
+
+This was / is a crufty hack which saved me quite a bit of time today, it
+renames the selected elements in PCB by applying a sed expression to
+them.
+
+Enjoy, but don't come to me if it eats your homework.
+
+Best wishes,
+
+-- 
+Peter Clifton
+
+Electrical Engineering Division,
+Engineering Department,
+University of Cambridge,
+9, JJ Thomson Avenue,
+Cambridge
+CB3 0FA
+
+Tel: +44 (0)7729 980173 - (No signal in the lab!)
+
+
+_______________________________________________
+geda-dev mailing list
+geda-dev@moria.seul.org
+http://www.seul.org/cgi-bin/mailman/listinfo/geda-dev
