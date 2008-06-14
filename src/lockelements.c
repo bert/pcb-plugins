@@ -1,16 +1,16 @@
 /*!
  * \file lockelements.c
  * \author Copyright (C) 2008 by Bert Timmerman <bert.timmerman@xs4all.nl>
- * \brief LockElements plug-in for PCB.
+ * \brief Unlocking/locking elements plug-in for PCB.
  *
  * Function to lock/unlock all/selected PCB elements.
  * \n
  * Compile like this:\n
  * \n
- * gcc -Ipath/to/pcb/src -Ipath/to/pcb -O2 -shared lockelements.c -o lockelements.so\n
- * \n
+ * gcc -Ipath/to/pcb/src -Ipath/to/pcb -O2 -shared lockelements.c -o lockelements.so
+ * \n\n
  * The resulting lockelements.so file should go in $HOME/.pcb/plugins/\n
- *
+ * \n
  * \warning Be very strict in compiling this plug-in against the exact pcb
  * sources you compiled/installed the pcb executable (i.e. src/pcb) with.\n
  * \n
@@ -18,6 +18,13 @@
  * Usage: UnlockElements([Selected|All])\n
  * \n
  * If no argument is passed, no locking/unlocking of elements is carried out.\n
+ * \n
+ * \bug When locking a selection of elements, it is not easy to unselect the
+ * selection since those elements and their pins/pads/elementlines/elementarcs
+ * are now locked ;)\n
+ * This appears to be a bug in pcb.\n
+ * \todo A possible workaround would be to clear the selected flag of the
+ * locked element at the same instance the lock flag was set.
  * <hr>
  * This program is free software; you can redistribute it and/or modify\n
  * it under the terms of the GNU General Public License as published by\n
@@ -52,7 +59,6 @@
  * \brief Locking all or selected elements.
  *
  * Usage: LockElements([Selected|All])\n
- *
  * If no argument is passed, no action is carried out.
  */
 static int
@@ -69,6 +75,7 @@ lock_elements(int argc, char **argv)
                 Message ("ERROR: in LockElements argument should be either Selected or All.\n");
                 return 1;
         }
+        SET_FLAG (NAMEONPCBFLAG, PCB);
         ELEMENT_LOOP(PCB->Data);
         {
                 if (!TEST_FLAG (LOCKFLAG, element))
@@ -79,11 +86,18 @@ lock_elements(int argc, char **argv)
                         if (selected)
                         {
                                 if (TEST_FLAG (SELECTEDFLAG, element))
+                                {
+                                        /* better to unselect element first */
+                                        CLEAR_FLAG(SELECTEDFLAG, element);
                                         SET_FLAG(LOCKFLAG, element);
+                                }
                         }
                 }
         }
         END_LOOP;
+        gui->invalidate_all ();
+        IncrementUndoSerialNumber ();
+        return 0;
 }
 
 
@@ -91,7 +105,6 @@ lock_elements(int argc, char **argv)
  * \brief Locking all or selected elements.
  *
  * Usage: UnlockElements([Selected|All])\n
- *
  * If no argument is passed, no action is carried out.
  */
 static int
@@ -108,6 +121,7 @@ unlock_elements(int argc, char **argv)
                 Message ("ERROR: in UnlockElements argument should be either Selected or All.\n");
                 return 1;
         }
+        SET_FLAG (NAMEONPCBFLAG, PCB);
         ELEMENT_LOOP(PCB->Data);
         {
                 if (TEST_FLAG (LOCKFLAG, element))
@@ -123,6 +137,9 @@ unlock_elements(int argc, char **argv)
                 }
         }
         END_LOOP;
+        gui->invalidate_all ();
+        IncrementUndoSerialNumber ();
+        return 0;
 }
 
 
