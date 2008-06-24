@@ -64,8 +64,8 @@
 static int
 lock_elements(int argc, char **argv)
 {
-        int selected;
-        int all;
+        int selected = 0;
+        int all = 0;
         if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
                 selected = 1;
         else if (argc >0 && strcasecmp (argv[0], "All") == 0)
@@ -110,8 +110,8 @@ lock_elements(int argc, char **argv)
 static int
 unlock_elements(int argc, char **argv)
 {
-        int selected;
-        int all;
+        int selected = 0;
+        int all = 0;
         if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
                 selected = 1;
         else if (strcasecmp (argv[0], "All") == 0)
