@@ -3,7 +3,8 @@
  * \author Copyright (C) 2008 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * \brief Unlocking/locking elements plug-in for PCB.
  *
- * Function to lock/unlock all/selected PCB elements.
+ * Function to lock all or a selection of PCB elements.\n
+ * Locked elements can all be unlocked in the same instance.\n
  * \n
  * Compile like this:\n
  * \n
@@ -13,18 +14,18 @@
  * \n
  * \warning Be very strict in compiling this plug-in against the exact pcb
  * sources you compiled/installed the pcb executable (i.e. src/pcb) with.\n
- * \n
+ *
  * Usage: LockElements([Selected|All])\n
- * Usage: UnlockElements([Selected|All])\n
+ * Usage: UnlockElements(All)\n
  * \n
  * If no argument is passed, no locking/unlocking of elements is carried out.\n
  * \n
  * \bug When locking a selection of elements, it is not easy to unselect the
  * selection since those elements and their pins/pads/elementlines/elementarcs
  * are now locked ;)\n
- * This appears to be a bug in pcb.\n
- * \todo A possible workaround would be to clear the selected flag of the
- * locked element at the same instance the lock flag was set.
+ * This may be thought of as understandable at first,
+ * but may also be considered to be a bug in pcb.\n
+ *
  * <hr>
  * This program is free software; you can redistribute it and/or modify\n
  * it under the terms of the GNU General Public License as published by\n
@@ -110,15 +111,12 @@ lock_elements(int argc, char **argv)
 static int
 unlock_elements(int argc, char **argv)
 {
-        int selected = 0;
         int all = 0;
-        if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
-                selected = 1;
-        else if (strcasecmp (argv[0], "All") == 0)
+        if (strcasecmp (argv[0], "All") == 0)
                 all = 1;
         else
         {
-                Message ("ERROR: in UnlockElements argument should be either Selected or All.\n");
+                Message ("ERROR: in UnlockElements argument should be All.\n");
                 return 1;
         }
         SET_FLAG (NAMEONPCBFLAG, PCB);
@@ -129,11 +127,6 @@ unlock_elements(int argc, char **argv)
                         /* element is locked */
                         if (all)
                                 CLEAR_FLAG(LOCKFLAG, element);
-                        if (selected)
-                        {
-                                if (TEST_FLAG (SELECTEDFLAG, element))
-                                        CLEAR_FLAG(LOCKFLAG, element);
-                        }
                 }
         }
         END_LOOP;
