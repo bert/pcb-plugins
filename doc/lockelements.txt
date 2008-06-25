@@ -1,0 +1,37 @@
+From: Bert Timmerman <bert.timmerman@xs4all.nl>
+To: gEDA developer mailing list <geda-dev@moria.seul.org>, gEDA user mailing list <geda-user@moria.seul.org>
+Organization: me organized ?
+Date: Wed, 25 Jun 2008 23:17:52 +0200
+Subject: gEDA-user: [pcb] lock elements plug-in
+
+Hi all,
+
+The final version of the plug-in can be found here:
+
+http://www.xs4all.nl/~ljh4timm/downloads/lockelements.c
+
+
+Usage:
+
+LockElements(Selected) to lock a (selected first) selection of elements
+(only).
+
+LockElements(All) to lock all elements on the pcb.
+
+UnlockElements(All) to unlock all elements on the pcb.
+
+If no argument is given, no locking/unlocking is performed on elements.
+
+
+Usual disclaimers apply, just my EUR 0.02 and have fun :)
+
+Kind regards,
+
+Bert Timmerman.
+
+
+
+_______________________________________________
+geda-user mailing list
+geda-user@moria.seul.org
+http://www.seul.org/cgi-bin/mailman/listinfo/geda-user
