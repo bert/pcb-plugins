@@ -105,7 +105,7 @@ lock_elements(int argc, char **argv)
 /*!
  * \brief Locking all or selected elements.
  *
- * Usage: UnlockElements([Selected|All])\n
+ * Usage: UnlockElements(All)\n
  * If no argument is passed, no action is carried out.
  */
 static int
