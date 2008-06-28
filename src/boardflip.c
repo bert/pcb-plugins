@@ -63,7 +63,7 @@ boardflip (int argc, char **argv, int x, int y)
     sides = 1;
   printf("argc %d argv %s sides %d\n", argc, argv[0], sides);
 
-  LAYER_LOOP (PCB->Data, max_layer);
+  LAYER_LOOP (PCB->Data, max_layer + 2);
   {
     LINE_LOOP (layer);
     {
