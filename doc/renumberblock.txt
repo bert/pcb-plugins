@@ -1,0 +1,74 @@
+From: DJ Delorie [dj AT delorie DOT com]
+Date: friday 12 september 2008 5:38
+To: geda-user AT moria DOT seul DOT org
+Subject: gEDA-user: RenumberBuffer()
+
+
+http://www.delorie.com/pcb/renumberblock.c
+
+I added RenumberBuffer() to my RenumberBlock() plug in.  It does the same thing, but to the paste buffer.  Why?  I needed twenty copies of a block on a board, and not in a simple grid:
+
+LoadFrom(Layout,powermeter.pcb)
+LoadFrom(LayoutToBuffer,channel1.pcb)
+
+# left upper
+
+PasteBuffer(ToLayout,0,30000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,80000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,130000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,180000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,230000)
+
+# Now skip 300 more for the next five
+
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,310000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,360000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,410000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,460000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,0,510000)
+
+# Other side
+pastebuffer(Rotate,2)
+
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,90000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,140000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,190000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,240000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,290000)
+
+# skip
+
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,370000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,420000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,470000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,520000)
+RenumberBuffer(0,10)
+PasteBuffer(ToLayout,250000,570000)
+
+SaveTo(LayoutAs,djtest.pcb)
+Quit()
+
+
+
+_______________________________________________
+geda-user mailing list
+geda-user@moria.seul.org
+http://www.seul.org/cgi-bin/mailman/listinfo/geda-user

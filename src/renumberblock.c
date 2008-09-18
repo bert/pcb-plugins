@@ -18,6 +18,10 @@
    the existing number.  I.e. RenumberBlock(100,200) will change R213
    to R313.
 
+   Usage: RenumberBuffer(oldnum,newnum)
+
+   Same, but the paste buffer is renumbered.
+
 */
 
 #include <stdio.h>
@@ -79,8 +83,50 @@ renumber_block (int argc, char **argv, int x, int y)
   return 0;
 }
 
+static int
+renumber_buffer (int argc, char **argv, int x, int y)
+{
+  char num_buf[15];
+  int old_base, new_base;
+
+  if (argc < 2) {
+    Message("Usage: RenumberBuffer oldnum newnum");
+    return 1;
+  }
+
+  old_base = atoi (argv[0]);
+  new_base = atoi (argv[1]);
+
+  SET_FLAG (NAMEONPCBFLAG, PCB);
+
+  ELEMENT_LOOP (PASTEBUFFER->Data);
+  {
+    char *refdes_split, *cp;
+    char *old_ref, *new_ref;
+    int num;
+
+    old_ref = element->Name[1].TextString;
+    for (refdes_split=cp=old_ref; *cp; cp++)
+      if (!isdigit(*cp))
+	refdes_split = cp+1;
+
+    num = atoi (refdes_split);
+    num += (new_base - old_base);
+    sprintf(num_buf, "%d" ,num);
+    new_ref = (char *) malloc (refdes_split - old_ref + strlen(num_buf) + 1);
+    memcpy (new_ref, old_ref, refdes_split - old_ref);
+    strcpy (new_ref + (refdes_split - old_ref), num_buf);
+    
+    ChangeObjectName (ELEMENT_TYPE, element, NULL, NULL, new_ref);
+  }
+  END_LOOP;
+  return 0;
+}
+
 static HID_Action renumber_block_action_list[] = {
   {"RenumberBlock", NULL, renumber_block,
+   NULL, NULL},
+  {"RenumberBuffer", NULL, renumber_buffer,
    NULL, NULL}
 };
 
