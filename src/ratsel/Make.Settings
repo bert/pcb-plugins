@@ -1,0 +1,3 @@
+PCBDIR=$(HOME)/prg/pcb/
+LIBGCJPATH=/usr/share/java/libgcj.jar
+

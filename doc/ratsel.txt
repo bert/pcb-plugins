@@ -1,0 +1,23 @@
+From: Endre Bak <endrebak@yahoo.com>
+Date: Thu, 6 Nov 2008 05:30:47 -0800 (PST)
+To: geda-dev@moria.seul.org
+Subject: gEDA-dev: PCB plugin for rat selection
+
+Hi,
+
+I have made a PCB plugin which intends to help auto-routing with variable track width.
+You can download it from here:
+
+http://ratsel.googlecode.com/files/RatSel.tar.bz2
+
+There is a quick introduction under the doc directory.
+
+Any feedback is welcome.
+
+Cheers,
+Endre
+
+_______________________________________________
+geda-dev mailing list
+geda-dev@moria.seul.org
+http://www.seul.org/cgi-bin/mailman/listinfo/geda-dev
