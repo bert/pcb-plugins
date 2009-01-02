@@ -1,0 +1,5 @@
+*~
+*.bak
+*.so
+install.sh
+.git
