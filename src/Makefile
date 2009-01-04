@@ -32,14 +32,14 @@ teardrops: teardrops.so
 all: \
 	autocrop \
 	boardflip \
-	distalign.so \
-	findrat.so \
-	jostle.so \
-	lockelements.so \
-	renumberblock.so \
-	sedrename.so \
-	smartdisperse.so \
-	teardrops.so
+	distalign \
+	findrat \
+	jostle \
+	lockelements \
+	renumberblock \
+	sedrename \
+	smartdisperse \
+	teardrops
 
 install:
 	mv *.so ~/.pcb/plugins
