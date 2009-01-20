@@ -1,0 +1,152 @@
+<HTML>
+<HEAD>
+<LINK REL="stylesheet" TYPE="text/css" HREF="toporouter.css">
+<TITLE>Topological Autorouter</TITLE>
+</HEAD>
+<BODY>
+
+<DIV CLASS="header" ID="header">
+<img src="puzzle.png">  
+<H1>Topological Autorouter</H1>
+<H2>Anthony Blake - amb33@cs.waikato.ac.nz</H2>
+<H3>18/08/2008</H3>
+</DIV>
+
+<br>
+
+<DIV CLASS="body" ID="body">
+<A NAME="toc1"></A>
+<H1>Overview</H1>
+<p> 
+
+This project was undertaken as part of the <a href="http://code.google.com/soc/2008/">Google Summer of Code</a>, and is mentored by <a
+	href="http://www.delorie.com/users/dj">DJ Delorie</a>. The goal is to create a topological autorouter for <a
+	href="http://pcb.sourceforge.net">PCB</a>, a printed circuit board layout program. PCB is part of the <a
+	href="http://geda.seul.org">gEDA</a> suite of open source electronic design automation tools.
+
+</p> <P>
+
+Perhaps one of the biggest advantages commercial PCB layout tools has over open source tools such as "PCB", is the autorouter capability.
+Tools incorporating topological autorouters produce results of a higher quality and can solve a larger range of routing problems compared to
+geometric sequential maze routers, such as that currently found in "PCB".  It is currently implemented as a plugin to PCB. Ultimitely it
+would be nice to integrate it back into PCB once it achieves a good level of functionality.
+
+</P> <P>
+
+The advantages of a topological autorouter arise from the flexible and abstract representation of nets and terminals in a structure such as
+the rubber-band sketch. During the routing process manipulation is performed on this more flexible format, and the exact geometric
+representation of the nets is delayed until the latest possible moment. In contrast, sequential maze autorouters maintain a geometric
+representation of the nets and terminals on a grid system throughout the routing process, requiring comparitively high computational
+resources and producing generally lacking results.  
+	
+</P> <P>
+
+Most of this work is influenced by "Rubberband based topological router", a PhD thesis by Tal Dayan, and a few other papers mentioned in the
+bibliography.
+	
+</P>
+
+<A NAME="toc2"></A>
+<H1>Status</H1>
+
+<p>
+The topological router is still in development. Here are some samples of the output: 
+</p>
+
+<img src="first_board.png" border="0">  
+<img src="hexagon.png" border="0">  
+
+<h3>Current features:</h3>
+<ul>
+	<li> Data is imported from PCB into internal data structures. <p></p>
+	<li> Computation of a forest of EMST (euclidean minimum spanning tree) for each netlist. <p></p>
+	<li> Division of n-layer problem into smaller n-layer subproblems based on flow density of topology edges between cuts.  <p></p>
+	<li> Assignment of 2-nets (edges of the topology) to layers within the subproblem (referred to as the 2-net layer assignment algorithm, or
+	2LAA). A 2-net may further be decomposed into 2-nets residing on different layers, and a via placed. The 2LAA also avoids closed sets of
+	nets which will cause an impossible situation at later stages. A heuristic for wiring detour and
+	cost function for via placement are the main parameters affecting the quality of results. The result of the 2LAA is a set of set problems
+	for each layer.<p></p>
+	<li>The topological net ordering algorithm solves the net ordering problem (NOP).  The order in which a layer problems set of nets are
+	routed can change the wiring cost, and also affects planarity. Routing a closed net prior to a net with terminals either side of the
+	closed net will cause an impossible routing situation.  The NOP orders the nets such wiring cost is minimized, and a planarity enforcement
+	operator (PEO) guarentees the local router can succeed without backtracking.  <p></p>
+	<li>A triangulation crossing sketch (TCS) is generated used the A* path search algorithm. <p></p>
+	<li>A ROAR (rip-up and re-reroute) operator is applied to detect and reroute situations of circular dependencies, where a 2-net routed
+	with the shortest path algorithm can block the optimal solution. E.g., the "triangle problem" <a
+		href="tri_prob_toporouter_noroar.png">before</a> and <a href="tri_prob_toporouter_roar.png">after</a> ROAR, and the <a
+		href="tri_prob_autorouter.png">current autorouters</a> results for the same problem. This also works with a greater number of 2-nets in
+		circular conflict, e.g., a hexagon problem with the <a href="hexagon_prob_toporouter.png">toporouter</a> and with the old autorouter 
+		<a href="hexagon_prob_autorouter.png">autorouter</a>. In this case the old autorouters solution isn&#8217;t that bad because it
+		couldn&#8217;t route a shortest path in the first place while under orthoganal constraints. <p></p>
+	<li>Another ROAR operator is applied to fix traces travelling adjacent to points from the same net, due to unforeseen detour and topology
+	decisions made earlier on. For every TCS edge e, if there is a point p on that edge belonging to the same netlist as the end points of e
+	(p1 and p2), then a route is tested from either p1 or p2 (depending on which belongs in the other cluster compared to p if edge e is
+	removed) to p, and if its shorter, it is used instead. This tends to appear on boards constrained to few layers which forces large
+	detours. E.g., the tutorial board <a href="tut_board_toporouter_noroar.png">before</a> this ROAR operator, and <a
+		href="tut_board_toporouter_roar.png">after</a><p></p> 
+	<li>Force-driven wiring optimization is applied to the TCS. <p></p>
+	<li>The TCS is converted to a rubberband representation consisting of arcs and edges, and exported back into PCB. <p></p>
+</ul>
+
+<h3>Future work:</h3>
+<ul>
+	<li>Import of all geometry from PCB, as constrained edges in the triangulations. This is required to route boards with existing 
+	geometry, or the pads for SMT boards.<p></p>
+	<li>Support for planes and polygons. <p></p>
+	<li>Heuristic for high-density device fanout. <p></p>
+	<li>Heuristic for handling large conflict in small area (e.g., a bus inverting). <p></p>
+	<li>Support for other topologies such as force-driven, constrained minimum steiner tree.<p></p>
+</ul>
+
+
+<A NAME="toc3"></A>
+<H1>Downloads</H1>
+<p> 
+	<a href="toporouter.tar.gz"> Source code (.tar.gz) </a>
+</p>
+
+
+<A NAME="toc4"></A>
+<H1>Bibliography</H1>
+ <UL>
+ <LI>Dayan, T. and Dai, W.W.M., "Layer Assignment for a Rubber Band Router" Tech
+   Report UCSC-CRL-92-50, Univ. of California, Santa Cruz, 1992.
+ <P></P>
+ <LI>Dai, W.W.M and Dayan, T. and Staepelaere, D., "Topological Routing in SURF:
+   Generating a Rubber-Band Sketch" Proc. 28th ACM/IEEE Design Automation
+   Conference, 1991, pp. 39-44.
+ <P></P>
+ <LI>David Staepelaere, Jeffrey Jue, Tal Dayan, Wayne Wei-Ming Dai, "SURF:
+   Rubber-Band Routing System for Multichip Modules," IEEE Design and Test of
+   Computers ,vol. 10, no. 4,  pp. 18-26, October/December, 1993.
+ <P></P>
+ <LI>Dayan, T., "Rubber-band based topological router" PhD Thesis, Univ. of
+   California, Santa Cruz, 1997.
+ <P></P>
+ <LI>David Staepelaere, "Geometric transformations for a rubber-band sketch"
+   Master's thesis, Univ. of California, Santa Cruz, September 1992.
+ <P></P>
+ <LI>Geoff Leach. Improving worst-case optimal Delaunay triangulation algorithms.
+   In 4th Canadian Conference on Computational Geometry, 1992.
+ <P></P>
+ <LI>Guibas, L. and Stolfi, J. 1985. Primitives for the manipulation of general
+   subdivisions and the computation of Voronoi. ACM Trans. Graph. 4, 2 (Apr.
+   1985), 74-123.
+ <P></P>
+ <LI>Also implemented in this file is Euclidean minimum spanning tree, computed
+   as a subset of the Delaunay triangulation in O(n) time, using Kruskal's
+   algorithm:
+ <P></P>
+ <LI>Joseph. B. Kruskal: On the Shortest Spanning Subtree of a Graph and the
+   Traveling Salesman Problem. In: Proceedings of the American Mathematical
+   Society, Vol 7, No. 1 (Feb, 1956), pp. 48–50.
+ <P></P>
+ <LI>De Berg, M. and van Kreveld, M. and Overmars, M. and Schwarzkopf, O.
+   "Computational geometry: Algorithms and applications", 2000,
+   Springer-Verlag.
+ </UL>
+
+
+</DIV>
+
+</BODY></HTML>
