@@ -28,6 +28,8 @@ smartdisperse: smartdisperse.so
 	
 teardrops: teardrops.so
 	
+upth2pth: upth2pth.so
+	
 #
 all: \
 	autocrop \
@@ -39,7 +41,8 @@ all: \
 	renumberblock \
 	sedrename \
 	smartdisperse \
-	teardrops
+	teardrops \
+	upth2pth
 
 install:
 	mv *.so ~/.pcb/plugins
