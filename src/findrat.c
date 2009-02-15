@@ -1,3 +1,22 @@
+/* FindRat plug-in for PCB
+   http://www.delorie.com/pcb/findrat.c
+
+   Copyright (C) 2008 DJ Delorie <dj@delorie.com>
+
+   Licensed under the terms of the GNU General Public License, version
+   2 or later.
+
+   Compile like this:
+
+   gcc -I$HOME/geda/pcb-cvs/src -I$HOME/geda/pcb-cvs -O2 -shared findrat.c -o findrat.so
+
+   The resulting findrat.so goes in $HOME/.pcb/plugins/findrat.so.
+
+   Usage: FindRat()
+
+   The cursor scrolls to one of the rats on the board.
+*/
+
 #include <stdio.h>
 #include <math.h>
 
