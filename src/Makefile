@@ -14,6 +14,8 @@ boardflip: boardflip.so
 	
 distalign: distalign.so
 	
+findelement: findelement.so
+	
 findrat: findrat.so
 	
 jostle: jostle.so
@@ -35,6 +37,7 @@ all: \
 	autocrop \
 	boardflip \
 	distalign \
+	findelement \
 	findrat \
 	jostle \
 	lockelements \
