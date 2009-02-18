@@ -1,5 +1,5 @@
 /*!
- * \file ghellopcb`.c
+ * \file ghellopcb.c
  * \author Copyright (C) 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * \brief Plug-in for PCB to say "Hello world".
  *
@@ -48,8 +48,8 @@
 #include "undo.h"
 #include "set.h"
 
-/*
- * Terminate the main loop.
+/*!
+ * \brief Terminate the main loop.
  */
 static void
 on_destroy (GtkWidget * widget, gpointer data)
