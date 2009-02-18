@@ -18,6 +18,9 @@ findelement: findelement.so
 	
 findrat: findrat.so
 	
+ghellopcb: ghellopcb.so
+	${CC} ${CFLAGS} -lglib-2.0 -o ghellopcb.so ghellopcb.c `pkg-config --cflags gtk+-2.0 --libs gtk+-2.0`
+
 jostle: jostle.so
 	
 lockelements: lockelements.so
