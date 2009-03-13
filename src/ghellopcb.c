@@ -68,7 +68,7 @@ ghellopcb (int argc, char **argv)
         GtkWidget *window;
         GtkWidget *label;
         gtk_init (&argc, &argv);
-        /* create the main, top level, window */
+        /* create a new top level window */
         window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
         /* give the window a 20px wide border */
         gtk_container_set_border_width (GTK_CONTAINER (window), 20);
@@ -77,11 +77,11 @@ ghellopcb (int argc, char **argv)
         /* open it a bit wider so that both the label and title show up */
         gtk_window_set_default_size (GTK_WINDOW (window), 200, 50);
         /* Connect the destroy event of the window with our on_destroy function
-         * When the window is about to be destroyed we get a notificaiton and
+         * When the window is about to be destroyed we get a notificaton and
          * stop the main GTK loop
          */
         g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (on_destroy), NULL);
-        /* Create the "Hello, World" label  */
+        /* Create the "Hello, PCB World" label  */
         label = gtk_label_new ("Hello, PCB World");
         /* and insert it into the main window  */
         gtk_container_add (GTK_CONTAINER (window), label);
