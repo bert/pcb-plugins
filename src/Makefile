@@ -2,7 +2,14 @@
 
 CC=gcc
 
-CFLAGS=-g -Wall -I../../../pcb/src -I../../../pcb -O2 -shared
+# Test for osx install,  pass in cflags for shared libraries under OS X.
+OSX_INSTALL=$(shell bash -c "if [ -n \"`which sw_vers`\" ]; then sw_vers -productName; else echo 'Not OSX'; fi" )
+
+ifeq ($(OSX_INSTALL),Mac OS X)
+	CFLAGS= -Wall -I../../pcb/src -I../../pcb -O2 -flat_namespace -bundle -undefined suppress
+else
+	CFLAGS=-g -Wall -I../../../pcb/src -I../../../pcb -O2 -shared
+endif
 
 %.so: %.c
 	${CC} ${CFLAGS} $< -o $@
