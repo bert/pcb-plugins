@@ -7,6 +7,8 @@ CFLAGS=-g -Wall -I../../../pcb/src -I../../../pcb -O2 -shared
 %.so: %.c
 	${CC} ${CFLAGS} $< -o $@
 
+.DEFAULT_GOAL := all
+
 # Individual target definitions.
 autocrop: autocrop.so
 	
@@ -51,6 +53,7 @@ all: \
 	upth2pth
 
 install:
+	mkdir -p ~/.pcb/plugins
 	mv *.so ~/.pcb/plugins
 
 clean:
