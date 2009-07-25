@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <values.h>
+#include <float.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -513,7 +513,7 @@ fprintf(stderr, "\tkeep it!\n");
 		if (info->smallest) {
 			poly_Free(&info->smallest);
 		}
-		info->centroid = nocentroid ? MAXDOUBLE : (big - small);
+		info->centroid = nocentroid ? DBL_MAX : (big - small);
 		info->side = side;
 		info->line = line;
 		info->smallest = smallest;
