@@ -51,6 +51,7 @@
 #include "rtree.h"
 #include "undo.h"
 #include "set.h"
+#include "error.h"
 
 /*!
  * \brief Changing all or selected unplated holes to plated holes.
@@ -60,7 +61,7 @@
  * Locked holes are not to be changed.\n
  */
 static int
-upth2pth (int argc, char **argv)
+upth2pth (int argc, char **argv, int x, int y)
 {
         int selected = 0;
         int all = 0;
@@ -123,7 +124,7 @@ upth2pth (int argc, char **argv)
  * Locked holes are not to be changed.\n
  */
 static int
-pth2upth (int argc, char **argv)
+pth2upth (int argc, char **argv, int x, int y)
 {
         int selected = 0;
         int all = 0;
