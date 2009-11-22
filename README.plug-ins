@@ -13,4 +13,96 @@ was available at the time of the publication.
 For more information inquire at the geda project user 
 mailing list (http://geda.seul.org/mailinglist/index.html)
 
+It is assumed that both pcb and pcb-plugins source trees remain on an equal 
+level.
+For instance the command "tree -d" given on a terminal screen would give a 
+result similar as below:
+
+pcb-plugins
+|-- doc
+|   |-- doxygen
+|   |-- footprint-update
+|   `-- teardrops
+`-- src
+    |-- dxf
+    |   |-- doc
+    |   `-- template
+    |-- footprint-update
+    `-- ratsel
+        |-- doc
+        |-- src
+        |   `-- ratsel
+        `-- utst
+            `-- ratsel
+pcb
+|-- README_FILES
+|-- autom4te.cache
+|-- data
+|-- doc
+|   |-- gs
+|   `-- ideas
+|-- example
+|   `-- libraries
+|-- intl
+|-- lib
+|   `-- pcblib-newlib
+|       |-- amp
+|       |-- amphenol
+|       |-- bourns
+|       |-- candk
+|       |-- connector
+|       |-- crystal
+|       |-- cts
+|       |-- geda
+|       |-- generic
+|       |-- gtag
+|       |-- johnstech
+|       |-- minicircuits
+|       |-- nichicon
+|       |-- optek
+|       |-- optical
+|       |-- panasonic
+|       `-- pci
+|-- m4
+|-- newlib
+|   |-- 2_pin_thru-hole_packages
+|   |-- connectors
+|   |-- crystal
+|   |-- electro-optics
+|   |-- headers
+|   |-- keystone
+|   |-- msp430
+|   |-- not_vetted_ingo
+|   |-- sockets
+|   `-- tests
+|-- po
+|-- src
+|   |-- gts
+|   |-- hid
+|   |   |-- batch
+|   |   |-- bom
+|   |   |-- common
+|   |   |-- gerber
+|   |   |-- gtk
+|   |   |-- lesstif
+|   |   |-- lpr
+|   |   |-- nelma
+|   |   |-- png
+|   |   `-- ps
+|   `-- icons
+|-- tests
+|   |-- golden
+|   |   |-- hid_bom1
+|   |   |-- hid_bom2
+|   |   |-- hid_bom3
+|   |   |-- hid_bom4
+|   |   |-- hid_gerber1
+|   |   |-- hid_gerber2
+|   |   `-- hid_png1
+|   `-- inputs
+|-- tools
+|-- tutorial
+|-- utils
+`-- win32
+
 Kind regards, have fun and the usual YMMV disclaimers apply.
