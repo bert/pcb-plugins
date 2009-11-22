@@ -49,6 +49,7 @@
 #include "rtree.h"
 #include "undo.h"
 #include "set.h"
+#include "error.h"
 
 /*!
  * \brief Find the specified element.
@@ -57,7 +58,7 @@
  * If no argument is passed, no action is carried out.
  */
 static int
-find_element (int argc, char **argv)
+find_element (int argc, char **argv, int x, int y)
 {
         if (argc == 0 || strcasecmp (argv[0], "") == 0)
         {
