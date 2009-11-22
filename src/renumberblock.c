@@ -30,6 +30,8 @@
 #include "create.h"
 #include "rtree.h"
 #include "undo.h"
+#include "error.h"
+#include "change.h"
 
 static int
 renumber_block (int argc, char **argv, int x, int y)
