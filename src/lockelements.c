@@ -1,6 +1,6 @@
 /*!
  * \file lockelements.c
- * \author Copyright (C) 2008 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ * \author Copyright (C) 2008, 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * \brief Unlocking/locking elements plug-in for PCB.
  *
  * Function to lock all or a selection of PCB elements.\n
@@ -55,15 +55,18 @@
 #include "rtree.h"
 #include "undo.h"
 #include "set.h"
+#include "error.h"
 
 /*!
  * \brief Locking all or selected elements.
  *
- * Usage: LockElements([Selected|All])\n
+ * Usage:\n
+ * LockElements([Selected|All])\n
+ * LE([Selected|All])\n
  * If no argument is passed, no action is carried out.
  */
 static int
-lock_elements(int argc, char **argv)
+lock_elements (int argc, char **argv, int x, int y)
 {
         int selected = 0;
         int all = 0;
@@ -105,11 +108,13 @@ lock_elements(int argc, char **argv)
 /*!
  * \brief Locking all or selected elements.
  *
- * Usage: UnlockElements(All)\n
+ * Usage:\n
+ * UnlockElements(All)\n
+ * UE(All)\n       
  * If no argument is passed, no action is carried out.
  */
 static int
-unlock_elements(int argc, char **argv)
+unlock_elements (int argc, char **argv, int x, int y)
 {
         int all = 0;
         if (strcasecmp (argv[0], "All") == 0)
@@ -139,7 +144,9 @@ unlock_elements(int argc, char **argv)
 static HID_Action lockelements_action_list[] =
 {
         {"LockElements", NULL, lock_elements, "Lock selected or all elements", NULL},
-        {"UnlockElements", NULL, unlock_elements, "Unlock selected or all elements", NULL}
+        {"LE", NULL, lock_elements, "Lock selected or all elements", NULL},
+        {"UnlockElements", NULL, unlock_elements, "Unlock selected or all elements", NULL},
+        {"UE", NULL, unlock_elements, "Unlock selected or all elements", NULL}
 };
 
 
