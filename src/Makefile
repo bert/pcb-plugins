@@ -63,5 +63,19 @@ install:
 clean:
 	rm -f *.so *~
 
+uninstall:
+	rm ~/.pcb/plugins/autocrop.so
+	rm ~/.pcb/plugins/boardflip.so
+	rm ~/.pcb/plugins/distalign.so
+	rm ~/.pcb/plugins/findelement.so
+	rm ~/.pcb/plugins/findrat.so
+	rm ~/.pcb/plugins/jostle.so
+	rm ~/.pcb/plugins/lockelements.so
+	rm ~/.pcb/plugins/renumberblock.so
+	rm ~/.pcb/plugins/sedrename.so
+	rm ~/.pcb/plugins/smartdisperse.so
+	rm ~/.pcb/plugins/teardrops.so
+	rm ~/.pcb/plugins/upth2pth.so
+	
 # EOF #
 
