@@ -105,4 +105,20 @@ pcb
 |-- utils
 `-- win32
 
+To compile and install the single file plug-ins go into:
+
+cd pcb-plugins/src
+
+And type:
+
+make all
+make install
+
+Or if you want to uninstall them type:
+
+make uninstall
+
+Reading the Makefile might give a good idea how to compile and install 
+a single plug-ins.
+
 Kind regards, have fun and the usual YMMV disclaimers apply.
