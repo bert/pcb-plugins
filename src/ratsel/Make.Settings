@@ -1,0 +1,3 @@
+PCBDIR=../../../../pcb/
+LIBGCJPATH=/usr/share/java/libgcj.jar
+

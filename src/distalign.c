@@ -19,6 +19,10 @@
 #include "rtree.h"
 #include "undo.h"
 #include "rats.h"
+#include "error.h"
+#include "move.h"
+#include "draw.h"
+#include "set.h"
 
 #define ARG(n) (argc > (n) ? argv[n] : 0)
 
@@ -119,7 +123,8 @@ static struct element_by_pos {
 	LocationType	pos;
 	LocationType	width;
 } *elements_by_pos;
-static nelements_by_pos;
+
+static int nelements_by_pos;
 
 static int
 cmp_ebp(const void *a, const void *b)
@@ -145,7 +150,7 @@ static int
 sort_elements_by_pos(int op, int dir, int point)
 {
 	int nsel = 0;
-	struct element_pos *ep;
+//	struct element_pos *ep;
 
 	if (nelements_by_pos)
 		return nelements_by_pos;
@@ -561,8 +566,8 @@ distribute(int argc, char **argv, int x, int y)
 		SetChangedFlag(1);
 	}
 
-    out:
-	free_elements_by_pos();
+//    out:
+//	free_elements_by_pos();
 
 	return 0;
 }

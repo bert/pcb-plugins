@@ -26,6 +26,10 @@
 #include "rtree.h"
 #include "undo.h"
 #include "rats.h"
+#include "error.h"
+#include "move.h"
+#include "draw.h"
+#include "set.h"
 
 #define GAP 10000
 static LocationType minx;
@@ -123,10 +127,10 @@ smartdisperse (int argc, char **argv, int x, int y)
 	char *function = ARG(0);
 	NetListTypePtr Nets;
 	char *visited;
-	PointerListType stack = { 0, 0, NULL };
+//	PointerListType stack = { 0, 0, NULL };
 	int all;
-	int changed = 0;
-	int i;
+//	int changed = 0;
+//	int i;
 
 	if (! function) {
 		all = 1;
@@ -172,7 +176,7 @@ smartdisperse (int argc, char **argv, int x, int y)
 	{
 		ConnectionTypePtr	conna, connb;
 		ElementTypePtr		ea, eb;
-		ElementTypePtr		*epp;
+//		ElementTypePtr		*epp;
 
 		if (net->ConnectionN != 2)
 			continue;

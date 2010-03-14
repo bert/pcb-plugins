@@ -21,7 +21,8 @@
 # $Id: Makefile,v 1.12 2008-05-25 00:16:06 dean Exp $
 
 # Location of PCB source tree
-PCB_CVS_DIR=/build/sources/pcb/pcb-20080202
+PCB_CVS_DIR=../../../../pcb
+
 # Installation location of PCB plug-ins
 INSTALL_DIR=~/.pcb/plugins
 

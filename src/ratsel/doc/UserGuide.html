@@ -1,0 +1,55 @@
+<html>
+<body>
+<h1>RatSel PCB plugin quick introduction</h1>
+<p>Last update: 2008.Nov.05</p>
+<p>
+<h2>Purpose</h2>
+In an electrical circuit there can be component pins with high current flow and there can be pins with low current flow. On the printed circuit representation it is often good to connect the high current pins with wide tracks and the low current pins with narrow tracks. RatSel intends to provide some help for accomplishing this kind of variable track width autorouting in PCB.
+<p>
+<h2>Usage</h2>
+Here is the schematic of 2 DC-DC converters:<br/>
+<image src="Schematic.png"/><br/><br/>
+1. Write the list of high current pins into a new file, called <code>power.DCDC.rs</code>:<br/>
+<pre>
+GND-1
+Uboost1-(1,2)
+PowDCDC-1
+Rsb1-(1,2)
+Lb1-(1,2), Lb2-(1,2), Db1-(1,2), BOOSTED-1
+Cobb1-(1,2)
+
+Rsi1-(1,2)
+Uinv1-(1,2)
+Li1-(1,2), Li2-(1,2), Di1-(1,2), INVERTED-1
+Cobi1-(1,2)
+</pre><br/>
+2. Launch PCB, generate the layout and place the rats:<br/>
+<image src="Layout.png"/><br/><br/>
+3. Execute the RatSel plugin from the PCB command line with this command: <code>RatSel(power.DCDC.rs)</code>. The result should look like this:<br/>
+<image src="RatsSelected.png"/><br/><br/>
+4. Setup the autorouter to route with wide tracks, e.g. with 60 mils. Execute the "Auto-route selected rats" functionality:<br>
+<image src="SelectedRatsAutorouted.png/"><br/><br/>
+5. Setup the autorouter to narrow track width, e.g. 20 mils. Execute the "Auto-route all rats" functionality for routing the remaining rats. After some "Auto optimize" and a "Miter" the result looks like this:<br/>
+<image src="FullyRouted.png"/><br/><br/>
+</p>
+
+<p>
+<h2>Problems</h2>
+There can be many. The plugin hasn't been intensively tested. I haven't tried it on SMT board. My tests were made with pcb-20080202.
+</p>
+
+<p>
+<h2>Compilation and installation.</h2>
+For compilation you'll need the source distribution of PCB, gcc, g++, and gcj environment.<br/>
+1st you have to edit the Make.Settings file, currently it contains 2 variables: PCBDIR, LIBGCJPATH.
+Then "make install" should do the remaining tasks.
+</p><br/>
+
+<p>
+Hopping that this functionality will be useful.<br/><br/>
+Cheers,<br/>
+Endre Bak
+</p>
+
+</body>
+</html>

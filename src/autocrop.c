@@ -20,6 +20,9 @@
 #include "rtree.h"
 #include "undo.h"
 #include "move.h"
+#include "draw.h"
+#include "set.h"
+#include "polygon.h"
 
 static void *
 MyMoveViaLowLevel(DataTypePtr Data, PinTypePtr Via, LocationType dx, LocationType dy)
@@ -152,7 +155,7 @@ MoveAll(LocationType dx, LocationType dy)
 static int
 autocrop(int argc, char **argv, int x, int y)
 {
-	int changed = 0;
+//	int changed = 0;
 	LocationType dx, dy, pad;
 	BoxTypePtr box;
 

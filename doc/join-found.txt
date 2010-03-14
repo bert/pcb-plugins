@@ -1,0 +1,70 @@
+From: Peter Clifton <pcjc2@cam.ac.uk>
+To: gEDA user mailing list <geda-user@moria.seul.org>
+Date: Mon, 26 Oct 2009 14:59:43 +0000
+Subject: Re: gEDA-user: PCB+GL testing
+
+On Mon, 2009-10-26 at 10:04 +0100, michalwd1979 wrote:
+> Hello,
+> 
+> Today I've done all possible tests with new, freshly compiled 3d pcb
+> using available PCs and these are the results:
+> 
+> 1) I can not reproduce "strange" crash with drc window on any machine.
+> Was it secret testing of new electromagnetic weapon? I'm living close
+> to military shipyard by the way.
+> 
+> 2) On intel graphics card (composite enabled) I also can not reproduce
+> crash in pinout window. Here everything works OK (dri2 in use).
+> 
+> 3) On intel graphics with composite disabled pcb does not start at
+> all: Can not set up gl context, then segmantation fault. Strange, but
+> rather related to driver not pcb itself.
+> 
+> 4) On radeon (composite disabled) there are problems when closing
+> pinout window.
+> 
+> 5) On radeon with composite some drawing errors occur, but this is
+> rather problem with driver because I can see similar problems with
+> other apps. This is also quite complicated system with 2 graphics
+> cards and 3 screens (my favorite).
+
+
+Sounds like GL drivers are going to cause me grief!
+
+> I've also tried to run teardrops() during these test but this did not
+> change anything.
+
+Ok, that is good at least. (Although only running under valgrind would
+reliably catch if this causes problems).
+
+> And one question: is there any "plugins documentation" for pcb? In my
+> wish list there is something that automatically add thermals tools to
+> vias on given net and set "don't clear polygons" flag on tracks. I
+> think that I will try to write it myself. I've been looking around for
+> a while and did not find anything yet.
+
+No documentation, sorry. I've coded up a very hacky start for what you
+want to do.. Unfortunately, the APIs I wanted to use to make PCB "find"
+the connected objects are burried in find.c and not exposed sufficiently
+for me to call them. I could probably have ripped out and duplicated a
+load of the find.c code in the plugin, but I think it is useful as is.
+
+Find the net you want to join. Hit "F" to "find" the connected objects.
+(Highlighting them in green).
+
+Run action "JoinFound". Presto.
+
+You might want to hack the plugin's code to change the thermal style
+number. IIRC:
+
+1,2 = square ish thermals
+3   = solid join thermal
+4,5 = rounded thermals
+
+************************************
+SAVE WORK BEFORE RUNNING THIS ONE ;)
+************************************
+
+Best wishes,
+
+Peter C.
