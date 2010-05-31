@@ -32,6 +32,10 @@
 #include "hid.h"
 #include "error.h"
 #include "rtree.h"
+#include "draw.h"
+#include "set.h"
+#include "polygon.h"
+#include "misc.h"
 
 static PolygonType *inner_poly, *outer_poly;
 static LayerType *poly_layer;
@@ -98,7 +102,7 @@ find_crosshair_poly (int x, int y)
   if (!inner_poly)
     {
       Message("Cannot find any polygons");
-      return 0;
+      return;
     }
 }
 
@@ -130,7 +134,6 @@ static void
 check_windings ()
 {
   double iw, ow;
-  PointType *np;
   int i, j;
 
   iw = poly_winding (inner_poly);
@@ -154,7 +157,7 @@ check_windings ()
 static void
 rotate_points (PolygonTypePtr poly, int n)
 {
-  PointType *np, *t;
+  PointType *np;
   int n2 = poly->PointN - n;
 
   np = (PointType *) malloc (poly->PointN * sizeof(PointType));
