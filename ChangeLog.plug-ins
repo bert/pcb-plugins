@@ -1,0 +1,223 @@
+[33mcommit 2cfb20d3e5b96888e60dd183bdd74aba093874c6[m
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Thu Sep 18 19:48:03 2008 +0200
+
+    RenumberBuffer() added by DJ Delorie.
+
+[33mcommit 08200a544f540814695758c4c604a92cc9ebf979[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 28 09:40:02 2008 +0200
+
+    Bug fix in src/boardflip.c by DJ Delorie.
+    
+    I just fixed a bug in my boardflip plugin where before the silk lines
+    and arcs wouldn't be flipped.  So, if you're using boardflip, you
+    might want to get a fresh copy.
+
+[33mcommit dafe6ae6b2554a4e2a64b33fefde125133a001ef[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Thu Jun 26 00:25:28 2008 +0200
+
+    Correction on doxygen documentation in src/lockelements.c
+
+[33mcommit 58a5b49048e924f2643cb85afd0ed2c8c4eb1085[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Jun 25 23:25:58 2008 +0200
+
+    Added documentation about lockelements.c
+
+[33mcommit fe7702b45bd6fa83a9627270a23d500f7abf1103[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Jun 25 23:03:53 2008 +0200
+
+    Dropped UnlockElements(Selected) option in src/lockelements.c
+    
+    When locking a selection of elements, it is not easy to unselect the
+    selection since those elements and their pins/pads/elementlines/elementarcs
+    are now locked ;)
+    This may be thought of as understandable at first,
+    but may also be considered to be a bug in pcb.
+
+[33mcommit 1e49a8f13f64735431695891257607512141cc49[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Tue Jun 24 21:59:55 2008 +0200
+
+    Initializing variable seems to squash some unwanted behaviour in src/lockelements.c
+
+[33mcommit 9c0d3dd2bfc29901887ef0a5471d2f3d69d3bf3d[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 13:47:23 2008 +0200
+
+    Tried to solve a bug in src/lockelements.c
+    
+    When locking a selection of elements, it is not easy to unselect the
+    selection since those elements and their pins/pads/elementlines/elementarcs
+    are now locked ;-)
+    This appears to be a bug in pcb.
+    A possible workaround would be to clear the selected flag of the
+    locked element at the same instance the lock flag was set.
+    This needs some further tweaking.
+    
+    GUI is updated when leaving the command dialog.
+
+[33mcommit bfd5356ef4eb42d3815a90590b35d29dd4966539[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 12:40:37 2008 +0200
+
+    Updated AUTHORS.plug-ins file.
+
+[33mcommit 620bc1e33077bede93ce2b3eea40b21abc48af5b[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 12:19:54 2008 +0200
+
+    Added doc/sedrename.txt
+
+[33mcommit 1f698ce29ee3cd316e7a964e01d3dfe79ef4d6e8[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 12:15:35 2008 +0200
+
+    Added src/sedrename.c
+
+[33mcommit 1449fa7650fb16076ef1470404f6c50a76396408[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 12:14:06 2008 +0200
+
+    Updated AUTHORS.plug-ins file.
+
+[33mcommit de65aafaea2dc561a01b74f90d5e8903ebe72f8a[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jun 14 10:23:29 2008 +0200
+
+    Added src/lockelements.c
+
+[33mcommit e3e505bce5f19ae0959ba35fb2bd8a5ef808f978[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed May 28 22:46:17 2008 +0200
+
+    Updated boardflip.c with the latest version.
+
+[33mcommit 0062c19b64a835b6888728717974373c2c48cb4e[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed May 28 06:39:32 2008 +0200
+
+    Renamed CONTRIB.plug-ins -> AUTHORS.plug-ins as this name better reflects the content of the file.
+
+[33mcommit ad57a5de493b9cb888f403b1d35d1bd0cf3d4c63[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:28:15 2008 +0200
+
+    Added documentation about smartdisperse.c
+
+[33mcommit 25398fbe630a8d3b0a279809f4d27a0a49aee084[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:27:44 2008 +0200
+
+    Added documentation about distalign.c
+
+[33mcommit 8978a3c7e16a35693f01492f4ef4841c0f798685[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:26:56 2008 +0200
+
+    Added documentation about autocrop.c
+
+[33mcommit 438e7031c572df2cc5439da2cc0cde2b0507dcc6[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:26:16 2008 +0200
+
+    Added CONTRIB.plug-ins containing additional information about authors and URLs on where to get updates.
+
+[33mcommit 3eb13df419eccca7e97e22a7114f22ca8b5ab97a[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:10:41 2008 +0200
+
+    Updated teardrops.c with the latest version.
+
+[33mcommit a8ec93cfb735863b5f30809e93a854d46067496f[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 23:00:36 2008 +0200
+
+    Updated jostle.c with the latest version.
+
+[33mcommit 3a71f349ff1c7d93bc103bcf3249bce520794c8c[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 22:58:02 2008 +0200
+
+    Updated autocrop.c with the latest version.
+
+[33mcommit 21425b9b70c9869e46825feeff76ae329afb1fd4[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 13:20:15 2008 +0200
+
+    Renamed README -> README.plug-ins to avoid future filename clash.
+
+[33mcommit 66486380030954789ab6aa20f3a9d6a15cdcd8d5[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 13:17:56 2008 +0200
+
+    Added various license texts.
+
+[33mcommit d03ce72f30605a1ca47af830ab0607c26bca22aa[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:27:17 2008 +0200
+
+    Corrected a small typo in the README file.
+
+[33mcommit 8bb2051aadf58ffd70fc74b91f3fd3c989fb0b73[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:18:56 2008 +0200
+
+    Added smartdisperse.c
+
+[33mcommit dcf47fc1db87160ea0237378e2ba183d277118cb[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:18:18 2008 +0200
+
+    Added renumberblock.c
+
+[33mcommit 31a1788c265a96ed1db3894fa1528e8d073f8d7a[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:17:40 2008 +0200
+
+    Added jostle.c
+
+[33mcommit 7be539b9dd9065cbd0e9ef759d0a9fafa750ae52[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:17:01 2008 +0200
+
+    Added footprint-update with additional documentation.
+
+[33mcommit 6b17cf546286248780c004d9226467fe1ebb67a9[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:14:59 2008 +0200
+
+    Added teardrops.c with additional documentation.
+
+[33mcommit ca572adec67986dd2af7994a3242bbdb54cd9025[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:13:18 2008 +0200
+
+    Added findrat.c
+
+[33mcommit f52f959f08679b7b6878f532c4278f377f572f10[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:12:39 2008 +0200
+
+    Added distalign.c
+
+[33mcommit 810df79d91d8a9c97700c65afe3c85dccb7c1785[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:12:06 2008 +0200
+
+    Added boardflip.c
+
+[33mcommit c7a40a2e25d531a19ece7ee294c36dde633ec4c0[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 09:11:26 2008 +0200
+
+    Added autocrop.c
+
+[33mcommit 823ea456ca81bee4f6f4c69cbf480df003e1bf9e[m
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun May 25 08:49:57 2008 +0200
+
+    Initial commit
