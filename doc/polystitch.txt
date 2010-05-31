@@ -1,0 +1,29 @@
+From: geda-user-bounces@moria.seul.org on behalf of DJ Delorie [dj@delorie.com]
+Date: Friday May 28 2010 7:33
+To: geda-user@moria.seul.org
+Subject: gEDA-user: PolyStitch plugin
+
+
+I needed to do some logos, so everyone gets a logo tool :-)
+
+PolyStitch is a PCB plugin to fix the output of pstoedit's "pcbfill"
+output, when you have text with holes in it (like the letter "d").
+Pstoedit makes two polygons, one for the outside and one for the hole, but what you really want in PCB is one polygon, so that the hole is not filled.
+
+This plugin, used when the crosshair is over the inner polygon, stitches the two polygons together such that the area inside the inner polygon becomes "outside" the resulting polygon.  Basically, it cuts the shape at the narrowest spot and stitches the point lists together.
+
+It can also be used to cut holes in a ground plane, by drawing the hole as a separate polygon then stitching it to the plane's polygon.
+
+Plugin source: http://www.delorie.com/pcb/polystitch.c
+
+Sample board: http://www.delorie.com/pcb/polystitch.pcb
+
+Undo is not supported (sorry).
+
+DJ
+
+
+_______________________________________________
+geda-user mailing list
+geda-user@moria.seul.org
+http://www.seul.org/cgi-bin/mailman/listinfo/geda-user
