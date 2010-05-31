@@ -1,10 +1,410 @@
-[33mcommit 2cfb20d3e5b96888e60dd183bdd74aba093874c6[m
+commit c1dc98b93c122db3da6201b78e07bd02c48eac6b
+Merge: 77d9d3a c674087
+Author: Bert Timmerman <bert@draaikolk.(none)>
+Date:   Mon May 31 18:53:07 2010 +0200
+
+    Merge branch 'master' of git://github.com/bert/pcb-plugins
+
+commit c6740879bdf50b21d175f32eb6f40b498caef02d
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Mon May 31 18:46:55 2010 +0200
+
+    Added the polystitch plug-in to the list.
+
+commit 77d9d3a6b353d0c3392a8d1c828ebd7cdb7fa0ab
+Merge: 4886da7 2249d9e
+Author: Bert Timmerman <bert@draaikolk.(none)>
+Date:   Mon May 31 15:08:09 2010 +0200
+
+    Merge branch 'master' of git://github.com/bert/pcb-plugins
+
+commit 2249d9e551121f8c355dd93f7917ac8df6807dc1
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Mon May 31 08:27:12 2010 +0200
+
+    Added information regarding the lighthouse issue tracker for pcb-plugins.
+
+commit 82af773fb4e360fd6d39d2ce1263a82a6305a191
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Mon May 31 07:48:52 2010 +0200
+
+    Added the polystitch target in the Makefile.
+
+commit 3b3fe237eab2056dd330ef86dcfba3a8737c6f64
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Mon May 31 07:32:09 2010 +0200
+
+    Added the PolyStitch plug-in by DJ Delorie.
+
+commit 4886da782e1f18c7abcbf40ffcbf6c605a3d5d9d
+Author: lambert <ljh4timm@xs4all.nl>
+Date:   Sat Mar 20 13:36:09 2010 +0100
+
+    OK, let's give in to windoze and let have it's way with CRLFs.
+
+commit 41d9a872b5333532e5ba9f030140c50089d9c9f5
+Merge: f6bab9d fbdffc7
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Sun Mar 14 18:10:01 2010 +0100
+
+    Merge branch 'master' of git@github.com:bert/pcb-plugins
+
+commit fbdffc7fc003af03d5ea9df4f51a237de0eeb79e
+Author: bert <bert.timmerman@xs4all.nl>
+Date:   Sat Jan 2 09:03:46 2010 -0700
+
+    More verbosity on compiling and (un)installing plug-ins.
+
+commit 17755b26330a0a595dfdde0800a5e32b1a3721fa
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 19:22:24 2009 +0100
+
+    Cleared all warnings during compiling.
+
+commit 9b2c64cf534f07200c6bb65d8f2d653b80dae003
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 19:17:37 2009 +0100
+
+    Cleared all warnings during compiling.
+
+commit 442f5a82db1f1ae1edb68440e6bf52fe8c1aa39f
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 18:57:34 2009 +0100
+
+    Cleared all but one warnings during compiling.
+
+commit 7441cee5be7ceba4d2c674d0a9d39f8c76cd9b2d
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 18:42:37 2009 +0100
+
+    Cleared all warnings during compiling.
+
+commit 0c4c153bd86cb0179b22391a0c8ebdcc9b1941c2
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 18:34:47 2009 +0100
+
+    Cleared all warnings during compiling.
+
+commit 7f05cc16a96178f1d7147c8ecbe0c0ae939cc46e
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 18:25:33 2009 +0100
+
+    Cleared all warnings during compiling.
+
+commit 1c13fa77ebc5f7257d7061da0b9dbf9e2b4fb661
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 18:23:22 2009 +0100
+
+    Cleared all warnings during compiling.
+    
+    Added abbreviated calls "LE" and "UE" for locking
+    and unlocking of elements.
+
+commit e42dbc48bfb2755af4548ba20742f2e6d07881ec
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 12:41:14 2009 +0100
+
+    Added "make uninstall" target.
+
+commit f45e02d0006da12f0744fbd9cff6bd5f50053bf1
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 09:44:23 2009 +0100
+
+    Update on the README file.
+
+commit 3ef110ba3ec428c67111f19ece4de89d51b5f418
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 22 08:34:21 2009 +0100
+
+    Changed the level of pcb and pcb-plugins directories.
+    
+    It is assumed that both source trees have an equal level.
+    For instance:
+    pcb-plugins
+    |-- doc
+    |   |-- doxygen
+    |   |   `-- html
+    |   |-- email
+    |   |-- footprint-update
+    |   `-- teardrops
+    `-- src
+        |-- dxf
+        |   |-- doc
+        |   |   |-- html
+        |   |   `-- latex
+        |   `-- template
+        |-- footprint-update
+        `-- ratsel
+            |-- doc
+            |-- src
+            |   `-- ratsel
+            `-- utst
+                `-- ratsel
+    pcb
+    |-- README_FILES
+    |-- autom4te.cache
+    |-- data
+    |-- doc
+    |   |-- gs
+    |   `-- ideas
+    |-- example
+    |   `-- libraries
+    |-- intl
+    |-- lib
+    |   `-- pcblib-newlib
+    |       |-- amp
+    |       |-- amphenol
+    |       |-- bourns
+    |       |-- candk
+    |       |-- connector
+    |       |-- crystal
+    |       |-- cts
+    |       |-- geda
+    |       |-- generic
+    |       |-- gtag
+    |       |-- johnstech
+    |       |-- minicircuits
+    |       |-- nichicon
+    |       |-- optek
+    |       |-- optical
+    |       |-- panasonic
+    |       `-- pci
+    |-- m4
+    |-- newlib
+    |   |-- 2_pin_thru-hole_packages
+    |   |-- connectors
+    |   |-- crystal
+    |   |-- electro-optics
+    |   |-- headers
+    |   |-- keystone
+    |   |-- msp430
+    |   |-- not_vetted_ingo
+    |   |-- sockets
+    |   `-- tests
+    |-- po
+    |-- src
+    |   |-- gts
+    |   |-- hid
+    |   |   |-- batch
+    |   |   |-- bom
+    |   |   |-- common
+    |   |   |-- gerber
+    |   |   |-- gtk
+    |   |   |-- lesstif
+    |   |   |-- lpr
+    |   |   |-- nelma
+    |   |   |-- png
+    |   |   `-- ps
+    |   `-- icons
+    |-- tests
+    |   |-- golden
+    |   |   |-- hid_bom1
+    |   |   |-- hid_bom2
+    |   |   |-- hid_bom3
+    |   |   |-- hid_bom4
+    |   |   |-- hid_gerber1
+    |   |   |-- hid_gerber2
+    |   |   `-- hid_png1
+    |   `-- inputs
+    |-- tools
+    |-- tutorial
+    |-- utils
+    `-- win32
+
+commit d6dbfad9ee265bb0cb02dd8345d81a25e0c16b9c
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Mon Oct 26 16:35:51 2009 +0100
+
+    Added the join-found plug-in.
+
+commit 5babd08d9a9cf79d263a3993b2c9cbaab239821c
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 16:58:39 2009 +0200
+
+    Added whitespace for better reading.
+
+commit 175b5a64d32d6c783405152b88d1727f241f6821
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 16:56:43 2009 +0200
+
+    Removed rule for ghellopcb.
+    
+    Since the ghellopcb plug-in depends on gtk and glib it does not fit
+    in with the other plug-ins, I think it is better to move it to a separate dir.
+
+commit bd5c69bea78988632d3bd7b5b84f789338b56136
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 15:40:02 2009 +0200
+
+    Remove the toporouter since it is now part of the official pcb repository.
+
+commit 4d76d864b361ef3b8d20035ae8b03d602d3e9824
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 11:45:47 2009 +0200
+
+    Patch for OSX compatibility.
+    
+    Patch by Steven Michalske.
+
+commit f06e7589122c577d58488d1b824907095726b117
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 11:45:10 2009 +0200
+
+    Patch for OSX compatibility.
+    
+    Patch by Steven Michalske.
+
+commit 097eee34a9a4562982b896f1a30561f8a0da2f08
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jul 25 10:27:04 2009 +0200
+
+    make by default, all plugins and make the plugin dir if needed.
+    
+    Patch by Steven Michalske
+
+commit 2946d9118fa22ecfe012b1f90593aa50cc447a4a
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Mar 15 16:08:10 2009 +0100
+
+    Removed version number.
+
+commit 1720b362ce83639d4496725fc281520431d8c86d
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Fri Mar 13 23:25:09 2009 +0100
+
+    Minor changes in comments.
+
+commit 42933a4d30832fb1367fab338bdbe98d47845143
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Feb 18 17:02:09 2009 +0100
+
+    Correction of a typo and doxygenation of a comment.
+
+commit da3e036006a10fab6782618053715efa83557fa7
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Feb 18 15:52:22 2009 +0100
+
+    Added a rule to compile the GTK Hello PCB World plug-in.
+
+commit e878da3820ee6f0975622f8e9fe33a96915bd7fd
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Feb 18 15:51:40 2009 +0100
+
+    Added a GTK based plug-in showing a "Hello PCB World" dialog.
+    
+    Just to see if this is possible I wrote this plug-in to launch
+    a GTK dialog from within pcb.
+    It contains a single label and a destroy callback to close the dialog.
+
+commit 88d7c1bf4b5434f4a15c00c3b598011c31db0239
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Tue Feb 17 08:03:31 2009 +0100
+
+    Added the FindElement plug-in to the list.
+
+commit de1f0488515d5ea43a14af72ababef7f5818d1f8
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Tue Feb 17 08:00:49 2009 +0100
+
+    Added findelement plug-in.
+
+commit 4e7581c7f84a030a4ee05d5e779f8a52dae6f403
+Author: lambert <ljh4timm@xs4all.nl>
+Date:   Sun Feb 15 18:15:38 2009 +0100
+
+    Updated with comments by DJ Delorie.
+
+commit 76a7d4798df31f8c4f100ff7cac184e14eda4f05
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Jan 21 22:33:18 2009 +0100
+
+    Added code for the upth2pth plug-in.
+
+commit fa0a502995bf8663f78a1e06290210de133ba4b2
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Jan 21 21:55:07 2009 +0100
+
+    Added upth2pth plug-in.
+
+commit 48ac3e6ef67f7be419e252630c864b8bec788c8a
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Wed Jan 21 20:46:13 2009 +0100
+
+    Added upth2pth target.
+
+commit 1ab60c5863d1b20da84d18d1d392297a23bd0ce8
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Tue Jan 20 10:54:09 2009 +0100
+
+    Added toporouter documentation.
+
+commit d0b2fbe6fbb00314fa3e5e3b2d036046970541cb
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Jan 4 10:07:56 2009 +0100
+
+    Correction on target names in target "all".
+
+commit 7eb61a5c5a4686cc3c940c55bf6943cd5034154d
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jan 3 22:44:20 2009 +0100
+
+    Added framework for Doxygen documentation.
+
+commit f1dcf899cc716c8346e8ad2b40704c891b8144c7
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sat Jan 3 19:52:24 2009 +0100
+
+    Added a makefile to compile single source files against the pcb source tree.
+
+commit 1fbe3758eb17f38f280a77cd44c2f73e44982b36
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Fri Jan 2 21:23:11 2009 +0100
+
+    Added toporouter sources.
+
+commit 53e12b744af567b8bee9f443775d6c096ab6f178
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Fri Jan 2 21:16:20 2009 +0100
+
+    Added .gitignore files.
+
+commit 143f0f56cb184c1f1378b692cd2233a841957a7c
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Fri Jan 2 10:41:41 2009 +0100
+
+    Changed the location of PCB source tree.
+
+commit d628ffa9b45b3ac5328774ebcf5e72c6d063ebca
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Fri Jan 2 10:14:59 2009 +0100
+
+    Changed the location of PCB source tree.
+
+commit 14186a8d43958d05554b9f5c89d3cbe2785dbfac
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 9 13:05:58 2008 +0100
+
+    Updated the AUTHORS file.
+
+commit c1a109f4e0e2abadac7f093438247f8a257bf607
+Author: Bert Timmerman <bert.timmerman@xs4all.nl>
+Date:   Sun Nov 9 11:30:00 2008 +0100
+
+    Added ratsel plugin by Endre Bak.
+
+commit f6bab9d5502fa773bc1590e98b43b029bac4f527
+Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
+Date:   Thu Sep 18 20:15:19 2008 +0200
+
+    Added a ChangeLog.
+
+commit 2cfb20d3e5b96888e60dd183bdd74aba093874c6
 Author: Lambert J.H. Timmerman <ljh4timm@xs4all.nl>
 Date:   Thu Sep 18 19:48:03 2008 +0200
 
     RenumberBuffer() added by DJ Delorie.
 
-[33mcommit 08200a544f540814695758c4c604a92cc9ebf979[m
+commit 08200a544f540814695758c4c604a92cc9ebf979
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 28 09:40:02 2008 +0200
 
@@ -14,19 +414,19 @@ Date:   Sat Jun 28 09:40:02 2008 +0200
     and arcs wouldn't be flipped.  So, if you're using boardflip, you
     might want to get a fresh copy.
 
-[33mcommit dafe6ae6b2554a4e2a64b33fefde125133a001ef[m
+commit dafe6ae6b2554a4e2a64b33fefde125133a001ef
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Thu Jun 26 00:25:28 2008 +0200
 
     Correction on doxygen documentation in src/lockelements.c
 
-[33mcommit 58a5b49048e924f2643cb85afd0ed2c8c4eb1085[m
+commit 58a5b49048e924f2643cb85afd0ed2c8c4eb1085
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Wed Jun 25 23:25:58 2008 +0200
 
     Added documentation about lockelements.c
 
-[33mcommit fe7702b45bd6fa83a9627270a23d500f7abf1103[m
+commit fe7702b45bd6fa83a9627270a23d500f7abf1103
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Wed Jun 25 23:03:53 2008 +0200
 
@@ -38,13 +438,13 @@ Date:   Wed Jun 25 23:03:53 2008 +0200
     This may be thought of as understandable at first,
     but may also be considered to be a bug in pcb.
 
-[33mcommit 1e49a8f13f64735431695891257607512141cc49[m
+commit 1e49a8f13f64735431695891257607512141cc49
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Tue Jun 24 21:59:55 2008 +0200
 
     Initializing variable seems to squash some unwanted behaviour in src/lockelements.c
 
-[33mcommit 9c0d3dd2bfc29901887ef0a5471d2f3d69d3bf3d[m
+commit 9c0d3dd2bfc29901887ef0a5471d2f3d69d3bf3d
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 13:47:23 2008 +0200
 
@@ -60,163 +460,163 @@ Date:   Sat Jun 14 13:47:23 2008 +0200
     
     GUI is updated when leaving the command dialog.
 
-[33mcommit bfd5356ef4eb42d3815a90590b35d29dd4966539[m
+commit bfd5356ef4eb42d3815a90590b35d29dd4966539
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 12:40:37 2008 +0200
 
     Updated AUTHORS.plug-ins file.
 
-[33mcommit 620bc1e33077bede93ce2b3eea40b21abc48af5b[m
+commit 620bc1e33077bede93ce2b3eea40b21abc48af5b
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 12:19:54 2008 +0200
 
     Added doc/sedrename.txt
 
-[33mcommit 1f698ce29ee3cd316e7a964e01d3dfe79ef4d6e8[m
+commit 1f698ce29ee3cd316e7a964e01d3dfe79ef4d6e8
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 12:15:35 2008 +0200
 
     Added src/sedrename.c
 
-[33mcommit 1449fa7650fb16076ef1470404f6c50a76396408[m
+commit 1449fa7650fb16076ef1470404f6c50a76396408
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 12:14:06 2008 +0200
 
     Updated AUTHORS.plug-ins file.
 
-[33mcommit de65aafaea2dc561a01b74f90d5e8903ebe72f8a[m
+commit de65aafaea2dc561a01b74f90d5e8903ebe72f8a
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sat Jun 14 10:23:29 2008 +0200
 
     Added src/lockelements.c
 
-[33mcommit e3e505bce5f19ae0959ba35fb2bd8a5ef808f978[m
+commit e3e505bce5f19ae0959ba35fb2bd8a5ef808f978
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Wed May 28 22:46:17 2008 +0200
 
     Updated boardflip.c with the latest version.
 
-[33mcommit 0062c19b64a835b6888728717974373c2c48cb4e[m
+commit 0062c19b64a835b6888728717974373c2c48cb4e
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Wed May 28 06:39:32 2008 +0200
 
     Renamed CONTRIB.plug-ins -> AUTHORS.plug-ins as this name better reflects the content of the file.
 
-[33mcommit ad57a5de493b9cb888f403b1d35d1bd0cf3d4c63[m
+commit ad57a5de493b9cb888f403b1d35d1bd0cf3d4c63
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:28:15 2008 +0200
 
     Added documentation about smartdisperse.c
 
-[33mcommit 25398fbe630a8d3b0a279809f4d27a0a49aee084[m
+commit 25398fbe630a8d3b0a279809f4d27a0a49aee084
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:27:44 2008 +0200
 
     Added documentation about distalign.c
 
-[33mcommit 8978a3c7e16a35693f01492f4ef4841c0f798685[m
+commit 8978a3c7e16a35693f01492f4ef4841c0f798685
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:26:56 2008 +0200
 
     Added documentation about autocrop.c
 
-[33mcommit 438e7031c572df2cc5439da2cc0cde2b0507dcc6[m
+commit 438e7031c572df2cc5439da2cc0cde2b0507dcc6
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:26:16 2008 +0200
 
     Added CONTRIB.plug-ins containing additional information about authors and URLs on where to get updates.
 
-[33mcommit 3eb13df419eccca7e97e22a7114f22ca8b5ab97a[m
+commit 3eb13df419eccca7e97e22a7114f22ca8b5ab97a
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:10:41 2008 +0200
 
     Updated teardrops.c with the latest version.
 
-[33mcommit a8ec93cfb735863b5f30809e93a854d46067496f[m
+commit a8ec93cfb735863b5f30809e93a854d46067496f
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 23:00:36 2008 +0200
 
     Updated jostle.c with the latest version.
 
-[33mcommit 3a71f349ff1c7d93bc103bcf3249bce520794c8c[m
+commit 3a71f349ff1c7d93bc103bcf3249bce520794c8c
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 22:58:02 2008 +0200
 
     Updated autocrop.c with the latest version.
 
-[33mcommit 21425b9b70c9869e46825feeff76ae329afb1fd4[m
+commit 21425b9b70c9869e46825feeff76ae329afb1fd4
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 13:20:15 2008 +0200
 
     Renamed README -> README.plug-ins to avoid future filename clash.
 
-[33mcommit 66486380030954789ab6aa20f3a9d6a15cdcd8d5[m
+commit 66486380030954789ab6aa20f3a9d6a15cdcd8d5
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 13:17:56 2008 +0200
 
     Added various license texts.
 
-[33mcommit d03ce72f30605a1ca47af830ab0607c26bca22aa[m
+commit d03ce72f30605a1ca47af830ab0607c26bca22aa
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:27:17 2008 +0200
 
     Corrected a small typo in the README file.
 
-[33mcommit 8bb2051aadf58ffd70fc74b91f3fd3c989fb0b73[m
+commit 8bb2051aadf58ffd70fc74b91f3fd3c989fb0b73
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:18:56 2008 +0200
 
     Added smartdisperse.c
 
-[33mcommit dcf47fc1db87160ea0237378e2ba183d277118cb[m
+commit dcf47fc1db87160ea0237378e2ba183d277118cb
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:18:18 2008 +0200
 
     Added renumberblock.c
 
-[33mcommit 31a1788c265a96ed1db3894fa1528e8d073f8d7a[m
+commit 31a1788c265a96ed1db3894fa1528e8d073f8d7a
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:17:40 2008 +0200
 
     Added jostle.c
 
-[33mcommit 7be539b9dd9065cbd0e9ef759d0a9fafa750ae52[m
+commit 7be539b9dd9065cbd0e9ef759d0a9fafa750ae52
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:17:01 2008 +0200
 
     Added footprint-update with additional documentation.
 
-[33mcommit 6b17cf546286248780c004d9226467fe1ebb67a9[m
+commit 6b17cf546286248780c004d9226467fe1ebb67a9
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:14:59 2008 +0200
 
     Added teardrops.c with additional documentation.
 
-[33mcommit ca572adec67986dd2af7994a3242bbdb54cd9025[m
+commit ca572adec67986dd2af7994a3242bbdb54cd9025
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:13:18 2008 +0200
 
     Added findrat.c
 
-[33mcommit f52f959f08679b7b6878f532c4278f377f572f10[m
+commit f52f959f08679b7b6878f532c4278f377f572f10
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:12:39 2008 +0200
 
     Added distalign.c
 
-[33mcommit 810df79d91d8a9c97700c65afe3c85dccb7c1785[m
+commit 810df79d91d8a9c97700c65afe3c85dccb7c1785
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:12:06 2008 +0200
 
     Added boardflip.c
 
-[33mcommit c7a40a2e25d531a19ece7ee294c36dde633ec4c0[m
+commit c7a40a2e25d531a19ece7ee294c36dde633ec4c0
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 09:11:26 2008 +0200
 
     Added autocrop.c
 
-[33mcommit 823ea456ca81bee4f6f4c69cbf480df003e1bf9e[m
+commit 823ea456ca81bee4f6f4c69cbf480df003e1bf9e
 Author: Bert Timmerman <bert.timmerman@xs4all.nl>
 Date:   Sun May 25 08:49:57 2008 +0200
 
