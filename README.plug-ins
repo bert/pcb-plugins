@@ -13,7 +13,12 @@ was available at the time of the publication.
 For more information inquire at the geda project user 
 mailing list (http://geda.seul.org/mailinglist/index.html)
 
-It is assumed that both pcb and pcb-plugins source trees remain on an equal 
+All issues may be reported at:
+
+http://pcb-plugins.lighthouseapp.com/projects/53541-pcb-plugins/tickets
+
+
+It is assumed that both the pcb and pcb-plugins source trees remain on an equal 
 level.
 For instance the command "tree -d" given on a terminal screen would give a 
 result similar as below:
