@@ -525,7 +525,7 @@ fprintf(stderr, "\tkeep it!\n");
 static int
 jostle(int argc, char **argv, int x, int y)
 {
-	Boolean rel;
+	bool rel;
 	POLYAREA *expand;
 	float value;
 	struct info info;
@@ -562,7 +562,7 @@ fprintf(stderr, "search (%d,%d)->(%d,%d):\n", info.box.X1,info.box.Y1, info.box.
 				PBO_UNITE);
 		}
 	} while (found);
-	SetChangedFlag(True);
+	SetChangedFlag(true);
 	IncrementUndoSerialNumber();
 
 	return 0;
