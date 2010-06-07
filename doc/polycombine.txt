@@ -1,0 +1,44 @@
+From: geda-user-bounces@moria.seul.org on behalfe of Peter Clifton [pcjc2@cam.ac.uk]
+Date: Monday June 7th, 2010 3:31
+To: geda-user
+Subjects: gEDA-user: Polygon combiner plugin
+
+This is far less tested than the support for hole'd polygons. The idea is similar to DJ's polystitch plugin, but this one uses PCB's new support for saving polygons with holes in them.
+
+
+Usage:
+
+1. Have some file from pstoedit's pcbfill back-end handy. Polygon contours are all thrown in as separate polygons are a real mess.
+
+2. Select the region you want to sort out (all at once). NB: Only polygons on the same layer will be processed.
+
+3. Run the action "polycombine"
+
+4. Fix up the letter A in the logo! ;)
+
+
+I've attached a before + after example (which requires git HEAD pcb).
+
+NB: For some reason, the "A" in the logo I'm working with appears to have been emitted with the wrong winding orders by pstoedit.
+
+
+The work the plugin does to process the contours is actually pretty slow. (Awful computational complexity, and no speed-up tricks like r-trees are used).
+
+A more naive algorithm won't work because the contours to add / subtract are multiply nested in this image. I started off trying to loop over all polygons, computing the union of the positive contours, the union of the negative contours - then doing a single subtraction. This unfortunately deleted detail in the image.
+
+The plugin now works to construct a tree ordered by "containership" - and processes the relevant contours in an appropriate order so outer contours are processed before inner ones.
+
+Best regards,
+
+--
+Peter Clifton
+
+Electrical Engineering Division,
+Engineering Department,
+University of Cambridge,
+9, JJ Thomson Avenue,
+Cambridge
+CB3 0FA
+
+Tel: +44 (0)7729 980173 - (No signal in the lab!)
+Tel: +44 (0)1223 748328 - (Shared lab phone, ask for me)
