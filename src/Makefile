@@ -31,6 +31,8 @@ jostle: jostle.so
 	
 lockelements: lockelements.so
 
+polycombine: polycombine.so
+	
 polystitch: polystitch.so
 	
 renumberblock: renumberblock.so
@@ -52,6 +54,7 @@ all: \
 	findrat \
 	jostle \
 	lockelements \
+	polycombine \
 	polystitch \
 	renumberblock \
 	sedrename \
@@ -74,6 +77,7 @@ uninstall:
 	rm ~/.pcb/plugins/findrat.so
 	rm ~/.pcb/plugins/jostle.so
 	rm ~/.pcb/plugins/lockelements.so
+	rm ~/.pcb/plugins/polycombine.so
 	rm ~/.pcb/plugins/polystitch.so
 	rm ~/.pcb/plugins/renumberblock.so
 	rm ~/.pcb/plugins/sedrename.so
