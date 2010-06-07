@@ -219,7 +219,7 @@ stitch_them ()
   for (i=0; i<inner_poly->PointN; i++)
     CreateNewPointInPolygon (outer_poly, inner_poly->Points[i].X, inner_poly->Points[i].Y);
 
-  SetChangedFlag (True);
+  SetChangedFlag (true);
 
   outer_poly->NoHolesValid = 0;
   SetPolygonBoundingBox (outer_poly);
