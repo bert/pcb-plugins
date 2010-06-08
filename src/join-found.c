@@ -93,7 +93,7 @@ joinfound (int argc, char **argv, int x, int y)
   InitConnectionLookup ();
   ResetConnections (False);
   SelectedOperation (init_funcs, False, LINE_TYPE | ARC_TYPE | PIN_TYPE | VIA_TYPE | PAD_TYPE);
-  DoIt (True, False);
+  DoIt (true, False);
 #endif
 
   VISIBLELINE_LOOP (PCB->Data);
@@ -101,7 +101,7 @@ joinfound (int argc, char **argv, int x, int y)
     if (TEST_FLAG (TheFlag, line))
       {
         ChangeObjectJoin (LINE_TYPE, layer, line, line);
-        changed = True;
+        changed = true;
       }
   }
   ENDALL_LOOP;
@@ -111,7 +111,7 @@ joinfound (int argc, char **argv, int x, int y)
     if (TEST_FLAG (TheFlag, arc))
       {
         ChangeObjectJoin (ARC_TYPE, layer, arc, arc);
-        changed = True;
+        changed = true;
       }
   }
   ENDALL_LOOP;
@@ -124,7 +124,7 @@ joinfound (int argc, char **argv, int x, int y)
       if (TEST_FLAG (TheFlag, pin))
         {
           ChangeObjectThermal (PIN_TYPE, element, pin, pin, THERMAL_STYLE);
-          changed = True;
+          changed = true;
         }
     }
     END_LOOP;
@@ -137,7 +137,7 @@ joinfound (int argc, char **argv, int x, int y)
     if (TEST_FLAG (TheFlag, via))
       {
         ChangeObjectThermal (VIA_TYPE, via, via, via, THERMAL_STYLE);
-        changed = True;
+        changed = true;
       }
   }
   END_LOOP;
