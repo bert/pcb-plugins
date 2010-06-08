@@ -27,6 +27,8 @@ findelement: findelement.so
 	
 findrat: findrat.so
 	
+join-found: join-found.so
+	
 jostle: jostle.so
 	
 lockelements: lockelements.so
@@ -52,6 +54,7 @@ all: \
 	distalign \
 	findelement \
 	findrat \
+	join-found \
 	jostle \
 	lockelements \
 	polycombine \
@@ -75,6 +78,7 @@ uninstall:
 	rm ~/.pcb/plugins/distalign.so
 	rm ~/.pcb/plugins/findelement.so
 	rm ~/.pcb/plugins/findrat.so
+	rm ~/.pcb/plugins/join-found.so
 	rm ~/.pcb/plugins/jostle.so
 	rm ~/.pcb/plugins/lockelements.so
 	rm ~/.pcb/plugins/polycombine.so
