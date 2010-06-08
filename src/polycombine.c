@@ -33,6 +33,7 @@
 #include "find.h"
 #include "misc.h"
 #include "draw.h"
+#include "undo.h"
 
 static POLYAREA *
 original_poly (PolygonType * p, bool *forward)
@@ -290,12 +291,12 @@ polycombine (int argc, char **argv, int x, int y)
 {
   POLYAREA *res;
   bool forward;
-  bool outer;
+//  bool outer;
   POLYAREA *np;
-  POLYAREA *pa;
-  PLINE *pline;
-  VNODE *node;
-  PolygonType *Polygon;
+//  POLYAREA *pa;
+//  PLINE *pline;
+//  VNODE *node;
+//  PolygonType *Polygon;
   LayerType *Layer = NULL;
   poly_tree *root = NULL;
   poly_tree *this_node;
