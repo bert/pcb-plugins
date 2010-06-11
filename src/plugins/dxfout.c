@@ -38,6 +38,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include "global.h"
 #include "data.h"
@@ -61,6 +62,14 @@
 static int
 dxfout_element (int argc, char **argv, int x, int y)
 {
+        int i;
+        char utcTime[64];
+        FILE *fp;
+        char *dxfout_xref_filename = NULL;
+        bool dxfout_metric;
+        
+        /*! \todo Implement the choice for metric or imerial units. */
+        dxfout_metric = true;
         if (argc == 0 || strcasecmp (argv[0], "") == 0)
         {
                 Message ("WARNING: in DxfoutElement the argument should be a non-empty string value.\n");
@@ -69,6 +78,48 @@ dxfout_element (int argc, char **argv, int x, int y)
         else
         {
                 SET_FLAG (NAMEONPCBFLAG, PCB);
+                i = strlen (PCB->Filename);
+                dxfout_xref_filename = MyRealloc (dxfout_xref_filename, i + 40, "dxf");
+                dxfout_xref_filename = PCB->Filename;
+                if (!dxfout_xref_filename)
+                {
+                        strcat (dxfout_xref_filename, "dxfout_xrefs.dxf");
+                }
+                strcat (dxfout_xref_filename, "_xrefs.dxf");
+                fp = fopen (dxfout_xref_filename, "w");
+                if (!fp)
+                {
+                        gui->log ("ERROR: dxfout_element (): cannot open file %s for writing.\n",
+                                dxfout_xref_filename);
+                        return 1;
+                }
+                /* Create a portable timestamp. */
+                time_t currenttime;
+                currenttime = time (NULL);
+                strftime (utcTime, sizeof (utcTime),
+                        "%c UTC", gmtime (&currenttime));
+                /* Print a report when beginning a new file */
+                fprintf (stderr, "DXFOUT: board name: %s, stored as file named: %s \n",
+                        UNKNOWN (PCB->Name),
+                        UNKNOWN (PCB->Filename));
+                /*! \todo Find VERSION. */
+                //fprintf (stderr, "DXFOUT: file created by: pcb-%s.\n", VERSION);
+                fprintf (stderr, "DXFOUT: creation date: %s \n", utcTime);
+                fprintf (stderr, "DXFOUT: file format according to: AutoCAD R14.\n");
+                if (dxfout_metric)
+                {
+                        fprintf (stderr, "DXFOUT: using Metric coordinates [mm].\n");
+                }
+                else
+                {
+                        fprintf (stderr, "DXFOUT: using Imperial coordinates [mil].\n");
+                }
+                fprintf (stderr, "DXFOUT: pcb dimensions: %d %d.\n",
+                        PCB->MaxWidth,
+                        PCB->MaxHeight);
+                fprintf (stderr, "DXFOUT: XREF coordinate origin for pcb is lower left corner.\n");
+                fprintf (stderr, "DXFOUT: writing XREFs.\n");
+                /* Walk all the elements. */
                 ELEMENT_LOOP(PCB->Data);
                 {
                         if (NAMEONPCB_NAME(element)
@@ -78,6 +129,7 @@ dxfout_element (int argc, char **argv, int x, int y)
                         }
                 }
                 END_LOOP;
+                fclose (fp);
                 gui->invalidate_all ();
                 IncrementUndoSerialNumber ();
                 return 0;
