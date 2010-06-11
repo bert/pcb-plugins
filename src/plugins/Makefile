@@ -28,6 +28,8 @@ distalign: distalign.so
 	
 distaligntext: distaligntext.so
 	
+dxfout: dxfout.so
+	
 elementupdate: elementupdate.so
 	
 findelement: findelement.so
@@ -62,6 +64,7 @@ all: \
 	boardflip \
 	distalign \
 	distaligntext \
+	dxfout \
 	elementupdate \
 	findelement \
 	findrat \
@@ -89,6 +92,7 @@ uninstall:
 	rm ~/.pcb/plugins/boardflip.so
 	rm ~/.pcb/plugins/distalign.so
 	rm ~/.pcb/plugins/distaligntext.so
+	rm ~/.pcb/plugins/dxfout.so
 	rm ~/.pcb/plugins/elementupdate.so
 	rm ~/.pcb/plugins/findelement.so
 	rm ~/.pcb/plugins/findrat.so
