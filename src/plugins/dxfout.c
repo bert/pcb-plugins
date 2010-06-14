@@ -440,6 +440,12 @@ dxfout_element (int argc, char **argv, int x, int y)
         FILE *fp;
         char *dxfout_xref_filename = NULL;
         bool dxfout_metric;
+        int dxf_id_code;
+        char *dxf_xref_name;
+        char *dxf_block_name;
+        double dxf_x0;
+        double dxf_y0;
+        double dxf_z0;
         
         /*! \todo Implement the choice for metric or imerial units. */
         dxfout_metric = true;
@@ -492,17 +498,42 @@ dxfout_element (int argc, char **argv, int x, int y)
                         PCB->MaxHeight);
                 fprintf (stderr, "DXFOUT: XREF coordinate origin for pcb is lower left corner.\n");
                 fprintf (stderr, "DXFOUT: writing XREFs.\n");
-                /* Walk all the elements. */
+                /* Setup some static variables first. */
+                dxf_id_code = 1;
+                /* First walk of all the elements for the block reference list. */
                 ELEMENT_LOOP(PCB->Data);
                 {
-                        if (NAMEONPCB_NAME(element)
-                                && strcmp (argv[0], NAMEONPCB_NAME(element)) == 0)
-                        {
-                                /*! \todo Add code here. */
-                        }
+                        dxf_block_name = strdup (dxf_clean_string (UNKNOWN (DESCRIPTION_NAME (element))));
+                        dxf_xref_name = DXF_DEFAULT_XREF_PATH_NAME;
+                        /*
+                         * Write a single block definition for every unique element to
+                         * the BLOCKS section of the DXF file.
+                         * since these are all supposed to be Xref blocks they are not to
+                         * contain entities, just the path and filename (including extension).
+                         * write a section BLOCKS marker to the DXF file.
+                         */
+                        dxf_write_block
+                        (
+                                fp, /* file pointer to output file (or device) */
+                                dxf_id_code, /* group code = 5 */
+                                dxf_xref_name, /* group code = 1 */
+                                dxf_block_name, /* group code = 2 and 3 */
+                                DXF_DEFAULT_LINETYPE, /*linetype */
+                                DXF_DEFAULT_LAYER, /* layer */
+                                0.0, /* x0, base point */
+                                0.0, /* y0, base point */
+                                0.0, /* z0, base point */
+                                0.0, /* thickness */
+                                DXF_COLOR_BYLAYER, /* color */
+                                DXF_MODELSPACE, /* paperspace */
+                                DXF_BLOCK_IS_XREF && DXF_BLOCK_IS_RESOLVED_XREF /* block type */
+                        );
+                        dxf_id_code++;
+                        /*! \todo Add code here. */
                 }
                 END_LOOP;
                 fclose (fp);
+                dxf_id_code = 0;
                 gui->invalidate_all ();
                 IncrementUndoSerialNumber ();
                 return 0;
