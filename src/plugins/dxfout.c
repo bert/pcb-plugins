@@ -453,6 +453,40 @@ dxf_write_block
 
 
 /*!
+ * \brief Write DXF output for a comment string with line termination.
+ *
+ * The group code "999" indicates that the following line is a comment
+ * string.\n
+ * The AutoCAD command "DXFOUT" does not currently include such groups in a
+ * DXF output file.\n
+ * The AutoCAD command "DXFIN" honors them and ignores the comments.\n
+ * Thus, you can use the 999 group to include comments in a DXF file you've
+ * created.
+ */
+static void
+dxf_write_comment
+(
+        FILE *fp,
+                /*!< file pointer to output file (or device) */
+        char *comment_string)
+                /*!< comment string */
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_comment () function.\n", __FILE__, __LINE__);
+#endif
+        if (comment_string == "")
+        {
+                /* no use in writing an empty comment string to file */
+                return;
+        }
+        fprintf (fp, "999\n%s\n", comment_string);
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_comment () function.\n", __FILE__, __LINE__);
+#endif
+}
+
+
+/*!
  * \brief Export the specified elements.
  *
  * Usage: DxfoutElement(Refdes)\n
