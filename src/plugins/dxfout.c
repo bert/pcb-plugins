@@ -214,6 +214,50 @@ static int dxf_verbose;
 
 
 /*!
+ * \brief Clean up a string.
+ *
+ * Copy over input string to output string with some character conversions.\n
+ * Go all the way to end of string to get the termination character.
+ */
+static char *
+dxf_clean_string
+(
+        char *in
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_clean_string () function.\n", __FILE__, __LINE__);
+#endif
+        char *out;
+        int i;
+        if ((out = malloc ((strlen (in) + 1) * sizeof (char))) == NULL)
+        {
+                Message ("ERROR: in dxf_clean_string (): malloc () failed.\n");
+                if (dxf_verbose)
+                {
+                        fprintf (stderr, "ERROR: in dxf_clean_string (): malloc () failed.\n");
+                }
+                exit (1);
+        }
+        for (i = 0; i <= strlen (in); i++)
+        {
+                switch (in[i])
+                {
+                        case '"':
+                                out[i] = '\'';
+                                break;
+                        default:
+                                out[i] = in[i];
+                }
+        }
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_clean_string () function.\n", __FILE__, __LINE__);
+#endif
+        return (out);
+}
+
+
+/*!
  * \brief Write DXF output to a file for a block entity.
  *
  *The <c>BLOCKS</c> section of the DXF file contains all the block
