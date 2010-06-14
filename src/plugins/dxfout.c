@@ -258,6 +258,34 @@ dxf_clean_string
 
 
 /*!
+ * \brief Write DXF output to a file for a <c>BLOCK_RECORD</c> table.
+ *
+ * The DXF <c>BLOCK_RECORD</c> table is part of the <c>TABLES</c> section of
+ * the header that comes after the <c>DIMSTYLE</c> table and before the
+ * <c>ENTITIES</c> section.\n
+ * The <c>BLOCK_RECORD</c> table contains record definitions of all
+ * <c>BLOCK</c> entities, either regular <c>BLOCK</c> entities or external
+ * referenced <c>BLOCK</c> entities, the so called XREFS.\n
+ * \todo Code it !! Make it happen !!
+ */
+static void
+dxf_write_table_block_record
+(
+        FILE *fp
+                /*!< file pointer to output file (or device) */
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_table_block_record () function.\n", __FILE__, __LINE__);
+#endif
+        /*! \todo Add code here. */
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_table_block_record () function.\n", __FILE__, __LINE__);
+#endif
+}
+
+
+/*!
  * \brief Write DXF output to a file for a block entity.
  *
  *The <c>BLOCKS</c> section of the DXF file contains all the block
