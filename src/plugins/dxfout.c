@@ -37,8 +37,11 @@
 
 
 #include <stdio.h>
-#include <math.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <math.h>
 
 #include "global.h"
 #include "data.h"
@@ -208,6 +211,31 @@
 
 
 /*!
+ * \brief List with string data.
+ */
+typedef struct _StringList
+{
+        char *str; /*!< String value.  */
+        struct _StringList *next; /*!< Pointer to next item.  */
+} StringList;
+
+
+/*!
+ * \brief List with pcb element header data.
+ */
+typedef struct _DxfList
+{
+        char *descr; /*!< description of pcb element.  */
+        char *value; /*!< value of pcb element.  */
+        int num; /*!< amount of elements per unique pcb element.  */
+        StringList *refdes; /*!< list of reference designators (refdes's) of
+                pcb elements.  */
+        struct _DxfList *next; /*!< pointer to next (unique) element header
+                data.  */
+} DxfList;
+
+
+/*!
  * \brief DXF file with verbose output (to contain DXF comments).
  */
 static int dxf_verbose;
@@ -258,30 +286,111 @@ dxf_clean_string
 
 
 /*!
- * \brief Write DXF output to a file for a <c>BLOCK_RECORD</c> table.
- *
- * The DXF <c>BLOCK_RECORD</c> table is part of the <c>TABLES</c> section of
- * the header that comes after the <c>DIMSTYLE</c> table and before the
- * <c>ENTITIES</c> section.\n
- * The <c>BLOCK_RECORD</c> table contains record definitions of all
- * <c>BLOCK</c> entities, either regular <c>BLOCK</c> entities or external
- * referenced <c>BLOCK</c> entities, the so called XREFS.\n
- * \todo Code it !! Make it happen !!
+ * \brief Insert the string to the list of strings.
  */
-static void
-dxf_write_table_block_record
+static StringList *
+dxf_string_insert
 (
-        FILE *fp
-                /*!< file pointer to output file (or device) */
+        char *str,
+        StringList * list
 )
 {
 #if DEBUG
-        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_table_block_record () function.\n", __FILE__, __LINE__);
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_string_insert () function.\n", __FILE__, __LINE__);
 #endif
-        /*! \todo Add code here. */
+        StringList *new;
+        StringList *cur;
+        if ((new = (StringList *) malloc (sizeof (StringList))) == NULL)
+        {
+                Message ("DXF Error: in dxf_string_insert (): malloc () failed.\n");
+                if (dxf_verbose)
+                {
+                        fprintf (stderr, "DXF Error: in dxf_string_insert (): malloc () failed.\n");
+                }
+                exit (1);
+        }
+        new->next = NULL;
+        new->str = strdup (str);
+        if (list == NULL)
+        {
+                return (new);
+        }
+        cur = list;
+        while (cur->next != NULL) cur = cur->next;
+        cur->next = new;
 #if DEBUG
-        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_table_block_record () function.\n", __FILE__, __LINE__);
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_string_insert () function.\n", __FILE__, __LINE__);
 #endif
+        return (list);
+}
+
+
+/*!
+ * \brief Insert an element in the list of elements.
+ */
+static DxfList *
+dxf_insert
+(
+        char *refdes, /*!< reference designator.  */
+        char *descr, /*!< description or footprint.  */
+        char *value, /*!< element value.  */
+        DxfList * dxf /*!< next item in list.  */
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_insert () function.\n", __FILE__, __LINE__);
+#endif
+        DxfList *new, *cur, *prev = NULL;
+        if (dxf == NULL)
+        {
+        /*
+         * this is the first element so automatically create an entry.
+         */
+        if ((new = (DxfList *) malloc (sizeof (DxfList))) == NULL)
+        {
+                fprintf (stderr, "Error in dxf.c|dxf_insert (): malloc() failed.\n");
+                exit (1);
+        }
+        new->next = NULL;
+        new->descr = strdup (descr);
+        new->value = strdup (value);
+        new->num = 1;
+        new->refdes = dxf_string_insert (refdes, NULL);
+        return (new);
+        }
+        /*
+         * search and see if we already have used one of these components.
+         */
+        cur = dxf;
+        while (cur != NULL)
+        {
+                if ((NSTRCMP (descr, cur->descr) == 0) && (NSTRCMP (value, cur->value) == 0))
+                {
+                        cur->num++;
+                        cur->refdes = dxf_string_insert (refdes, cur->refdes);
+                        break;
+                }
+                prev = cur;
+                cur = cur->next;
+        }
+        if (cur == NULL)
+        {
+                if ((new = (DxfList *) malloc (sizeof (DxfList))) == NULL)
+                {
+                        fprintf (stderr, "Error in dxf.c|dxf_insert (): malloc() failed.\n");
+                        exit (1);
+                }
+                prev->next = new;
+                new->next = NULL;
+                new->descr = strdup (descr);
+                new->value = strdup (value);
+                new->num = 1;
+                new->refdes = dxf_string_insert (refdes, NULL);
+        }
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_insert () function.\n", __FILE__, __LINE__);
+#endif
+        return (dxf);
 }
 
 
@@ -474,7 +583,7 @@ dxf_write_comment
 #if DEBUG
         fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_comment () function.\n", __FILE__, __LINE__);
 #endif
-        if (comment_string == "")
+        if (strcmp (comment_string, "") == 0)
         {
                 /* no use in writing an empty comment string to file */
                 return;
@@ -482,6 +591,534 @@ dxf_write_comment
         fprintf (fp, "999\n%s\n", comment_string);
 #if DEBUG
         fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_comment () function.\n", __FILE__, __LINE__);
+#endif
+}
+
+
+/*!
+ * \brief Write DXF output to a file for an end of section marker.
+ */
+static void
+dxf_write_endsection
+(
+        FILE *fp
+                /*!< file pointer to output file (or device) */
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_endsection () function.\n", __FILE__, __LINE__);
+#endif
+        fprintf (fp, "  0\nENDSEC\n");
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_endsection () function.\n", __FILE__, __LINE__);
+#endif
+}
+
+
+/*!
+ * \brief Write DXF output to a file for a metric DXF header.
+ *
+ * Fall back for if no default metric header template file exists in the
+ * pcb/src/hid/dxf/template directory.\n
+ * Write down a DXF header from scratch based on metric values.\n
+ * Included sections and tables are:\n
+ * <ul>
+* <li>HEADER section
+ * <li>CLASSES section
+ * <li>TABLES section
+ *   <ul>
+ *   <li>VPORT table
+ *   <li>LTYPE table
+ *   <li>LAYER table
+ *   <li>STYLE table
+ *   <li>VIEW table
+ *   <li>UCS table
+ *   <li>APPID table
+ *   <li>DIMSTYLE table
+ *   </ul>
+ * </ul>
+ */
+static void
+dxf_write_header_metric
+(
+        FILE *fp
+                /*!< file pointer to output file (or device).  */
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_header_metric_new () function.\n", __FILE__, __LINE__);
+#endif
+        /* write a metric HEADER section */
+        fprintf (fp, "  0\nSECTION\n");
+        fprintf (fp, "  2\nHEADER\n");
+        fprintf (fp, "  9\n$ACADVER\n  1\nAC1014\n");
+        fprintf (fp, "  9\n$ACADMAINTVER\n 70\n     0\n");
+        fprintf (fp, "  9\n$DWGCODEPAGE\n  3\nANSI_1252\n");
+        fprintf (fp, "  9\n$INSBASE\n 10\n0.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$EXTMIN\n 10\n-0.012816\n 20\n-0.009063\n 30\n-0.001526\n");
+        fprintf (fp, "  9\n$EXTMAX\n 10\n88.01056\n 20\n35.022217\n 30\n0.0\n");
+        fprintf (fp, "  9\n$LIMMIN\n 10\n0.0\n 20\n0.0\n");
+        fprintf (fp, "  9\n$LIMMAX\n 10\n420.0\n 20\n297.0\n");
+        fprintf (fp, "  9\n$ORTHOMODE\n 70\n     0\n");
+        fprintf (fp, "  9\n$REGENMODE\n 70\n     1\n");
+        fprintf (fp, "  9\n$FILLMODE\n 70\n     1\n");
+        fprintf (fp, "  9\n$QTEXTMODE\n 70\n     0\n");
+        fprintf (fp, "  9\n$MIRRTEXT\n 70\n     1\n");
+        fprintf (fp, "  9\n$DRAGMODE\n 70\n     2\n");
+        fprintf (fp, "  9\n$LTSCALE\n 40\n1.0\n");
+        fprintf (fp, "  9\n$OSMODE\n 70\n   125\n");
+        fprintf (fp, "  9\n$ATTMODE\n 70\n     1\n");
+        fprintf (fp, "  9\n$TEXTSIZE\n 40\n2.5\n");
+        fprintf (fp, "  9\n$TRACEWID\n 40\n1.0\n");
+        fprintf (fp, "  9\n$TEXTSTYLE\n  7\nSTANDARD\n");
+        fprintf (fp, "  9\n$CLAYER\n  8\n0\n");
+        fprintf (fp, "  9\n$CELTYPE\n  6\nBYLAYER\n");
+        fprintf (fp, "  9\n$CECOLOR\n 62\n   256\n");
+        fprintf (fp, "  9\n$CELTSCALE\n 40\n1.0\n");
+        fprintf (fp, "  9\n$DELOBJ\n 70\n     1\n");
+        fprintf (fp, "  9\n$DISPSILH\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSCALE\n 40\n1.0\n");
+        fprintf (fp, "  9\n$DIMASZ\n 40\n2.5\n");
+        fprintf (fp, "  9\n$DIMEXO\n 40\n0.625\n");
+        fprintf (fp, "  9\n$DIMDLI\n 40\n3.75\n");
+        fprintf (fp, "  9\n$DIMRND\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMDLE\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMEXE\n 40\n1.25\n");
+        fprintf (fp, "  9\n$DIMTP\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMTM\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMTXT\n 40\n2.5\n");
+        fprintf (fp, "  9\n$DIMCEN\n 40\n2.5\n");
+        fprintf (fp, "  9\n$DIMTSZ\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMTOL\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMLIM\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMTIH\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMTOH\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSE1\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSE2\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMTAD\n 70\n     1\n");
+        fprintf (fp, "  9\n$DIMZIN\n 70\n     8\n");
+        fprintf (fp, "  9\n$DIMBLK\n  1\n\n");
+        fprintf (fp, "  9\n$DIMASO\n 70\n     1\n");
+        fprintf (fp, "  9\n$DIMSHO\n 70\n     1\n");
+        fprintf (fp, "  9\n$DIMPOST\n  1\n\n");
+        fprintf (fp, "  9\n$DIMAPOST\n  1\n\n");
+        fprintf (fp, "  9\n$DIMALT\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMALTD\n 70\n     4\n");
+        fprintf (fp, "  9\n$DIMALTF\n 40\n0.0394\n");
+        fprintf (fp, "  9\n$DIMLFAC\n 40\n1.0\n");
+        fprintf (fp, "  9\n$DIMTOFL\n 70\n     1\n");
+        fprintf (fp, "  9\n$DIMTVP\n 40\n0.0\n");
+        fprintf (fp, "  9\n$DIMTIX\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSOXD\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSAH\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMBLK1\n  1\n\n");
+        fprintf (fp, "  9\n$DIMBLK2\n  1\n\n");
+        fprintf (fp, "  9\n$DIMSTYLE\n  2\nSTANDARD\n");
+        fprintf (fp, "  9\n$DIMCLRD\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMCLRE\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMCLRT\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMTFAC\n 40\n1.0\n");
+        fprintf (fp, "  9\n$DIMGAP\n 40\n0.625\n");
+        fprintf (fp, "  9\n$DIMJUST\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSD1\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMSD2\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMTOLJ\n 70\n     1\n");
+        fprintf (fp, "  9\n$DIMTZIN\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMALTZ\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMALTTZ\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMFIT\n 70\n     3\n");
+        fprintf (fp, "  9\n$DIMUPT\n 70\n     0\n");
+        fprintf (fp, "  9\n$DIMUNIT\n 70\n     2\n");
+        fprintf (fp, "  9\n$DIMDEC\n 70\n     4\n");
+        fprintf (fp, "  9\n$DIMTDEC\n 70\n     4\n");
+        fprintf (fp, "  9\n$DIMALTU\n 70\n     2\n");
+        fprintf (fp, "  9\n$DIMALTTD\n 70\n     2\n");
+        fprintf (fp, "  9\n$DIMTXSTY\n  7\nSTANDARD\n");
+        fprintf (fp, "  9\n$DIMAUNIT\n 70\n     0\n");
+        fprintf (fp, "  9\n$LUNITS\n 70\n     2\n");
+        fprintf (fp, "  9\n$LUPREC\n 70\n     4\n");
+        fprintf (fp, "  9\n$SKETCHINC\n 40\n1.0\n");
+        fprintf (fp, "  9\n$FILLETRAD\n 40\n1.0\n");
+        fprintf (fp, "  9\n$AUNITS\n 70\n     0\n");
+        fprintf (fp, "  9\n$AUPREC\n 70\n     0\n");
+        fprintf (fp, "  9\n$MENU\n  1\n.\n");
+        fprintf (fp, "  9\n$ELEVATION\n 40\n0.0\n");
+        fprintf (fp, "  9\n$PELEVATION\n 40\n0.0\n");
+        fprintf (fp, "  9\n$THICKNESS\n 40\n0.0\n");
+        fprintf (fp, "  9\n$LIMCHECK\n 70\n     0\n");
+        fprintf (fp, "  9\n$BLIPMODE\n 70\n     0\n");
+        fprintf (fp, "  9\n$CHAMFERA\n 40\n10.0\n");
+        fprintf (fp, "  9\n$CHAMFERB\n 40\n10.0\n");
+        fprintf (fp, "  9\n$CHAMFERC\n 40\n0.0\n");
+        fprintf (fp, "  9\n$CHAMFERD\n 40\n0.0\n");
+        fprintf (fp, "  9\n$SKPOLY\n 70\n     0\n");
+        fprintf (fp, "  9\n$TDCREATE\n 40\n2452949.844398842\n");
+        fprintf (fp, "  9\n$TDUPDATE\n 40\n2453105.563639282\n");
+        fprintf (fp, "  9\n$TDINDWG\n 40\n0.0994079282\n");
+        fprintf (fp, "  9\n$TDUSRTIMER\n 40\n0.0994079282\n");
+        fprintf (fp, "  9\n$USRTIMER\n 70\n     1\n");
+        fprintf (fp, "  9\n$ANGBASE\n 50\n0.0\n");
+        fprintf (fp, "  9\n$ANGDIR\n 70\n     0\n");
+        fprintf (fp, "  9\n$PDMODE\n 70\n    98\n");
+        fprintf (fp, "  9\n$PDSIZE\n 40\n0.0\n");
+        fprintf (fp, "  9\n$PLINEWID\n 40\n0.0\n");
+        fprintf (fp, "  9\n$COORDS\n 70\n     2\n");
+        fprintf (fp, "  9\n$SPLFRAME\n 70\n     0\n");
+        fprintf (fp, "  9\n$SPLINETYPE\n 70\n     6\n");
+        fprintf (fp, "  9\n$SPLINESEGS\n 70\n     8\n");
+        fprintf (fp, "  9\n$ATTDIA\n 70\n     0\n");
+        fprintf (fp, "  9\n$ATTREQ\n 70\n     1\n");
+        fprintf (fp, "  9\n$HANDLING\n 70\n     1\n");
+        fprintf (fp, "  9\n$HANDSEED\n  5\n262\n");
+        fprintf (fp, "  9\n$SURFTAB1\n 70\n     6\n");
+        fprintf (fp, "  9\n$SURFTAB2\n 70\n     6\n");
+        fprintf (fp, "  9\n$SURFTYPE\n 70\n     6\n");
+        fprintf (fp, "  9\n$SURFU\n 70\n     6\n");
+        fprintf (fp, "  9\n$SURFV\n 70\n     6\n");
+        fprintf (fp, "  9\n$UCSNAME\n  2\n\n");
+        fprintf (fp, "  9\n$UCSORG\n 10\n0.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$UCSXDIR\n 10\n1.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$UCSYDIR\n 10\n0.0\n 20\n1.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$PUCSNAME\n  2\n\n");
+        fprintf (fp, "  9\n$PUCSORG\n 10\n0.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$PUCSXDIR\n 10\n1.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$PUCSYDIR\n 10\n0.0\n 20\n1.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$USERI1\n 70\n     0\n");
+        fprintf (fp, "  9\n$USERI2\n 70\n     0\n");
+        fprintf (fp, "  9\n$USERI3\n 70\n     0\n");
+        fprintf (fp, "  9\n$USERI4\n 70\n     0\n");
+        fprintf (fp, "  9\n$USERI5\n 70\n     0\n");
+        fprintf (fp, "  9\n$USERR1\n 40\n0.0\n");
+        fprintf (fp, "  9\n$USERR2\n 40\n0.0\n");
+        fprintf (fp, "  9\n$USERR3\n 40\n0.0\n");
+        fprintf (fp, "  9\n$USERR4\n 40\n0.0\n");
+        fprintf (fp, "  9\n$USERR5\n 40\n0.0\n");
+        fprintf (fp, "  9\n$WORLDVIEW\n 70\n     1\n");
+        fprintf (fp, "  9\n$SHADEDGE\n 70\n     3\n");
+        fprintf (fp, "  9\n$SHADEDIF\n 70\n    70\n");
+        fprintf (fp, "  9\n$TILEMODE\n 70\n     1\n");
+        fprintf (fp, "  9\n$MAXACTVP\n 70\n    48\n");
+        fprintf (fp, "  9\n$PINSBASE\n 10\n0.0\n 20\n0.0\n 30\n0.0\n");
+        fprintf (fp, "  9\n$PLIMCHECK\n 70\n     0\n");
+        fprintf (fp, "  9\n$PEXTMIN\n 10\n1.000000E+20\n 20\n1.000000E+20\n 30\n1.000000E+20\n");
+        fprintf (fp, "  9\n$PEXTMAX\n 10\n-1.000000E+20\n 20\n-1.000000E+20\n 30\n-1.000000E+20\n");
+        fprintf (fp, "  9\n$PLIMMIN\n 10\n0.0\n 20\n0.0\n");
+        fprintf (fp, "  9\n$PLIMMAX\n 10\n420.0\n 20\n297.0");
+        fprintf (fp, "  9\n$UNITMODE\n 70\n     0\n");
+        fprintf (fp, "  9\n$VISRETAIN\n 70\n     1\n");
+        fprintf (fp, "  9\n$PLINEGEN\n 70\n     0\n");
+        fprintf (fp, "  9\n$PSLTSCALE\n 70\n     1\n");
+        fprintf (fp, "  9\n$TREEDEPTH\n 70\n  3020\n");
+        fprintf (fp, "  9\n$PICKSTYLE\n 70\n     1\n");
+        fprintf (fp, "  9\n$CMLSTYLE\n  2\nSTANDARD\n");
+        fprintf (fp, "  9\n$CMLJUST\n 70\n     0\n");
+        fprintf (fp, "  9\n$CMLSCALE\n 40\n1.0\n");
+        fprintf (fp, "  9\n$PROXYGRAPHICS\n 70\n     1\n");
+        fprintf (fp, "  9\n$MEASUREMENT\n 70\n     0\n");
+        fprintf (fp, "  0\nENDSEC\n");
+        /* write a CLASSES section */
+        fprintf (fp, "  0\nSECTION\n");
+        fprintf (fp, "  2\nCLASSES\n");
+        fprintf (fp, "  0\nENDSEC\n");
+        /* write a TABLES section */
+        fprintf (fp, "  0\nSECTION\n");
+        fprintf (fp, "  2\nTABLES\n");
+        /* write a VPORT (viewport) table entry */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nVPORT\n");
+        fprintf (fp, "  5\n23A\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     2\n");
+        fprintf (fp, "  0\nVPORT\n");
+        fprintf (fp, "  5\n261\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        fprintf (fp, "100\nAcDbViewportTableRecord\n");
+        fprintf (fp, "  2\n*ACTIVE\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, " 10\n0.0\n 20\n0.0\n");
+        fprintf (fp, " 11\n1.0\n 21\n1.0\n");
+        fprintf (fp, " 12\n43.998872\n 22\n17.506577\n");
+        fprintf (fp, " 13\n0.0\n 23\n0.0\n");
+        fprintf (fp, " 14\n1.0\n 24\n1.0\n");
+        fprintf (fp, " 15\n10.0\n 25\n10.0\n");
+        fprintf (fp, " 16\n0.0\n 26\n0.0\n 36\n1.0\n");
+        fprintf (fp, " 17\n0.0\n 27\n0.0\n 37\n0.0\n");
+        fprintf (fp, " 40\n47.164502\n");
+        fprintf (fp, " 41\n1.882514\n");
+        fprintf (fp, " 42\n50.0\n");
+        fprintf (fp, " 43\n0.0\n");
+        fprintf (fp, " 44\n0.0\n");
+        fprintf (fp, " 50\n0.0\n");
+        fprintf (fp, " 51\n0.0\n");
+        fprintf (fp, " 71\n     0\n");
+        fprintf (fp, " 72\n   100\n");
+        fprintf (fp, " 73\n     1\n");
+        fprintf (fp, " 74\n     3\n");
+        fprintf (fp, " 75\n     0\n");
+        fprintf (fp, " 76\n     0\n");
+        fprintf (fp, " 77\n     0\n");
+        fprintf (fp, " 78\n     0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write LTYPE (linetype) table entries */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nLTYPE\n");
+        fprintf (fp, "  5\n237\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     1\n");
+        fprintf (fp, "  0\nLTYPE\n");
+        fprintf (fp, "  5\n244\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a BYBLOCK linetype */
+        fprintf (fp, "100\nAcDbLinetypeTableRecord\n");
+        fprintf (fp, "  2\nBYBLOCK\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  3\n\n");
+        fprintf (fp, " 72\n    65\n");
+        fprintf (fp, " 73\n     0\n");
+        fprintf (fp, " 40\n0.0\n");
+        fprintf (fp, "  0\nLTYPE\n");
+        fprintf (fp, "  5\n245\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a BYLAYER linetype */
+        fprintf (fp, "100\nAcDbLinetypeTableRecord\n");
+        fprintf (fp, "  2\nBYLAYER\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  3\n\n");
+        fprintf (fp, " 72\n    65\n");
+        fprintf (fp, " 73\n     0\n");
+        fprintf (fp, " 40\n0.0\n");
+        fprintf (fp, "  0\nLTYPE\n");
+        fprintf (fp, "  5\n246\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a CONTINUOUS linetype */
+        fprintf (fp, "100\nAcDbLinetypeTableRecord\n");
+        fprintf (fp, "  2\nCONTINUOUS\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  3\nSolid line\n");
+        fprintf (fp, " 72\n    65\n");
+        fprintf (fp, " 73\n     0\n");
+        fprintf (fp, " 40\n0.0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write LAYER table entries */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nLAYER\n");
+        fprintf (fp, "  5\n234\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     2\n");
+        fprintf (fp, "  0\nLAYER\n");
+        fprintf (fp, "  5\n240\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for layer "0" */
+        fprintf (fp, "100\nAcDbLayerTableRecord\n");
+        fprintf (fp, "  2\n0\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, " 62\n     7\n");
+        fprintf (fp, "  6\nCONTINUOUS\n");
+        fprintf (fp, "  0\nLAYER\n");
+        fprintf (fp, "  5\n251\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* * write a record entry for a layer "ASHADE" */
+        fprintf (fp, "100\nAcDbLayerTableRecord\n");
+        fprintf (fp, "  2\nASHADE\n");
+        fprintf (fp, " 70\n     4\n");
+        fprintf (fp, " 62\n     7\n");
+        fprintf (fp, "  6\nCONTINUOUS\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write STYLE table entries */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nSTYLE\n");
+        fprintf (fp, "  5\n235\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     2\n");
+        fprintf (fp, "  0\nSTYLE\n");
+        fprintf (fp, "  5\n241\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a style "STANDARD" */
+        fprintf (fp, "100\nAcDbTextStyleTableRecord\n");
+        fprintf (fp, "  2\nSTANDARD\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, " 40\n0.0\n");
+        fprintf (fp, " 41\n1.0\n");
+        fprintf (fp, " 50\n0.0\n");
+        fprintf (fp, " 71\n     0\n");
+        fprintf (fp, " 42\n2.5\n");
+        fprintf (fp, "  3\ntxt\n");
+        fprintf (fp, "  4\n\n");
+        fprintf (fp, "  0\nSTYLE\n");
+        fprintf (fp, "  5\n252\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a style "ASHADE" */
+        fprintf (fp, "100\nAcDbTextStyleTableRecord\n");
+        fprintf (fp, "  2\nASHADE\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, " 40\n0.2\n");
+        fprintf (fp, " 41\n1.0\n");
+        fprintf (fp, " 50\n0.0\n");
+        fprintf (fp, " 71\n     0\n");
+        fprintf (fp, " 42\n2.5\n");
+        fprintf (fp, "  3\nsimplex.shx\n");
+        fprintf (fp, "  4\n\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write a VIEW table entry */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nVIEW\n");
+        fprintf (fp, "  5\n238\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write a UCS (User Coordinate System) table entry */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nUCS\n");
+        fprintf (fp, "  5\n239\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write a APPID (APPlication ID) table entry */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nAPPID\n");
+        fprintf (fp, "  5\n23B\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     6\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n242\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "ACAD" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nACAD\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n253\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "AVE_RENDER" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nAVE_RENDER\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n254\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "AVE_ENTITY_MATERIAL" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nAVE_ENTITY_MATERIAL\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n255\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "AVE_FINISH" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nAVE_FINISH\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n256\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "AVE_MATERIAL" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nAVE_MATERIAL\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nAPPID\n");
+        fprintf (fp, "  5\n257\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a appid "AVE_GLOBAL" */
+        fprintf (fp, "100\nAcDbRegAppTableRecord\n");
+        fprintf (fp, "  2\nAVE_GLOBAL\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+        /* write a DIMSTYLE (DIMensioning STYLE) table entry */
+        fprintf (fp, "  0\nTABLE\n");
+        fprintf (fp, "  2\nDIMSTYLE\n");
+        fprintf (fp, "  5\n23C\n");
+        fprintf (fp, "100\nAcDbSymbolTable\n");
+        fprintf (fp, " 70\n     1\n");
+        fprintf (fp, "  0\nDIMSTYLE\n");
+        fprintf (fp, "105\n258\n");
+        fprintf (fp, "100\nAcDbSymbolTableRecord\n");
+        /* write a record entry for a dimstyle "STANDARD" */
+        fprintf (fp, "100\nAcDbDimStyleTableRecord\n");
+        fprintf (fp, "  2\nSTANDARD\n");
+        fprintf (fp, " 70\n     0\n");
+        fprintf (fp, "  3\n\n");
+        fprintf (fp, "  4\n\n");
+        fprintf (fp, "  5\n\n");
+        fprintf (fp, "  6\n\n");
+        fprintf (fp, "  7\n\n");
+        fprintf (fp, " 40\n1.0\n");
+        fprintf (fp, " 41\n0.18\n");
+        fprintf (fp, " 42\n0.0625\n");
+        fprintf (fp, " 43\n0.38\n");
+        fprintf (fp, " 44\n0.18\n");
+        fprintf (fp, " 45\n0.0\n");
+        fprintf (fp, " 46\n0.0\n");
+        fprintf (fp, " 47\n0.0\n");
+        fprintf (fp, " 48\n0.0\n");
+        fprintf (fp, "140\n0.18\n");
+        fprintf (fp, "141\n0.09\n");
+        fprintf (fp, "142\n0.0\n");
+        fprintf (fp, "143\n25.4\n");
+        fprintf (fp, "144\n1.0\n");
+        fprintf (fp, "145\n0.0\n");
+        fprintf (fp, "146\n1.0\n");
+        fprintf (fp, "147\n0.09\n");
+        fprintf (fp, " 71\n     0\n");
+        fprintf (fp, " 72\n     0\n");
+        fprintf (fp, " 73\n     1\n");
+        fprintf (fp, " 74\n     1\n");
+        fprintf (fp, " 75\n     0\n");
+        fprintf (fp, " 76\n     0\n");
+        fprintf (fp, " 77\n     0\n");
+        fprintf (fp, " 78\n     0\n");
+        fprintf (fp, "170\n     0\n");
+        fprintf (fp, "171\n     2\n");
+        fprintf (fp, "172\n     0\n");
+        fprintf (fp, "173\n     0\n");
+        fprintf (fp, "174\n     0\n");
+        fprintf (fp, "175\n     0\n");
+        fprintf (fp, "176\n     0\n");
+        fprintf (fp, "177\n     0\n");
+        fprintf (fp, "178\n     0\n");
+        fprintf (fp, "270\n     2\n");
+        fprintf (fp, "271\n     4\n");
+        fprintf (fp, "272\n     4\n");
+        fprintf (fp, "273\n     2\n");
+        fprintf (fp, "274\n     2\n");
+        fprintf (fp, "340\n241\n");
+        /* this doesn't look like good dxf syntax to me */
+        fprintf (fp, "275\n     0\n");
+        fprintf (fp, "280\n     0\n");
+        fprintf (fp, "281\n     0\n");
+        fprintf (fp, "282\n     0\n");
+        fprintf (fp, "283\n     1\n");
+        fprintf (fp, "284\n     0\n");
+        fprintf (fp, "285\n     0\n");
+        fprintf (fp, "286\n     0\n");
+        fprintf (fp, "287\n     3\n");
+        fprintf (fp, "288\n     0\n");
+        fprintf (fp, "  0\nENDTAB\n");
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_header_metric_new () function.\n", __FILE__, __LINE__);
+#endif
+}
+
+
+/*!
+ * \brief Write DXF output to a file for a section marker.
+ */
+static void
+dxf_write_section
+(
+        FILE *fp, /*!< file pointer to output device  */
+        char *section_name /*!< section name  */
+)
+{
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Entering dxf_write_section () function.\n", __FILE__, __LINE__);
+#endif
+        /* no use in writing an empty string to file */
+        if (strcmp (section_name, "") == 0)
+        {
+                return;
+        }
+        fprintf (fp, "  0\nSECTION\n  2\n%s\n", section_name);
+#if DEBUG
+        fprintf (stderr, "[File: %s: line: %d] Leaving dxf_write_section () function.\n", __FILE__, __LINE__);
 #endif
 }
 
@@ -500,8 +1137,9 @@ dxfout_element (int argc, char **argv, int x, int y)
         int i;
         char utcTime[64];
         FILE *fp;
+        DxfList *dxf = NULL;
         char *dxfout_xref_filename = NULL;
-        bool dxfout_metric;
+        bool dxf_metric;
         int dxf_id_code;
         char *dxf_xref_name;
         char *dxf_block_name;
@@ -510,7 +1148,7 @@ dxfout_element (int argc, char **argv, int x, int y)
         double dxf_z0;
         
         /*! \todo Implement the choice for metric or imerial units. */
-        dxfout_metric = true;
+        dxf_metric = true;
         if (argc == 0 || strcasecmp (argv[0], "") == 0)
         {
                 Message ("WARNING: in DxfoutElement the argument should be a non-empty string value.\n");
@@ -547,7 +1185,7 @@ dxfout_element (int argc, char **argv, int x, int y)
                 //fprintf (stderr, "DXFOUT: file created by: pcb-%s.\n", VERSION);
                 fprintf (stderr, "DXFOUT: creation date: %s \n", utcTime);
                 fprintf (stderr, "DXFOUT: file format according to: AutoCAD R14.\n");
-                if (dxfout_metric)
+                if (dxf_metric)
                 {
                         fprintf (stderr, "DXFOUT: using Metric coordinates [mm].\n");
                 }
@@ -562,18 +1200,47 @@ dxfout_element (int argc, char **argv, int x, int y)
                 fprintf (stderr, "DXFOUT: writing XREFs.\n");
                 /* Setup some static variables first. */
                 dxf_id_code = 1;
+                dxf_write_comment (fp, strcat ("PCB name: ", UNKNOWN (PCB->Name)));
+                dxf_write_comment (fp, "Created with the dxfout plug-in.");
+                dxf_write_comment (fp, "File format according to: AutoCAD R14.");
+                if (dxf_metric)
+                {
+                        dxf_write_comment (fp, "Using Metric coordinates [mm].");
+                }
+                else
+                {
+                        dxf_write_comment (fp, "Using Imperial coordinates [mil].");
+                }
+                dxf_write_comment (fp, "Using Metric coordinates [mm].");
+                if (dxf_metric)
+                {
+                        dxf_write_header_metric (fp);
+                }
+                /* Write a section BLOCKS marker to the DXF file. */
+                dxf_write_section (fp, "BLOCKS");
                 /* First walk of all the elements for the block reference list. */
                 ELEMENT_LOOP(PCB->Data);
                 {
-                        dxf_block_name = strdup (dxf_clean_string (UNKNOWN (DESCRIPTION_NAME (element))));
+                        /* Insert the elements into the dxf list. */
+                        dxf = dxf_insert
+                        (
+                                UNKNOWN (NAMEONPCB_NAME (element)),
+                                UNKNOWN (DESCRIPTION_NAME (element)),
+                                UNKNOWN (VALUE_NAME (element)), dxf
+                        );
+
+                }
+                END_LOOP;
+                /*
+                 * Write a single block definition for every unique element to
+                 * the BLOCKS section of the DXF file.
+                 * Since these are all supposed to be Xref blocks they are not to
+                 * contain entities, just the path and filename (including extension).
+                 */
+                while (dxf != NULL)
+                {
+                        dxf_block_name = strdup (dxf_clean_string (dxf->descr));
                         dxf_xref_name = DXF_DEFAULT_XREF_PATH_NAME;
-                        /*
-                         * Write a single block definition for every unique element to
-                         * the BLOCKS section of the DXF file.
-                         * since these are all supposed to be Xref blocks they are not to
-                         * contain entities, just the path and filename (including extension).
-                         * write a section BLOCKS marker to the DXF file.
-                         */
                         dxf_write_block
                         (
                                 fp, /* file pointer to output file (or device) */
@@ -591,9 +1258,18 @@ dxfout_element (int argc, char **argv, int x, int y)
                                 DXF_BLOCK_IS_XREF && DXF_BLOCK_IS_RESOLVED_XREF /* block type */
                         );
                         dxf_id_code++;
-                        /*! \todo Add code here. */
+                }
+                /* Write an ENDSEC marker to the DXF file */
+                dxf_write_endsection (fp);
+                /* Write a section ENTITIES marker to the DXF file. */
+                dxf_write_section (fp, "ENTITIES");
+                /* Second walk of all the elements for the insertion of all instances. */
+                ELEMENT_LOOP(PCB->Data);
+                {
                 }
                 END_LOOP;
+                /* Write ENDSEC marker to close the ENTITIES section. */
+                dxf_write_endsection (fp);
                 fclose (fp);
                 dxf_id_code = 0;
                 gui->invalidate_all ();
