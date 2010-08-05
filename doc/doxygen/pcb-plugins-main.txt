@@ -1,5 +1,7 @@
 /*! \mainpage Plug-ins for PCB.
-\image html pcb-logo-small.png
-\section pcb-intro PCB Plug-ins Introduction
-    \htmlinclude what-are-pcb-plugins.html
+\image html ../pcb-plugin-logo.png
+\section pcb-plugins-introduction PCB Plugins Introduction
+    \htmlinclude ./what-are-pcb-plugins.html
+\section pcb-introduction PCB Introduction
+    \htmlinclude ./what-is-pcb.html
 */
