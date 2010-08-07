@@ -10,6 +10,9 @@ There happens to be some documentation included in both the
 source (files) and in the doc directory, the latter if this
 was available at the time of the publication.
 
+Documentation for developers generated with Doxygen can be found here:
+http://www.xs4all.nl/~ljh4timm/gaf/dox_pcb-plugins/index.html
+
 For more information inquire at the geda project user 
 mailing list (http://geda.seul.org/mailinglist/index.html)
 
