@@ -169,8 +169,7 @@ sort_elements_by_pos(int op, int dir, int point)
 	if (! nsel)
 		return 0;
 
-	elements_by_pos = MyMalloc(nsel * sizeof(*elements_by_pos),
-				"distalign/selected_elements_sorted");
+	elements_by_pos = malloc(nsel * sizeof(*elements_by_pos));
 	nelements_by_pos = nsel;
 
 	nsel = 0;
@@ -192,7 +191,7 @@ static void
 free_elements_by_pos(void)
 {
 	if (nelements_by_pos) {
-		MYFREE(elements_by_pos);
+		free(elements_by_pos);
 		elements_by_pos = NULL;
 		nelements_by_pos = 0;
 	}
