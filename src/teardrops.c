@@ -162,7 +162,7 @@ check_pin (PinTypePtr _pin)
   spot.X2 = px + 1;
   spot.Y2 = py + 1;
 
-  for (layer = 0; layer < max_layer; layer ++)
+  for (layer = 0; layer < max_copper_layer; layer ++)
     {
       LayerTypePtr l = &(PCB->Data->Layer[layer]);
       r_search (l->line_tree, &spot, NULL, check_line_callback, l);
