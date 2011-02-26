@@ -149,8 +149,7 @@ smartdisperse (int argc, char **argv, int x, int y)
 	}
 
 	/* remember which elements we finish with */
-	visited = MyCalloc(PCB->Data->ElementN, sizeof(*visited),
-				"smartdisperse()");
+	visited = calloc(PCB->Data->ElementN, sizeof(*visited));
 
 	/* if we're not doing all, mark the unselected elements as "visited" */
 	ELEMENT_LOOP(PCB->Data);
