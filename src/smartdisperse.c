@@ -239,7 +239,7 @@ smartdisperse (int argc, char **argv, int x, int y)
 	free(visited);
 
 	IncrementUndoSerialNumber();
-	ClearAndRedrawOutput();
+	Redraw();
 	SetChangedFlag(1);
 
 	return 0;
