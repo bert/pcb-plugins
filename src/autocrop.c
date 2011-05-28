@@ -203,7 +203,7 @@ autocrop(int argc, char **argv, int x, int y)
 	MoveAll(dx, dy);
 
 	IncrementUndoSerialNumber();
-	ClearAndRedrawOutput();
+	Redraw();
 	SetChangedFlag(1);
 	return 0;
 }
