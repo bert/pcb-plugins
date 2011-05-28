@@ -204,6 +204,7 @@ reference_coord(int op, int x, int y, int dir, int point, int reference)
 	LocationType q;
 	int nsel;
 
+	q = 0;
 	switch (reference) {
 	case K_Crosshair:
 		if (dir == K_X)
@@ -370,7 +371,7 @@ align(int argc, char **argv, int x, int y)
 
 	if (changed) {
 		IncrementUndoSerialNumber();
-		ClearAndRedrawOutput();
+		Redraw();
 		SetChangedFlag(1);
 	}
 
@@ -561,7 +562,7 @@ distribute(int argc, char **argv, int x, int y)
 
 	if (changed) {
 		IncrementUndoSerialNumber();
-		ClearAndRedrawOutput();
+		Redraw();
 		SetChangedFlag(1);
 	}
 
