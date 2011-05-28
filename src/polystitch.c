@@ -226,7 +226,7 @@ stitch_them ()
   r_insert_entry (poly_layer->polygon_tree, (BoxType *)outer_poly, 0);
   RemoveExcessPolygonPoints (poly_layer, outer_poly);
   InitClip (PCB->Data, poly_layer, outer_poly);
-  DrawPolygon (poly_layer, outer_poly, 0);
+  DrawPolygon (poly_layer, outer_poly);
   Draw ();
 
   RemovePolygon (poly_layer, inner_poly);
