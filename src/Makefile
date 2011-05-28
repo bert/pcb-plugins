@@ -8,7 +8,7 @@ OSX_INSTALL=$(shell bash -c "if [ -n \"`which sw_vers`\" ]; then sw_vers -produc
 ifeq ($(OSX_INSTALL),Mac OS X)
 	CFLAGS= -Wall -I../pcb/src -I../pcb -O2 -flat_namespace -bundle -undefined suppress
 else
-	CFLAGS=-g -Wall -I../../pcb/src -I../../pcb -O2 -shared
+	CFLAGS=-g -Wall -I../../pcb/src -I../../pcb -O2 -shared `pkg-config --cflags glib-2.0`
 endif
 
 %.so: %.c
