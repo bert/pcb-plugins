@@ -1,6 +1,6 @@
 /*!
  * \file lockelements.c
- * \author Copyright (C) 2008, 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ * \author Copyright (C) 2008 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * \brief Unlocking/locking elements plug-in for PCB.
  *
  * Function to lock all or a selection of PCB elements.\n
@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
