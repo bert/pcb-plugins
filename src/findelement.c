@@ -1,6 +1,6 @@
 /*!
  * \file findelement.c
- * \author Copyright (C) 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ * \author Copyright (C) 2009 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * with some usefull hints from DJ Delorie to finish this plug-in.
  * \brief Plug-in for PCB to find the specified element.
  *
@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
