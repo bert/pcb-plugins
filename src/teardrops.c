@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
