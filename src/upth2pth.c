@@ -1,6 +1,6 @@
 /*!
  * \file upth2pth.c
- * \author Copyright (C) 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ * \author Copyright (C) 2009 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * \brief A p[lug-in for pcb to change UnPlated Through Holes to Plated
  * Through Holes or vice versa.
  *
@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
