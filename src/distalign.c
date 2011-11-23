@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
@@ -85,7 +86,7 @@ keyword(const char *s)
 
 /* this macro produces a function in X or Y that switches on 'point' */
 #define COORD(DIR)						\
-static inline LocationType					\
+static inline Coord					\
 coord ## DIR(ElementTypePtr element, int point)			\
 {								\
 	switch (point) {					\
@@ -109,7 +110,7 @@ COORD(X)
 COORD(Y)
 
 /* return the element coordinate associated with the given internal point */
-static LocationType
+static Coord
 coord(ElementTypePtr element, int dir, int point)
 {
 	if (dir == K_X)
@@ -120,8 +121,8 @@ coord(ElementTypePtr element, int dir, int point)
 
 static struct element_by_pos {
 	ElementTypePtr	element;
-	LocationType	pos;
-	LocationType	width;
+	Coord	pos;
+	Coord	width;
 } *elements_by_pos;
 
 static int nelements_by_pos;
@@ -198,10 +199,10 @@ free_elements_by_pos(void)
 }
 
 /* find the reference coordinate from the specified points of all selected elements */
-static LocationType
+static Coord
 reference_coord(int op, int x, int y, int dir, int point, int reference)
 {
-	LocationType q;
+	Coord q;
 	int nsel;
 
 	q = 0;
@@ -269,7 +270,7 @@ align(int argc, char **argv, int x, int y)
 	int point;
 	int reference;
 	int gridless;
-	LocationType q;
+	Coord q;
 	int changed = 0;
 
 	if (argc < 1 || argc > 4) {
@@ -342,7 +343,7 @@ align(int argc, char **argv, int x, int y)
 	/* move all selected elements to the new coordinate */
 	ELEMENT_LOOP(PCB->Data);
 	{
-		LocationType p, dp, dx, dy;
+		Coord p, dp, dx, dy;
 
 		if (! TEST_FLAG (SELECTEDFLAG, element))
 			continue;
@@ -403,7 +404,7 @@ distribute(int argc, char **argv, int x, int y)
 	int point;
 	int refa, refb;
 	int gridless;
-	LocationType s, e, slack;
+	Coord s, e, slack;
 	int divisor;
 	int changed = 0;
 	int i;
@@ -503,7 +504,7 @@ distribute(int argc, char **argv, int x, int y)
 	/* even the gaps instead of the edges or whatnot */
 	/* find the "slack" in the row */
 	if (point == K_Gaps) {
-		LocationType w;
+		Coord w;
 
 		/* subtract all the "widths" from the slack */
 		for (i = 0; i < nelements_by_pos; ++i) {
@@ -526,7 +527,7 @@ distribute(int argc, char **argv, int x, int y)
 	/* move all selected elements to the new coordinate */
 	for (i = 0; i < nelements_by_pos; ++i) {
 		ElementTypePtr element = elements_by_pos[i].element;
-		LocationType p, q, dp, dx, dy;
+		Coord p, q, dp, dx, dy;
 
 		/* find reference point for this element */
 		q = s + slack * i / divisor;
@@ -584,3 +585,4 @@ hid_distalign_init()
 {
 	register_distalign_action_list();
 }
+
