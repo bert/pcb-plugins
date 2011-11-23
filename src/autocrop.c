@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
@@ -25,7 +26,7 @@
 #include "polygon.h"
 
 static void *
-MyMoveViaLowLevel(DataTypePtr Data, PinTypePtr Via, LocationType dx, LocationType dy)
+MyMoveViaLowLevel(DataTypePtr Data, PinTypePtr Via, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, VIA_TYPE, Via, Via);
@@ -40,7 +41,7 @@ MyMoveViaLowLevel(DataTypePtr Data, PinTypePtr Via, LocationType dx, LocationTyp
 }
 
 static void *
-MyMoveLineLowLevel(DataTypePtr Data, LayerTypePtr Layer, LineTypePtr Line, LocationType dx, LocationType dy)
+MyMoveLineLowLevel(DataTypePtr Data, LayerTypePtr Layer, LineTypePtr Line, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, LINE_TYPE, Layer, Line);
@@ -55,7 +56,7 @@ MyMoveLineLowLevel(DataTypePtr Data, LayerTypePtr Layer, LineTypePtr Line, Locat
 }
 
 static void *
-MyMoveArcLowLevel(DataTypePtr Data, LayerTypePtr Layer, ArcTypePtr Arc, LocationType dx, LocationType dy)
+MyMoveArcLowLevel(DataTypePtr Data, LayerTypePtr Layer, ArcTypePtr Arc, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, ARC_TYPE, Layer, Arc);
@@ -70,7 +71,7 @@ MyMoveArcLowLevel(DataTypePtr Data, LayerTypePtr Layer, ArcTypePtr Arc, Location
 }
 
 static void *
-MyMovePolygonLowLevel(DataTypePtr Data, LayerTypePtr Layer, PolygonTypePtr Polygon, LocationType dx, LocationType dy)
+MyMovePolygonLowLevel(DataTypePtr Data, LayerTypePtr Layer, PolygonTypePtr Polygon, Coord dx, Coord dy)
 {
 	if (Data) {
 		r_delete_entry(Layer->polygon_tree, (BoxTypePtr) Polygon);
@@ -85,7 +86,7 @@ MyMovePolygonLowLevel(DataTypePtr Data, LayerTypePtr Layer, PolygonTypePtr Polyg
 }
 
 static void *
-MyMoveTextLowLevel(LayerTypePtr Layer, TextTypePtr Text, LocationType dx, LocationType dy)
+MyMoveTextLowLevel(LayerTypePtr Layer, TextTypePtr Text, Coord dx, Coord dy)
 {
 	if (Layer)
 		r_delete_entry(Layer->text_tree, (BoxTypePtr) Text);
@@ -102,7 +103,7 @@ MyMoveTextLowLevel(LayerTypePtr Layer, TextTypePtr Text, LocationType dx, Locati
  * moving and re-clearing everything again.
  */
 static void
-MoveAll(LocationType dx, LocationType dy)
+MoveAll(Coord dx, Coord dy)
 {
 	ELEMENT_LOOP(PCB->Data);
 	{
@@ -156,7 +157,7 @@ static int
 autocrop(int argc, char **argv, int x, int y)
 {
 //	int changed = 0;
-	LocationType dx, dy, pad;
+	Coord dx, dy, pad;
 	BoxTypePtr box;
 
 	box = GetDataBoundingBox(PCB->Data);	/* handy! */
