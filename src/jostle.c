@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
@@ -28,6 +29,7 @@
 #include "remove.h"
 #include "error.h"
 #include "set.h"
+#include "pcb-printf.h"
 
 //#define DEBUG_POLYAREA
 
@@ -187,7 +189,7 @@ POLYAREA_boundingBox(POLYAREA *a)
  * Make it long so it will intersect everything in the area.
  */
 static void
-POLYAREA_findXmostLine(POLYAREA *a, int side, Vector p, Vector q, BDimension clearance)
+POLYAREA_findXmostLine(POLYAREA *a, int side, Vector p, Vector q, int clearance)
 {
 	p[0] = p[1] = 0;
 	q[0] = q[1] = 0;
@@ -217,7 +219,7 @@ POLYAREA_findXmostLine(POLYAREA *a, int side, Vector p, Vector q, BDimension cle
 		break;
 	default: {			/* diagonal case */
 		int kx, ky, minmax, dq, ckx, cky;
-		LocationType mm[2] = {MAX_COORD, -MAX_COORD};
+		Coord mm[2] = {MAX_COORD, -MAX_COORD};
 		Vector mmp[2];
 		VNODE *v;
 
@@ -297,7 +299,7 @@ rotateSide(int side, int n)
  * Wrapper for CreateNewLineOnLayer that takes vectors and deals with Undo
  */
 static LineTypePtr
-CreateVectorLineOnLayer(LayerTypePtr layer, Vector a, Vector b, BDimension thickness, BDimension clearance, FlagType flags)
+CreateVectorLineOnLayer(LayerTypePtr layer, Vector a, Vector b, int thickness, int clearance, FlagType flags)
 {
 	LineTypePtr line;
 
@@ -416,13 +418,13 @@ jostle_callback(const BoxType *targ, void *private)
 	p[0] = line->Point1.X;
 	p[1] = line->Point1.Y;
 	if (poly_InsideContour(info->brush->contours, p)) {
-		fprintf(stderr, "\tinside1 %d,%d\n", p[0],p[1]);
+		pcb_fprintf(stderr, "\tinside1 %ms,%ms\n", p[0],p[1]);
 		inside++;
 	}
 	p[0] = line->Point2.X;
 	p[1] = line->Point2.Y;
 	if (poly_InsideContour(info->brush->contours, p)) {
-		fprintf(stderr, "\tinside2 %d,%d\n", p[0],p[1]);
+		pcb_fprintf(stderr, "\tinside2 %ms,%ms\n", p[0],p[1]);
 		inside++;
 	}
 	lp = LinePoly(line, line->Thickness);
@@ -448,14 +450,14 @@ jostle_callback(const BoxType *targ, void *private)
 		return 0;
 	r = poly_Boolean_free(copy, lp, &tmp, PBO_SUB);
 	if (r != err_ok) {
-		fprintf(stderr, "Error while jostling PBO_SUB: %d\n", r);
+		pcb_fprintf(stderr, "Error while jostling PBO_SUB: %d\n", r);
 		return 0;
 	}
 	if (tmp == tmp->f) {
 		/* it didn't slice, must have glanced.  intersect instead
 		 * to get the glancing sliver??
 		 */
-fprintf(stderr, "try isect??\n");
+pcb_fprintf(stderr, "try isect??\n");
 		lp = LinePoly(line, line->Thickness);
 		r = poly_Boolean_free(tmp, lp, &tmp, PBO_ISECT);
 		if (r != err_ok) {
@@ -471,7 +473,7 @@ fprintf(stderr, "try isect??\n");
 	n = tmp;
 	small = big = tmp->contours->area;
 	do {
-fprintf(stderr, "\t\tarea %g, %d,%d %d,%d\n", n->contours->area, n->contours->xmin,n->contours->ymin, n->contours->xmax,n->contours->ymax);
+pcb_fprintf(stderr, "\t\tarea %g, %ms,%ms %ms,%ms\n", n->contours->area, n->contours->xmin,n->contours->ymin, n->contours->xmax,n->contours->ymax);
 		if (n->contours->area <= small) {
 			smallest = n;
 			small = n->contours->area;
@@ -506,10 +508,10 @@ fprintf(stderr, "\t\tarea %g, %d,%d %d,%d\n", n->contours->area, n->contours->xm
 		else
 			side = SOUTHEAST;
 	}
-fprintf(stderr, "\t%s\n", dirnames[side]);
+pcb_fprintf(stderr, "\t%s\n", dirnames[side]);
 	if (info->line == NULL ||
 	    (!nocentroid && (big - small) < info->centroid))  {
-fprintf(stderr, "\tkeep it!\n");
+pcb_fprintf(stderr, "\tkeep it!\n");
 		if (info->smallest) {
 			poly_Free(&info->smallest);
 		}
@@ -549,7 +551,7 @@ fprintf(stderr, "%d, %d, %f\n", x, y, value);
 	do {
 		info.box = POLYAREA_boundingBox(info.brush);
 DebugPOLYAREA (info.brush, NULL);
-fprintf(stderr, "search (%d,%d)->(%d,%d):\n", info.box.X1,info.box.Y1, info.box.X2,info.box.Y2);
+pcb_fprintf(stderr, "search (%ms,%ms)->(%ms,%ms):\n", info.box.X1,info.box.Y1, info.box.X2,info.box.Y2);
 		info.line = NULL;
 		info.smallest = NULL;
 		found = r_search(info.layer->line_tree, &info.box, NULL, jostle_callback, &info);
