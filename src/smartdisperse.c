@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
@@ -32,10 +33,10 @@
 #include "set.h"
 
 #define GAP 10000
-static LocationType minx;
-static LocationType miny;
-static LocationType maxx;
-static LocationType maxy;
+static Coord minx;
+static Coord miny;
+static Coord maxx;
+static Coord maxy;
 
 /*
  * Place one element.  Must initialize statics above before calling for
@@ -46,7 +47,7 @@ static LocationType maxy;
 static void
 place(ElementTypePtr element)
 {
-	LocationType dx, dy;
+	Coord dx, dy;
 
 	/* figure out how much to move the element */
 	dx = minx - element->BoundingBox.X1;
@@ -88,7 +89,7 @@ place(ElementTypePtr element)
 /*
  * Return the X location of a connection's pad or pin within its element
  */
-static LocationType
+static Coord
 padDX(ConnectionTypePtr conn)
 {
 	ElementTypePtr element = (ElementTypePtr) conn->ptr1;
@@ -102,7 +103,7 @@ padDX(ConnectionTypePtr conn)
 static int
 padorder(ConnectionTypePtr conna, ConnectionTypePtr connb)
 {
-	LocationType dxa, dxb;
+	Coord dxa, dxb;
 
 	dxa = padDX(conna);
 	dxb = padDX(connb);
@@ -189,15 +190,15 @@ smartdisperse (int argc, char **argv, int x, int y)
 		eb = (ElementTypePtr) connb->ptr1;
 
 		/* place this pair if possible */
-		if (VISITED(ea) || VISITED(eb))
+		if (VISITED((GList *)ea) || VISITED((GList *)eb))
 			continue;
-		VISITED(ea) = 1;
-		VISITED(eb) = 1;
+		VISITED((GList *)ea) = 1;
+		VISITED((GList *)eb) = 1;
 
 		/* a weak attempt to get the linked pads side-by-side */
 		if (padorder(conna, connb)) {
-			place(ea);
-			place(eb);
+			place((ElementTypePtr) ea);
+			place((ElementTypePtr) eb);
 		} else {
 			place(eb);
 			place(ea);
@@ -218,9 +219,9 @@ smartdisperse (int argc, char **argv, int x, int y)
 			element = (ElementTypePtr) connection->ptr1;
 
 			/* place this one if needed */
-			if (VISITED(element))
+			if (VISITED((GList *)element))
 				continue;
-			VISITED(element) = 1;
+			VISITED((GList *)element) = 1;
 			place(element);
 		}
 		END_LOOP;
