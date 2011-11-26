@@ -14,6 +14,9 @@ endif
 %.so: %.c
 	${CC} ${CFLAGS} $< -o $@
 
+ghellopcb.so: ghellopcb.c
+	${CC} ${CFLAGS} ghellopcb.c -o ghellopcb.so `pkg-config --cflags gtk+-2.0 --libs gtk+-2.0`
+
 .DEFAULT_GOAL := all
 
 # Individual target definitions.
@@ -26,6 +29,8 @@ distalign: distalign.so
 findelement: findelement.so
 	
 findrat: findrat.so
+	
+ghellopcb: ghellopcb.so
 	
 join-found: join-found.so
 	
@@ -54,6 +59,7 @@ all: \
 	distalign \
 	findelement \
 	findrat \
+	ghellopcb \
 	join-found \
 	jostle \
 	lockelements \
