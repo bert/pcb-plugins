@@ -14,7 +14,7 @@ HDRS=$(shell ./getFileNames.pl . h c) $(shell ./getFileNames.pl . hpp cpp)
 JAVAS=$(shell find src/ratsel/ -name '*.java')
 JHDRS=src/ratsel/JIFace.h src/ratsel/Location.h src/ratsel/Pin.h src/ratsel/Rat.h
 
-plugin: RatSel.so
+all: RatSel.so
 
 RatSel.so: JIFace $(OBJS)
 	g++ $(LFLAGS) $(OBJS) -shared -o RatSel.so
