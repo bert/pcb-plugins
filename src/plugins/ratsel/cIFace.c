@@ -21,10 +21,12 @@
 #include "cIFace.h"
 #include "cppIFace.hpp"
 
-#include "hid.h"
-#include "error.h"
+#include "config.h"
 #include "global.h"
 #include "data.h"
+#include "hid.h"
+#include "misc.h"
+#include "error.h"
 #include "draw.h"
 #include "undo.h"
 
@@ -171,7 +173,7 @@ void selectRat(int idx) {
 	/* TODO: add undo FIXME: how? */
 	/* AddObjectToFlagUndoList (RATLINE_TYPE, ptr1, ptr1, ptr1); */
 	TOGGLE_FLAG (SELECTEDFLAG, rat);
-	DrawRat (rat, 0);
+	DrawRat (rat);
 }
 
 static int ratSel(int argc, char **argv, int x, int y) {

@@ -1,6 +1,6 @@
 include Make.Settings
 
-CFLAGS=-O2 -Wall -I$(PCBDIR) -I$(PCBDIR)/src -I.
+CFLAGS=-O2 -Wall -I$(PCBDIR) -I$(PCBDIR)/src -I. -shared `pkg-config --cflags glib-2.0`
 CPPFLAGS=-O2 -Wall -I.
 LFLAGS=-lstdc++ -lgcj
 
