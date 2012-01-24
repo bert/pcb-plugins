@@ -87,7 +87,7 @@ keyword(const char *s)
 /* this macro produces a function in X or Y that switches on 'point' */
 #define COORD(DIR)						\
 static inline Coord					\
-coord ## DIR(ElementTypePtr element, int point)			\
+coord ## DIR(ElementType *element, int point)			\
 {								\
 	switch (point) {					\
 	case K_Marks:						\
@@ -111,7 +111,7 @@ COORD(Y)
 
 /* return the element coordinate associated with the given internal point */
 static Coord
-coord(ElementTypePtr element, int dir, int point)
+coord(ElementType *element, int dir, int point)
 {
 	if (dir == K_X)
 		return coordX(element, point);
@@ -120,7 +120,7 @@ coord(ElementTypePtr element, int dir, int point)
 }
 
 static struct element_by_pos {
-	ElementTypePtr	element;
+	ElementType	*element;
 	Coord	pos;
 	Coord	width;
 } *elements_by_pos;
@@ -508,7 +508,7 @@ distribute(int argc, char **argv, int x, int y)
 
 		/* subtract all the "widths" from the slack */
 		for (i = 0; i < nelements_by_pos; ++i) {
-			ElementTypePtr element = elements_by_pos[i].element;
+			ElementType *element = elements_by_pos[i].element;
 
 			/* coord doesn't care if I mix Lefts/Tops */
 			w = elements_by_pos[i].width =
@@ -526,7 +526,7 @@ distribute(int argc, char **argv, int x, int y)
 
 	/* move all selected elements to the new coordinate */
 	for (i = 0; i < nelements_by_pos; ++i) {
-		ElementTypePtr element = elements_by_pos[i].element;
+		ElementType *element = elements_by_pos[i].element;
 		Coord p, q, dp, dx, dy;
 
 		/* find reference point for this element */
