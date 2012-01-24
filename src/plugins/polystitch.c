@@ -156,7 +156,7 @@ check_windings ()
 /* Rotate the polygon point list around so that point N is the first
    one in the list.  */
 static void
-rotate_points (PolygonTypePtr poly, int n)
+rotate_points (PolygonType *poly, int n)
 {
   PointType *np;
   int n2 = poly->PointN - n;
