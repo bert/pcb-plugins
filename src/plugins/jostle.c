@@ -298,10 +298,10 @@ rotateSide(int side, int n)
 /*
  * Wrapper for CreateNewLineOnLayer that takes vectors and deals with Undo
  */
-static LineTypePtr
-CreateVectorLineOnLayer(LayerTypePtr layer, Vector a, Vector b, int thickness, int clearance, FlagType flags)
+static LineType *
+CreateVectorLineOnLayer(LayerType *layer, Vector a, Vector b, int thickness, int clearance, FlagType flags)
 {
-	LineTypePtr line;
+	LineType *line;
 
 	line = CreateNewLineOnLayer(layer, a[0], a[1], b[0], b[1], thickness, clearance, flags);
 	if (line) {
@@ -310,10 +310,10 @@ CreateVectorLineOnLayer(LayerTypePtr layer, Vector a, Vector b, int thickness, i
 	return line;
 }
 
-static LineTypePtr
-MakeBypassLine(LayerTypePtr layer, Vector a, Vector b, LineTypePtr orig, POLYAREA **expandp)
+static LineType *
+MakeBypassLine(LayerType *layer, Vector a, Vector b, LineType *orig, POLYAREA **expandp)
 {
-	LineTypePtr line;
+	LineType *line;
 
 	line = CreateVectorLineOnLayer(layer, a, b,
 		orig->Thickness, orig->Clearance, orig->Flags);
@@ -331,7 +331,7 @@ MakeBypassLine(LayerTypePtr layer, Vector a, Vector b, LineTypePtr orig, POLYARE
  * the brush on the named side.  Create them and remove the original.
  */
 static int
-MakeBypassingLines(POLYAREA *brush, LayerTypePtr layer, LineType *line, int side, POLYAREA **expandp)
+MakeBypassingLines(POLYAREA *brush, LayerType *layer, LineType *line, int side, POLYAREA **expandp)
 {
 	Vector pA, pB, flatA, flatB, qA, qB;
 	Vector lA, lB;
@@ -384,12 +384,12 @@ MakeBypassingLines(POLYAREA *brush, LayerTypePtr layer, LineType *line, int side
 struct info {
 	BoxType box;
 	POLYAREA *brush;
-	LayerTypePtr layer;
+	LayerType *layer;
 
 	POLYAREA *smallest;	/* after cutting brush with line,
 				 * the smallest chunk, which we will go
 				 * around on 'side' */
-	LineTypePtr line;
+	LineType *line;
 	int side;
 	double centroid;	/* smallest difference between slices of
 				 * brush after cutting with line, trying
