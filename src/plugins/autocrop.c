@@ -26,73 +26,73 @@
 #include "polygon.h"
 
 static void *
-MyMoveViaLowLevel(DataTypePtr Data, PinTypePtr Via, Coord dx, Coord dy)
+MyMoveViaLowLevel(DataType *Data, PinType *Via, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, VIA_TYPE, Via, Via);
-		r_delete_entry(Data->via_tree, (BoxTypePtr) Via);
+		r_delete_entry(Data->via_tree, (BoxType *) Via);
 	}
 	MOVE_VIA_LOWLEVEL(Via, dx, dy);
 	if (Data) {
-		r_insert_entry(Data->via_tree, (BoxTypePtr) Via, 0);
+		r_insert_entry(Data->via_tree, (BoxType *) Via, 0);
 		ClearFromPolygon(Data, VIA_TYPE, Via, Via);
 	}
 	return Via;
 }
 
 static void *
-MyMoveLineLowLevel(DataTypePtr Data, LayerTypePtr Layer, LineTypePtr Line, Coord dx, Coord dy)
+MyMoveLineLowLevel(DataType *Data, LayerType *Layer, LineType *Line, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, LINE_TYPE, Layer, Line);
-		r_delete_entry(Layer->line_tree, (BoxTypePtr) Line);
+		r_delete_entry(Layer->line_tree, (BoxType *) Line);
 	}
 	MOVE_LINE_LOWLEVEL(Line, dx, dy);
 	if (Data) {
-		r_insert_entry(Layer->line_tree, (BoxTypePtr) Line, 0);
+		r_insert_entry(Layer->line_tree, (BoxType *) Line, 0);
 		ClearFromPolygon(Data, LINE_TYPE, Layer, Line);
 	}
 	return Line;
 }
 
 static void *
-MyMoveArcLowLevel(DataTypePtr Data, LayerTypePtr Layer, ArcTypePtr Arc, Coord dx, Coord dy)
+MyMoveArcLowLevel(DataType *Data, LayerType *Layer, ArcType *Arc, Coord dx, Coord dy)
 {
 	if (Data) {
 		RestoreToPolygon(Data, ARC_TYPE, Layer, Arc);
-		r_delete_entry(Layer->arc_tree, (BoxTypePtr) Arc);
+		r_delete_entry(Layer->arc_tree, (BoxType *) Arc);
 	}
 	MOVE_ARC_LOWLEVEL(Arc, dx, dy);
 	if (Data) {
-		r_insert_entry(Layer->arc_tree, (BoxTypePtr) Arc, 0);
+		r_insert_entry(Layer->arc_tree, (BoxType *) Arc, 0);
 		ClearFromPolygon(Data, ARC_TYPE, Layer, Arc);
 	}
 	return Arc;
 }
 
 static void *
-MyMovePolygonLowLevel(DataTypePtr Data, LayerTypePtr Layer, PolygonTypePtr Polygon, Coord dx, Coord dy)
+MyMovePolygonLowLevel(DataType *Data, LayerType *Layer, PolygonType *Polygon, Coord dx, Coord dy)
 {
 	if (Data) {
-		r_delete_entry(Layer->polygon_tree, (BoxTypePtr) Polygon);
+		r_delete_entry(Layer->polygon_tree, (BoxType *) Polygon);
 	}
 	/* move.c actually only moves points, note no Data/Layer args */
 	MovePolygonLowLevel(Polygon, dx, dy);
 	if (Data) {
-		r_insert_entry(Layer->polygon_tree, (BoxTypePtr) Polygon, 0);
+		r_insert_entry(Layer->polygon_tree, (BoxType *) Polygon, 0);
 		InitClip(Data, Layer, Polygon);
 	}
 	return Polygon;
 }
 
 static void *
-MyMoveTextLowLevel(LayerTypePtr Layer, TextTypePtr Text, Coord dx, Coord dy)
+MyMoveTextLowLevel(LayerType *Layer, TextType *Text, Coord dx, Coord dy)
 {
 	if (Layer)
-		r_delete_entry(Layer->text_tree, (BoxTypePtr) Text);
+		r_delete_entry(Layer->text_tree, (BoxType *) Text);
 	MOVE_TEXT_LOWLEVEL(Text, dx, dy);
 	if (Layer)
-		r_insert_entry(Layer->text_tree, (BoxTypePtr) Text, 0);
+		r_insert_entry(Layer->text_tree, (BoxType *) Text, 0);
 	return Text;
 }
 
@@ -158,7 +158,7 @@ autocrop(int argc, char **argv, int x, int y)
 {
 //	int changed = 0;
 	Coord dx, dy, pad;
-	BoxTypePtr box;
+	BoxType *box;
 
 	box = GetDataBoundingBox(PCB->Data);	/* handy! */
 
