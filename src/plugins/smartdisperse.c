@@ -45,7 +45,7 @@ static Coord maxy;
  * This is taken almost entirely from ActionDisperseElements, with cleanup
  */
 static void
-place(ElementTypePtr element)
+place(ElementType *element)
 {
 	Coord dx, dy;
 
@@ -90,10 +90,10 @@ place(ElementTypePtr element)
  * Return the X location of a connection's pad or pin within its element
  */
 static Coord
-padDX(ConnectionTypePtr conn)
+padDX(ConnectionType *conn)
 {
-	ElementTypePtr element = (ElementTypePtr) conn->ptr1;
-	AnyLineObjectTypePtr line = (AnyLineObjectTypePtr) conn->ptr2;
+	ElementType *element = (ElementType *) conn->ptr1;
+	AnyLineObjectType *line = (AnyLineObjectType *) conn->ptr2;
 
 	return line->BoundingBox.X1 -
 			(element->BoundingBox.X1 + element->BoundingBox.X2) / 2;
@@ -101,7 +101,7 @@ padDX(ConnectionTypePtr conn)
 
 /* return true if ea,eb would be the best order, else eb,ea, based on pad loc */
 static int
-padorder(ConnectionTypePtr conna, ConnectionTypePtr connb)
+padorder(ConnectionType *conna, ConnectionType *connb)
 {
 	Coord dxa, dxb;
 
@@ -126,7 +126,7 @@ static int
 smartdisperse (int argc, char **argv, int x, int y)
 {
 	char *function = ARG(0);
-	NetListTypePtr Nets;
+	NetListType *Nets;
 	char *visited;
 //	PointerListType stack = { 0, 0, NULL };
 	int all;
@@ -174,9 +174,9 @@ smartdisperse (int argc, char **argv, int x, int y)
 	 */
 	NET_LOOP(Nets);
 	{
-		ConnectionTypePtr	conna, connb;
-		ElementTypePtr		ea, eb;
-//		ElementTypePtr		*epp;
+		ConnectionType	*conna, *connb;
+		ElementType		*ea, *eb;
+//		ElementType		*epp;
 
 		if (net->ConnectionN != 2)
 			continue;
@@ -186,8 +186,8 @@ smartdisperse (int argc, char **argv, int x, int y)
 		if (!IS_ELEMENT(conna) || !IS_ELEMENT(conna))
 			continue;
 
-		ea = (ElementTypePtr) conna->ptr1;
-		eb = (ElementTypePtr) connb->ptr1;
+		ea = (ElementType *) conna->ptr1;
+		eb = (ElementType *) connb->ptr1;
 
 		/* place this pair if possible */
 		if (VISITED((GList *)ea) || VISITED((GList *)eb))
@@ -197,8 +197,8 @@ smartdisperse (int argc, char **argv, int x, int y)
 
 		/* a weak attempt to get the linked pads side-by-side */
 		if (padorder(conna, connb)) {
-			place((ElementTypePtr) ea);
-			place((ElementTypePtr) eb);
+			place((ElementType *) ea);
+			place((ElementType *) eb);
 		} else {
 			place(eb);
 			place(ea);
@@ -211,12 +211,12 @@ smartdisperse (int argc, char **argv, int x, int y)
 	{
 		CONNECTION_LOOP(net);
 		{
-			ElementTypePtr element;
+			ElementType *element;
 
 			if (! IS_ELEMENT(connection))
 				continue;
 
-			element = (ElementTypePtr) connection->ptr1;
+			element = (ElementType *) connection->ptr1;
 
 			/* place this one if needed */
 			if (VISITED((GList *)element))
