@@ -19,18 +19,18 @@
 #include "rtree.h"
 #include "undo.h"
 
-static PinTypePtr pin;
+static PinType *pin;
 static int layer;
 static int px, py;
-static LayerTypePtr silk;
+static LayerType *silk;
 
 static int new_arcs = 0;
 
 static int
 check_line_callback (const BoxType * box, void *cl)
 {
-  LayerTypePtr lay = & PCB->Data->Layer[layer];
-  LineTypePtr l = (LineTypePtr) box;
+  LayerType *lay = & PCB->Data->Layer[layer];
+  LineType *l = (LineType *) box;
   int x1, x2, y1, y2;
   double a, b, c, x, r, t;
   double dx, dy, len;
@@ -38,7 +38,7 @@ check_line_callback (const BoxType * box, void *cl)
   double ldist, adist, radius;
   double vx, vy, vr, vl;
   int delta, aoffset, count;
-  ArcTypePtr arc;
+  ArcType *arc;
 
   if (l->Point1.X == px && l->Point1.Y == py)
     {
@@ -149,7 +149,7 @@ check_line_callback (const BoxType * box, void *cl)
 }
 
 static void
-check_pin (PinTypePtr _pin)
+check_pin (PinType *_pin)
 {
   BoxType spot;
 
@@ -165,7 +165,7 @@ check_pin (PinTypePtr _pin)
 
   for (layer = 0; layer < max_copper_layer; layer ++)
     {
-      LayerTypePtr l = &(PCB->Data->Layer[layer]);
+      LayerType *l = &(PCB->Data->Layer[layer]);
       r_search (l->line_tree, &spot, NULL, check_line_callback, l);
     }
 }
