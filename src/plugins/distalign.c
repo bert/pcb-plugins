@@ -151,7 +151,6 @@ static int
 sort_elements_by_pos(int op, int dir, int point)
 {
 	int nsel = 0;
-//	struct element_pos *ep;
 
 	if (nelements_by_pos)
 		return nelements_by_pos;
@@ -264,7 +263,7 @@ reference_coord(int op, int x, int y, int dir, int point, int reference)
  * Defaults are Marks, First
  */
 static int
-align(int argc, char **argv, int x, int y)
+align(int argc, char **argv, Coord x, Coord y)
 {
 	int dir;
 	int point;
@@ -398,7 +397,7 @@ align(int argc, char **argv, int x, int y)
  * before they were distributed.
  */
 static int
-distribute(int argc, char **argv, int x, int y)
+distribute(int argc, char **argv, Coord x, Coord y)
 {
 	int dir;
 	int point;
@@ -567,8 +566,7 @@ distribute(int argc, char **argv, int x, int y)
 		SetChangedFlag(1);
 	}
 
-//    out:
-//	free_elements_by_pos();
+	free_elements_by_pos();
 
 	return 0;
 }
