@@ -25,6 +25,8 @@ autocrop: autocrop.so
 boardflip: boardflip.so
 	
 distalign: distalign.so
+
+distaligntext: distaligntext.so
 	
 findelement: findelement.so
 	
@@ -57,6 +59,7 @@ all: \
 	autocrop \
 	boardflip \
 	distalign \
+	distaligntext \
 	findelement \
 	findrat \
 	ghellopcb \
@@ -82,6 +85,7 @@ uninstall:
 	rm ~/.pcb/plugins/autocrop.so
 	rm ~/.pcb/plugins/boardflip.so
 	rm ~/.pcb/plugins/distalign.so
+	rm ~/.pcb/plugins/distaligntext.so
 	rm ~/.pcb/plugins/findelement.so
 	rm ~/.pcb/plugins/findrat.so
 	rm ~/.pcb/plugins/join-found.so
