@@ -28,6 +28,8 @@ distalign: distalign.so
 
 distaligntext: distaligntext.so
 	
+elementupdate: elementupdate.so
+
 findelement: findelement.so
 	
 findrat: findrat.so
@@ -60,6 +62,7 @@ all: \
 	boardflip \
 	distalign \
 	distaligntext \
+	elementupdate \
 	findelement \
 	findrat \
 	ghellopcb \
@@ -86,6 +89,7 @@ uninstall:
 	rm ~/.pcb/plugins/boardflip.so
 	rm ~/.pcb/plugins/distalign.so
 	rm ~/.pcb/plugins/distaligntext.so
+	rm ~/.pcb/plugins/elementupdate.so
 	rm ~/.pcb/plugins/findelement.so
 	rm ~/.pcb/plugins/findrat.so
 	rm ~/.pcb/plugins/join-found.so
