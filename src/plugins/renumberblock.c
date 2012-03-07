@@ -39,7 +39,7 @@
 #include "change.h"
 
 static int
-renumber_block (int argc, char **argv, int x, int y)
+renumber_block (int argc, char **argv, Coord x, Coord y)
 {
   char num_buf[15];
   int old_base, new_base;
@@ -87,7 +87,7 @@ renumber_block (int argc, char **argv, int x, int y)
 }
 
 static int
-renumber_buffer (int argc, char **argv, int x, int y)
+renumber_buffer (int argc, char **argv, Coord x, Coord y)
 {
   char num_buf[15];
   int old_base, new_base;

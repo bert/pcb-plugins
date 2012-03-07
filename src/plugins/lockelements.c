@@ -67,7 +67,7 @@
  * If no argument is passed, no action is carried out.
  */
 static int
-lock_elements (int argc, char **argv, int x, int y)
+lock_elements (int argc, char **argv, Coord x, Coord y)
 {
         int selected = 0;
         int all = 0;
@@ -115,7 +115,7 @@ lock_elements (int argc, char **argv, int x, int y)
  * If no argument is passed, no action is carried out.
  */
 static int
-unlock_elements (int argc, char **argv, int x, int y)
+unlock_elements (int argc, char **argv, Coord x, Coord y)
 {
         int all = 0;
         if (strcasecmp (argv[0], "All") == 0)

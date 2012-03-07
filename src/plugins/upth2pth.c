@@ -62,7 +62,7 @@
  * Locked holes are not to be changed.\n
  */
 static int
-upth2pth (int argc, char **argv, int x, int y)
+upth2pth (int argc, char **argv, Coord x, Coord y)
 {
         int selected = 0;
         int all = 0;
@@ -125,7 +125,7 @@ upth2pth (int argc, char **argv, int x, int y)
  * Locked holes are not to be changed.\n
  */
 static int
-pth2upth (int argc, char **argv, int x, int y)
+pth2upth (int argc, char **argv, Coord x, Coord y)
 {
         int selected = 0;
         int all = 0;

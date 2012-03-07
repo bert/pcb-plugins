@@ -288,7 +288,7 @@ compute_polygon_recursive (poly_tree *root, POLYAREA *accumulate)
 }
 
 static int
-polycombine (int argc, char **argv, int x, int y)
+polycombine (int argc, char **argv, Coord x, Coord y)
 {
   POLYAREA *res;
   bool forward;

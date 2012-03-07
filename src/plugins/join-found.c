@@ -81,7 +81,7 @@ static ObjectFunctionType init_funcs = {
 #endif
 
 static int
-joinfound (int argc, char **argv, int x, int y)
+joinfound (int argc, char **argv, Coord x, Coord y)
 {
   int TheFlag = FOUNDFLAG;
 

@@ -59,7 +59,7 @@
  * If no argument is passed, no action is carried out.
  */
 static int
-find_element (int argc, char **argv, int x, int y)
+find_element (int argc, char **argv, Coord x, Coord y)
 {
         if (argc == 0 || strcasecmp (argv[0], "") == 0)
         {

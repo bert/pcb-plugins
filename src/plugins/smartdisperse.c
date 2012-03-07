@@ -123,7 +123,7 @@ padorder(ConnectionType *conna, ConnectionType *connb)
 static const char smartdisperse_syntax[] = "SmartDisperse([All|Selected])";
 
 static int
-smartdisperse (int argc, char **argv, int x, int y)
+smartdisperse (int argc, char **argv, Coord x, Coord y)
 {
 	char *function = ARG(0);
 	NetListType *Nets;

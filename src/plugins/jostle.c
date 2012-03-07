@@ -525,7 +525,7 @@ pcb_fprintf(stderr, "\tkeep it!\n");
 }
 
 static int
-jostle(int argc, char **argv, int x, int y)
+jostle(int argc, char **argv, Coord x, Coord y)
 {
 	bool rel;
 	POLYAREA *expand;
@@ -540,7 +540,7 @@ jostle(int argc, char **argv, int x, int y)
 
 	x = Crosshair.X;
 	y = Crosshair.Y;
-fprintf(stderr, "%d, %d, %f\n", x, y, value);
+fprintf(stderr, "%d, %d, %f\n", (int)x, (int)y, value);
 	info.brush = CirclePoly(x, y, value / 2);
 	info.layer = CURRENT;
 	LINE_LOOP(info.layer);

@@ -27,7 +27,7 @@
 #include "error.h"
 
 static int
-findrat (int argc, char **argv, int x, int y)
+findrat (int argc, char **argv, Coord x, Coord y)
 {
   RatType *r;
 

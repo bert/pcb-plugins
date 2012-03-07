@@ -27,7 +27,7 @@
 #include "undo.h"
 
 static int
-sedrename (int argc, char **argv, int x, int y)
+sedrename (int argc, char **argv, Coord x, Coord y)
 {
   FILE *fp;
   int result = STATUS_OK;

@@ -234,7 +234,7 @@ stitch_them ()
 }
 
 static int
-polystitch (int argc, char **argv, int x, int y)
+polystitch (int argc, char **argv, Coord x, Coord y)
 {
   find_crosshair_poly (x, y);
   if (inner_poly)

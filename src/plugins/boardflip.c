@@ -55,7 +55,7 @@
 #define NEG(y) (y) = - (y)
 
 static int
-boardflip (int argc, char **argv, int x, int y)
+boardflip (int argc, char **argv, Coord x, Coord y)
 {
   int h = PCB->MaxHeight;
   int sides = 0;

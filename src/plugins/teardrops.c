@@ -171,7 +171,7 @@ check_pin (PinType *_pin)
 }
 
 static int
-teardrops (int argc, char **argv, int x, int y)
+teardrops (int argc, char **argv, Coord x, Coord y)
 {
   silk = & PCB->Data->SILKLAYER;
 

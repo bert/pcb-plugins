@@ -154,7 +154,7 @@ MoveAll(Coord dx, Coord dy)
 }
 
 static int
-autocrop(int argc, char **argv, int x, int y)
+autocrop(int argc, char **argv, Coord x, Coord y)
 {
 //	int changed = 0;
 	Coord dx, dy, pad;
