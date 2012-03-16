@@ -659,17 +659,17 @@ distributetext(int argc, char **argv, Coord x, Coord y)
 	return 0;
 }
 
-static HID_Action distalign_action_list[] = {
+static HID_Action distaligntext_action_list[] = {
 	{"distributetext", NULL, distributetext, "Distribute Text Elements", distributetext_syntax},
 	{"aligntext", NULL, aligntext, "Align Text Elements", aligntext_syntax}
 };
 
-REGISTER_ACTIONS (distalign_action_list)
+REGISTER_ACTIONS (distaligntext_action_list)
 
 void
-hid_distalign_init()
+hid_distaligntext_init()
 {
-	register_distalign_action_list();
+	register_distaligntext_action_list();
 }
 
 /* vim: noexpandtab softtabstop=0 shiftwidth
