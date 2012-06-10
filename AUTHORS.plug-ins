@@ -15,6 +15,16 @@ distalign.c by Ben Jackson <bjj@saturn.home.ben.com> to be found at:
   http://www.gedasymbols.org/user/ben_jackson/
 
 
+distaligntext.c by Dan White <dan@whiteaudio.com>
+
+  https://github.com/etihwnad/pcb-plugins.git
+
+
+elementupdate.c by Dan White <dan@whiteaudio.com>
+
+  https://github.com/etihwnad/pcb-plugins.git
+
+
 findrat.c by DJ Delorie <dj@delorie.com> to be found at:
 
   http://www.delorie.com/pcb/findrat.c
