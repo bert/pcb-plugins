@@ -78,14 +78,14 @@ DebugPOLYAREA (POLYAREA *s, char *color)
     }
   if (1)
     {
-      gui->set_color (Output.fgGC, color ? color : PCB->ConnectedColor);
-      gui->set_line_width (Output.fgGC, 1);
+      gui->graphics->set_color (Output.fgGC, color ? color : PCB->ConnectedColor);
+      gui->graphics->set_line_width (Output.fgGC, 1);
       for (i = 0; i < n - 1; i++)
         {
-          gui->draw_line (Output.fgGC, x[i], y[i], x[i + 1], y[i + 1]);
+          gui->graphics->draw_line (Output.fgGC, x[i], y[i], x[i + 1], y[i + 1]);
           //  gui->fill_circle (Output.fgGC, x[i], y[i], 30);
         }
-      gui->draw_line (Output.fgGC, x[n - 1], y[n - 1], x[0], y[0]);
+      gui->graphics->draw_line (Output.fgGC, x[n - 1], y[n - 1], x[0], y[0]);
     }
   free (x);
   free (y);
