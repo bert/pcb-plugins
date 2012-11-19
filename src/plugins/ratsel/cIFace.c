@@ -169,7 +169,7 @@ void selectRat(int idx) {
 		       &ptr1, &ptr2, &ptr3);
 	 */
 	/* FIXME is ptr1 a layer? */
-	RatTypePtr rat = &(PCB->Data)->Rat[idx];
+	RatType *rat = &(PCB->Data)->Rat[idx];
 	/* TODO: add undo FIXME: how? */
 	/* AddObjectToFlagUndoList (RATLINE_TYPE, ptr1, ptr1, ptr1); */
 	TOGGLE_FLAG (SELECTEDFLAG, rat);
