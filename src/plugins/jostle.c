@@ -20,6 +20,7 @@
 #include "global.h"
 #include "data.h"
 #include "hid.h"
+#include "hid_draw.h"
 #include "misc.h"
 #include "create.h"
 #include "rtree.h"
