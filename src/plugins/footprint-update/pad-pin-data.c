@@ -25,31 +25,24 @@
 #include "matrix.h"
 #include "pad-pin-data.h"
 
-static Boolean calculate_transformation(CheapPointType new1_pt,
-                                        CheapPointType new2_pt,
-                                        CheapPointType old1_pt,
-                                        CheapPointType old2_pt,
-                                        Boolean reflect,
-                                        double angle,
-                                        Matrix3x3 new_to_old_mat);
-static void transform_pad_pin_data(ElementPadPinData* ppd, int len,
-                                   Matrix3x3 trans);
-static double calculate_sum_of_distances(ElementPadPinData* ppd_a, int len_a,
-                                         ElementPadPinData* ppd_b, int len_b);
-static Boolean find_number_block(const ElementPadPinData* ppd, int len,
-                                 const PadOrPinType* pp,
-                                 int* start, int* end);
-static int pad_pin_data_cmp_by_number(const void* va, const void* vb);
+static bool calculate_transformation (CheapPointType new1_pt, CheapPointType new2_pt, CheapPointType old1_pt, CheapPointType old2_pt, bool reflect, double angle, Matrix3x3 new_to_old_mat);
+static void transform_pad_pin_data (ElementPadPinData* ppd, int len, Matrix3x3 trans);
+static double calculate_sum_of_distances (ElementPadPinData* ppd_a, int len_a, ElementPadPinData* ppd_b, int len_b);
+static bool find_number_block (const ElementPadPinData* ppd, int len, const PadOrPinType* pp, int* start, int* end);
+static int pad_pin_data_cmp_by_number (const void* va, const void* vb);
 
 ElementPadPinData*
-alloc_pad_pin_data_array(ElementTypePtr element, int* len_ptr)
+alloc_pad_pin_data_array (ElementType *element, int* len_ptr)
 {
-  int len = element->PadN + element->PinN;
-  ElementPadPinData* ppd = MyCalloc(len, sizeof(ElementPadPinData),
-                                    "alloc_pad_pin_data_array");
+  int len;
+  int i;
+  ElementPadPinData* ppd = NULL;
+
+  len = element->PadN + element->PinN;
+  realloc ((ElementPadPinData*) ppd, len * sizeof (ElementPadPinData));
 
   /* Set the pad/pin pointers and centers */
-  int i = 0;
+  i = 0;
   PAD_OR_PIN_LOOP(element);
   {
     ppd[i].pp = pp;
@@ -103,10 +96,10 @@ find_non_coincident(const ElementPadPinData* ppd, int len,
   return 0;
 }
 
-Boolean
+bool
 find_best_corresponding_pads_or_pins(ElementPadPinData* ppd_a, int len_a,
                                      int index1_a, int index2_a,
-                                     Boolean reflect,
+                                     bool reflect,
                                      ElementPadPinData* ppd_b, int len_b,
                                      int* index1_b_ptr, int* index2_b_ptr)
 {
@@ -116,14 +109,14 @@ find_best_corresponding_pads_or_pins(ElementPadPinData* ppd_a, int len_a,
   int block2_end = 0;
   if (! find_number_block(ppd_b, len_b, &ppd_a[index1_a].pp,
                           &block1_start, &block1_end)) {
-    return False;
+    return false;
   }
   if (! find_number_block(ppd_b, len_b, &ppd_a[index2_a].pp,
                           &block2_start, &block2_end)) {
-    return False;
+    return false;
   }
 
-  Boolean min_set = False;
+  bool min_set = false;
   double min_sum_of_distances = 0;
   int min_index1_b = 0;
   int min_index2_b = 0;
@@ -151,7 +144,7 @@ find_best_corresponding_pads_or_pins(ElementPadPinData* ppd_a, int len_a,
             double sd = calculate_sum_of_distances(ppd_a, len_a,
                                                    ppd_b, len_b);
             if (! min_set || sd < min_sum_of_distances) {
-              min_set = True;
+              min_set = true;
               min_sum_of_distances = sd;
               min_index1_b = i;
               min_index2_b = j;
@@ -195,7 +188,7 @@ calculate_sum_of_distances(ElementPadPinData* ppd_a, int len_a,
   /* Clear the taken flags */
   int i;
   for (i = 0; i < len_b; i++) {
-    ppd_b[i].taken = False;
+    ppd_b[i].taken = false;
   }
 
   double sum_d2 = 0;
@@ -205,7 +198,7 @@ calculate_sum_of_distances(ElementPadPinData* ppd_a, int len_a,
     ElementPadPinData* a = &ppd_a[i];
     if (find_number_block(ppd_b, len_b, &a->pp,
                           &block_b_start, &block_b_end)) {
-      Boolean min_set = False;
+      bool min_set = false;
       double min_d2 = 0;
       int min_index = 0;
       int j;
@@ -215,14 +208,14 @@ calculate_sum_of_distances(ElementPadPinData* ppd_a, int len_a,
           double d2 = point_distance2(a->transformed_center,
                                       b->transformed_center);
           if (! min_set || d2 < min_d2) {
-            min_set = True;
+            min_set = true;
             min_d2 = d2;
             min_index = j;
           }
         }
       }
       if (min_set) {
-        ppd_b[min_index].taken = True;
+        ppd_b[min_index].taken = true;
         sum_d2 += min_d2;
       }
     }
@@ -230,10 +223,10 @@ calculate_sum_of_distances(ElementPadPinData* ppd_a, int len_a,
   return sum_d2;
 }
 
-Boolean
+bool
 calculate_transformation(CheapPointType new1_pt, CheapPointType new2_pt,
                          CheapPointType old1_pt, CheapPointType old2_pt,
-                         Boolean reflect,
+                         bool reflect,
                          double angle,
                          Matrix3x3 new_to_old_mat)
 {
@@ -260,10 +253,10 @@ calculate_transformation(CheapPointType new1_pt, CheapPointType new2_pt,
   multiply_matrix_matrix_inplace(t, result);
 
   copy_matrix(result, new_to_old_mat);
-  return True;
+  return true;
 }
 
-static Boolean
+static bool
 find_number_block(const ElementPadPinData* ppd, int len,
                   const PadOrPinType* pp,
                   int* start, int* end)
@@ -279,10 +272,10 @@ find_number_block(const ElementPadPinData* ppd, int len,
       }
       *start = i;
       *end = j;
-      return True;
+      return true;
     }
   }
-  return False;
+  return false;
 }
 
 static int

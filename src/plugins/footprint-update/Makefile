@@ -26,25 +26,19 @@ PCB_CVS_DIR=../../../../pcb
 # Installation location of PCB plug-ins
 INSTALL_DIR=~/.pcb/plugins
 
-VERSION=1.01
+#MY_VERSION=1.01
 
 # DEBUG_FLAGS=-DDEBUG=1
-CFLAGS=-O2 -shared -Wall -Werror -fPIC \
-       $(DEBUG_FLAGS) -DVERSION='"$(VERSION)"'
+CFLAGS=-Wall -O2 -shared `pkg-config --cflags glib-2.0`
+#        -Werror -fPIC $(DEBUG_FLAGS) -DVERSION='"$(VERSION)"'
+
+all: footprintupdate.so
 
 %.o: %.c
-	$(CC) $(CFLAGS)          \
-            -I$(PCB_CVS_DIR)/src \
-            -I$(PCB_CVS_DIR)     \
-            -c $<                \
-            -o $@
+	$(CC) $(CFLAGS) -I$(PCB_CVS_DIR)/src -I$(PCB_CVS_DIR) -c $< -o $@
 
 footprintupdate.so: footprintupdate.o utilities.o matrix.o pad-pin-data.o
-	$(CC) $(CFLAGS)          \
-            -I$(PCB_CVS_DIR)/src \
-            -I$(PCB_CVS_DIR)     \
-            $+                   \
-            -o $@
+	$(CC) $(CFLAGS) -I$(PCB_CVS_DIR)/src -I$(PCB_CVS_DIR) $+ -o $@
 
 footprintupdate.o: footprintupdate.c pad-pin-data.h utilities.h
 pad-pin-data.o: pad-pin-data.c pad-pin-data.h matrix.h utilities.h
@@ -77,3 +71,4 @@ dist:
            utilities.[ch] \
            $(DIST_DIR)
 	tar -czf $(DIST_FILE) $(DIST_DIR)
+

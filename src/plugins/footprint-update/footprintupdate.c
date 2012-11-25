@@ -76,35 +76,32 @@
  *     attributes in the layout element, if it has any, will be lost.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "config.h"
+#include "global.h"
+#include "data.h"
+#include "hid.h"
+#include "misc.h"
+#include "error.h"
+#include "draw.h"
+#include "undo.h"
+
 #include "utilities.h"
 #include "matrix.h"
 #include "pad-pin-data.h"
 
-static int replace_footprints(ElementTypePtr new_element);
-static Boolean replace_one_footprint(ElementTypePtr old_element,
-                                     ElementTypePtr new_element);
-static Boolean replace_one_footprint_quick(ElementTypePtr old_element,
-                                           ElementTypePtr new_element);
-static Boolean replace_one_footprint_expensive(ElementTypePtr old_element,
-                                               ElementTypePtr new_element);
-static Boolean replace_one_footprint_translate_only(ElementTypePtr old_element,
-                                                    ElementTypePtr new_element);
-static void replace_one_footprint_aux(ElementTypePtr old_element,
-                                      PadOrPinType* old1_pp,
-                                      PadOrPinType* old2_pp,
-                                      ElementTypePtr new_element,
-                                      PadOrPinType* new1_pp,
-                                      PadOrPinType* new2_pp);
-static BYTE calculate_rotation_steps(CheapPointType new1_pt,
-                                     CheapPointType new2_pt,
-                                     CheapPointType old1_pt,
-                                     CheapPointType old2_pt);
-static void transfer_text(ElementTypePtr old_element,
-                          ElementTypePtr new_element);
-static void transfer_names(ElementTypePtr old_element,
-                           ElementTypePtr new_element);
-static void transfer_flags(ElementTypePtr old_element,
-                           ElementTypePtr new_element);
+static int replace_footprints (ElementType *new_element);
+static bool replace_one_footprint (ElementType *old_element, ElementType *new_element);
+static bool replace_one_footprint_quick (ElementType *old_element, ElementType *new_element);
+static bool replace_one_footprint_expensive (ElementType *old_element, ElementType *new_element);
+static bool replace_one_footprint_translate_only (ElementType *old_element, ElementType *new_element);
+static void replace_one_footprint_aux (ElementType *old_element, PadOrPinType* old1_pp, PadOrPinType* old2_pp, ElementType *new_element, PadOrPinType* new1_pp, PadOrPinType* new2_pp);
+static BYTE calculate_rotation_steps (CheapPointType new1_pt, CheapPointType new2_pt, CheapPointType old1_pt, CheapPointType old2_pt);
+static void transfer_text (ElementType *old_element, ElementType *new_element);
+static void transfer_names (ElementType *old_element, ElementType *new_element);
+static void transfer_flags (ElementType *old_element, ElementType* new_element);
 
 enum {
   MATCH_MODE_AUTO,              /* Use element description field. */
@@ -122,19 +119,7 @@ enum {
  * Plug-in housekeeping.
  */
 
-int footprint_update(int argc, char **argv, int x, int y);
-
-HID_Action footprint_update_action_list[] = {
-  { ACTION_NAME, NULL, footprint_update, NULL, NULL }
-};
-
-REGISTER_ACTIONS(footprint_update_action_list)
-
-void
-pcb_plugin_init()
-{
-  register_footprint_update_action_list();
-}
+static int footprint_update (int argc, char **argv, int x, int y);
 
 int global_argc = 0;
 char **global_argv = NULL;
@@ -152,8 +137,8 @@ usage()
   return 1;
 }
 
-int
-footprint_update(int argc, char **argv, int x, int y)
+static int
+footprint_update (int argc, char **argv, int x, int y)
 {
   global_argc = argc;
   global_argv = argv;
@@ -213,7 +198,7 @@ footprint_update(int argc, char **argv, int x, int y)
 }
 
 static int
-replace_footprints(ElementTypePtr new_element)
+replace_footprints (ElementType *new_element)
 {
   int replaced = 0;
   int i = 0;
@@ -223,11 +208,11 @@ replace_footprints(ElementTypePtr new_element)
     if (match_mode != MATCH_MODE_AUTO
         || strcmp(DESCRIPTION_NAME(new_element),
                   DESCRIPTION_NAME(element)) == 0) {
-      Boolean matched = False;
+      bool matched = false;
 
       switch (style) {
       case STYLE_ALL:
-        matched = True;
+        matched = true;
         break;
       case STYLE_SELECTED:
         matched = TEST_FLAG(SELECTEDFLAG, element);
@@ -236,7 +221,7 @@ replace_footprints(ElementTypePtr new_element)
         for (i = 0; i < global_argc; i++) {
           if (NAMEONPCB_NAME(element)
               && strcasecmp(NAMEONPCB_NAME(element), global_argv[i]) == 0) {
-            matched = True;
+            matched = true;
             break;
           }
         }
@@ -260,9 +245,9 @@ replace_footprints(ElementTypePtr new_element)
   return replaced;
 }
 
-static Boolean
-replace_one_footprint(ElementTypePtr old_element,
-                      ElementTypePtr new_element)
+static bool
+replace_one_footprint(ElementType *old_element,
+                      ElementType *new_element)
 {
   /* Called in order from from most desirable to least desirable. */
   return (replace_one_footprint_quick(old_element, new_element)
@@ -270,9 +255,9 @@ replace_one_footprint(ElementTypePtr old_element,
           || replace_one_footprint_translate_only(old_element, new_element));
 }
 
-static Boolean
-replace_one_footprint_quick(ElementTypePtr old_element,
-                            ElementTypePtr new_element)
+static bool
+replace_one_footprint_quick (ElementType *old_element,
+                             ElementType *new_element)
 {
   /* Requires that there be two non-coincident, uniquely numbered
      pads/pins that correspond between the old and new element. */
@@ -280,12 +265,12 @@ replace_one_footprint_quick(ElementTypePtr old_element,
                                                      new_element,
                                                      NULL, NULL,
                                                      NULL, NULL)) {
-    return False;
+    return false;
   }
 
   /* Create copy of new element. */
-  ElementTypePtr copy_element =
-    CopyElementLowLevel(PCB->Data, NULL, new_element, False, 0, 0);
+  ElementType *copy_element =
+    CopyElementLowLevel (PCB->Data, NULL, new_element, false, 0, 0);
 
   PadOrPinType old1_pp;
   PadOrPinType old2_pp;
@@ -297,17 +282,17 @@ replace_one_footprint_quick(ElementTypePtr old_element,
                                                      &copy1_pp, &copy2_pp)) {
       base_log("Error: Couldn't find two corresponding, unique, "
                "non-coincident element pads/pins.");
-      return False;
+      return false;
   }
   replace_one_footprint_aux(old_element, &old1_pp, &old2_pp,
                             copy_element, &copy1_pp, &copy2_pp);
   debug_log("Used quick replacement.\n");
-  return True;
+  return true;
 }
 
-static Boolean
-replace_one_footprint_expensive(ElementTypePtr old_element,
-                                ElementTypePtr new_element)
+static bool
+replace_one_footprint_expensive (ElementType *old_element,
+                                 ElementType *new_element)
 {
   /* Requires that there be two corresponding, non-coincident
      pads/pins; non-unique pad/pin numbers okay.
@@ -319,12 +304,12 @@ replace_one_footprint_expensive(ElementTypePtr old_element,
      share the same pad/pin number. */
   if (! have_two_corresponding_non_coincident(old_element, new_element,
                                               NULL, NULL, NULL, NULL)) {
-    return False;
+    return false;
   }
 
   /* Create copy of new element. */
-  ElementTypePtr copy_element =
-    CopyElementLowLevel(PCB->Data, NULL, new_element, False, 0, 0);
+  ElementType *copy_element =
+    CopyElementLowLevel (PCB->Data, NULL, new_element, false, 0, 0);
 
   int old_ppd_len = 0;
   ElementPadPinData* old_ppd =
@@ -339,12 +324,12 @@ replace_one_footprint_expensive(ElementTypePtr old_element,
   if (! find_non_coincident(copy_ppd, copy_ppd_len,
                             &copy_index1, &copy_index2)) {
     base_log("Error: Couldn't find non-coincident element pads/pins.");
-    MYFREE(old_ppd);
-    MYFREE(copy_ppd);
-    return False;
+    free (old_ppd);
+    free (copy_ppd);
+    return false;
   }
 
-  Boolean reflect = IS_REFLECTED(new_element, old_element);
+  bool reflect = IS_REFLECTED (new_element, old_element);
   int old_index1 = 0;
   int old_index2 = 0;
   if (! find_best_corresponding_pads_or_pins(copy_ppd, copy_ppd_len,
@@ -352,9 +337,9 @@ replace_one_footprint_expensive(ElementTypePtr old_element,
                                              reflect,
                                              old_ppd, old_ppd_len,
                                              &old_index1, &old_index2)) {
-    MYFREE(old_ppd);
-    MYFREE(copy_ppd);
-    return False;
+    free (old_ppd);
+    free (copy_ppd);
+    return false;
   }
 
   replace_one_footprint_aux(old_element,
@@ -363,47 +348,47 @@ replace_one_footprint_expensive(ElementTypePtr old_element,
                             copy_element,
                             &copy_ppd[copy_index1].pp,
                             &copy_ppd[copy_index2].pp);
-  MYFREE(old_ppd);
-  MYFREE(copy_ppd);
+  free (old_ppd);
+  free (copy_ppd);
   debug_log("Used expensive replacement.\n");
-  return True;
+  return true;
 }
 
-static Boolean
-replace_one_footprint_translate_only(ElementTypePtr old_element,
-                                     ElementTypePtr new_element)
+static bool
+replace_one_footprint_translate_only (ElementType *old_element,
+                                      ElementType *new_element)
 {
   /* Just requires one corresponding pad/pin.  Does no rotations. */
   if (! have_any_corresponding_pad_or_pin(old_element, new_element,
                                           NULL, NULL)) {
-    return False;
+    return false;
   }
 
   /* Create copy of new element. */
-  ElementTypePtr copy_element =
-    CopyElementLowLevel(PCB->Data, NULL, new_element, False, 0, 0);
+  ElementType *copy_element =
+    CopyElementLowLevel (PCB->Data, NULL, new_element, false, 0, 0);
 
   PadOrPinType old_pp = make_pad_or_pin(NULL, NULL);
   PadOrPinType copy_pp = make_pad_or_pin(NULL, NULL);
   if (! have_any_corresponding_pad_or_pin(old_element, copy_element,
                                           &old_pp, &copy_pp)) {
     base_log("Error: Couldn't find any corresponding pads or pins.");
-    return False;
+    return false;
   }
   replace_one_footprint_aux(old_element, &old_pp, NULL,
                             copy_element, &copy_pp, NULL);
   debug_log("Used translation-only replacement.\n");
-  return True;
+  return true;
 }
 
 static void
-replace_one_footprint_aux(ElementTypePtr old_element,
-                          PadOrPinType* old1_pp, PadOrPinType* old2_pp,
-                          ElementTypePtr copy_element,
-                          PadOrPinType* copy1_pp, PadOrPinType* copy2_pp)
+replace_one_footprint_aux (ElementType *old_element,
+                           PadOrPinType* old1_pp, PadOrPinType* old2_pp,
+                           ElementType *copy_element,
+                           PadOrPinType* copy1_pp, PadOrPinType* copy2_pp)
 {
-  Boolean two_points = (old2_pp && copy2_pp);
-  Boolean reflect = IS_REFLECTED(copy_element, old_element);
+  bool two_points = (old2_pp && copy2_pp);
+  bool reflect = IS_REFLECTED (copy_element, old_element);
 
   debug_log("Reflect?: %s\n", (reflect ? "yes" : "no"));
   if (reflect) {
@@ -430,8 +415,8 @@ replace_one_footprint_aux(ElementTypePtr old_element,
   }
 
   /* Calculate translation */
-  LocationType dx = old1_pt.X - copy1_pt.X;
-  LocationType dy = old1_pt.Y - copy1_pt.Y;
+  Coord dx = old1_pt.X - copy1_pt.X;
+  Coord dy = old1_pt.Y - copy1_pt.Y;
   /* Move element */
   MoveElementLowLevel(PCB->Data, copy_element, dx, dy);
 
@@ -453,8 +438,8 @@ calculate_rotation_steps(CheapPointType new1_pt, CheapPointType new2_pt,
                          CheapPointType old1_pt, CheapPointType old2_pt)
 {
   /* Translation of new1_pt to origin. */
-  LocationType new1_to_origin_dx = -new1_pt.X;
-  LocationType new1_to_origin_dy = -new1_pt.Y;
+  Coord new1_to_origin_dx = -new1_pt.X;
+  Coord new1_to_origin_dy = -new1_pt.Y;
   /* Use translation for new2_pt. */
   CheapPointType new2_translated_pt =
     make_point(new2_pt.X + new1_to_origin_dx,
@@ -464,8 +449,8 @@ calculate_rotation_steps(CheapPointType new1_pt, CheapPointType new2_pt,
      ? atan2(new2_translated_pt.Y, new2_translated_pt.X) : 0);
 
   /* Translation of old1_pt to origin. */
-  LocationType old1_to_origin_dx = -old1_pt.X;
-  LocationType old1_to_origin_dy = -old1_pt.Y;
+  Coord old1_to_origin_dx = -old1_pt.X;
+  Coord old1_to_origin_dy = -old1_pt.Y;
   /* Use translation for old2_pt. */
   CheapPointType old2_translated_pt =
     make_point(old2_pt.X + old1_to_origin_dx,
@@ -487,26 +472,27 @@ calculate_rotation_steps(CheapPointType new1_pt, CheapPointType new2_pt,
 }
 
 static void
-transfer_text(ElementTypePtr old_element, ElementTypePtr new_element)
+transfer_text (ElementType *old_element, ElementType *new_element)
 {
   int i;
   for (i = 0; i < MAX_ELEMENTNAMES; i++) {
-    TextTypePtr old_text = &old_element->Name[i];
-    TextTypePtr new_text = &new_element->Name[i];
-    MYFREE(new_text->TextString);
+    TextType *old_text = &old_element->Name[i];
+    TextType *new_text = &new_element->Name[i];
+    free (new_text->TextString);
     new_text->X = old_text->X;
     new_text->Y = old_text->Y;
     new_text->Direction = old_text->Direction;
     new_text->Flags = old_text->Flags;
     new_text->Scale = old_text->Scale;
     new_text->TextString =
-      ((old_text->TextString && *old_text->TextString) ?
-       MyStrdup(old_text->TextString, "transfer_text()") : NULL);
+      (old_text->TextString && *old_text->TextString)
+      ? strdup (old_text->TextString)
+      : NULL;
   }
 }
 
 static void
-transfer_names(ElementTypePtr old_element, ElementTypePtr new_element)
+transfer_names (ElementType *old_element, ElementType *new_element)
 {
   PAD_OR_PIN_LOOP_HYG(old_element, _old);
   {
@@ -515,11 +501,11 @@ transfer_names(ElementTypePtr old_element, ElementTypePtr new_element)
     {
       if (pad_or_pin_number_cmp(&pp_old, &pp_new) == 0) {
         if (pp_new.pad) {
-          MYFREE(pp_new.pad->Name);
-          pp_new.pad->Name = MyStrdup((char*)old_name, "transfer_names()");
+          free (pp_new.pad->Name);
+          pp_new.pad->Name = strdup ((char*) old_name);
         } else if (pp_new.pin) {
-          MYFREE(pp_new.pin->Name);
-          pp_new.pin->Name = MyStrdup((char*)old_name, "transfer_names()");
+          free (pp_new.pin->Name);
+          pp_new.pin->Name = strdup ((char*)old_name);
         }
       }
     }
@@ -529,7 +515,7 @@ transfer_names(ElementTypePtr old_element, ElementTypePtr new_element)
 }
 
 static void
-transfer_flags(ElementTypePtr old_element, ElementTypePtr new_element)
+transfer_flags (ElementType *old_element, ElementType *new_element)
 {
   PAD_OR_PIN_LOOP_HYG(old_element, _old);
   {
@@ -548,3 +534,16 @@ transfer_flags(ElementTypePtr old_element, ElementTypePtr new_element)
     SET_FLAG(SELECTEDFLAG, new_element);
   }
 }
+
+static HID_Action footprint_update_action_list[] = {
+  {ACTION_NAME, NULL, footprint_update, NULL, NULL}
+};
+
+REGISTER_ACTIONS (footprint_update_action_list)
+
+void
+pcb_plugin_init ()
+{
+  register_footprint_update_action_list ();
+}
+

@@ -23,21 +23,22 @@
  */
 
 #ifndef UTILITIES_H_INCLUDED
-#define UTILITIES_H_INCLUDED 1
+#define UTILITIES_H_INCLUDED
 
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
 
+#include "config.h"
 #include "global.h"
+#include "data.h"
+#include "hid.h"
+#include "misc.h"
 #include "box.h"
 #include "copy.h"
 #include "change.h"
 #include "rotate.h"
 #include "move.h"
-#include "data.h"
-#include "hid.h"
-#include "misc.h"
 #include "create.h"
 #include "rtree.h"
 #include "polygon.h"
@@ -51,52 +52,51 @@
  */
 
 typedef struct {
-  PadTypePtr pad;
-  PinTypePtr pin;
+  PadType *pad;
+  PinType *pin;
 } PadOrPinType;
 
-PadOrPinType make_pad_or_pin(PadTypePtr pad, PinTypePtr pin);
-Boolean is_pad_or_pin(const PadOrPinType* pp);
+PadOrPinType make_pad_or_pin (GList *pad, GList *pin);
+bool is_pad_or_pin (const PadOrPinType* pp);
 int number_cmp(const char* number_a, const char* number_b);
 const char* pad_or_pin_number(const PadOrPinType* pp);
 const char* pad_or_pin_name(const PadOrPinType* pp);
-Boolean pad_or_pin_test_flag(const PadOrPinType* pp, unsigned long flag);
+bool pad_or_pin_test_flag (const PadOrPinType* pp, unsigned long flag);
 void pad_or_pin_set_flag(PadOrPinType* pp, unsigned long flag);
 int pad_or_pin_number_cmp(const PadOrPinType* ppa, const PadOrPinType* ppb);
 
-CheapPointType pad_center(PadTypePtr pad);
-CheapPointType pin_center(PinTypePtr pin);
+CheapPointType pad_center (PadType *pad);
+CheapPointType pin_center (PinType *pin);
 CheapPointType pad_or_pin_center(PadOrPinType* pp);
 
-PadTypePtr find_pad(ElementTypePtr element, const char* number);
-PinTypePtr find_pin(ElementTypePtr element, const char* number);
-Boolean find_pad_or_pin(ElementTypePtr element, const char* number,
-                        PadOrPinType* pp_ptr);
+PadType *find_pad (ElementType *element, const char* number);
+PinType *find_pin (ElementType *element, const char* number);
+bool find_pad_or_pin (ElementType *element, const char* number, PadOrPinType* pp_ptr);
 
-Boolean is_number_unique(ElementTypePtr element, const char* number);
+bool is_number_unique (ElementType *element, const char* number);
 
-Boolean have_two_corresponding_non_coincident(ElementTypePtr old_element,
-                                              ElementTypePtr new_element,
-                                              PadOrPinType* old1_pp_ptr,
-                                              PadOrPinType* old2_pp_ptr,
-                                              PadOrPinType* new1_pp_ptr,
-                                              PadOrPinType* new2_pp_ptr);
-Boolean have_two_corresponding_unique_non_coincident(ElementTypePtr old_element,
-                                                     ElementTypePtr new_element,
-                                                     PadOrPinType* old1_pp_ptr,
-                                                     PadOrPinType* old2_pp_ptr,
-                                                     PadOrPinType* new1_pp_ptr,
-                                                     PadOrPinType* new2_pp_ptr);
-Boolean have_any_corresponding_pad_or_pin(ElementTypePtr old_element,
-                                          ElementTypePtr new_element,
-                                          PadOrPinType* old_pp,
-                                          PadOrPinType* new_pp);
+bool have_two_corresponding_non_coincident (ElementType *old_element,
+                                            ElementType *new_element,
+                                            PadOrPinType* old1_pp_ptr,
+                                            PadOrPinType* old2_pp_ptr,
+                                            PadOrPinType* new1_pp_ptr,
+                                            PadOrPinType* new2_pp_ptr);
+bool have_two_corresponding_unique_non_coincident (ElementType *old_element,
+                                                   ElementType *new_element,
+                                                   PadOrPinType* old1_pp_ptr,
+                                                   PadOrPinType* old2_pp_ptr,
+                                                   PadOrPinType* new1_pp_ptr,
+                                                   PadOrPinType* new2_pp_ptr);
+bool have_any_corresponding_pad_or_pin (ElementType *old_element,
+                                        ElementType *new_element,
+                                        PadOrPinType* old_pp,
+                                        PadOrPinType* new_pp);
 
 /*
  * Points
  */
 
-CheapPointType make_point(LocationType x, LocationType y);
+CheapPointType make_point (Coord x, Coord y);
 CheapPointType subtract_point(CheapPointType pt1, CheapPointType pt2);
 double point_distance2(CheapPointType pt1, CheapPointType pt2);
 
@@ -107,9 +107,9 @@ double point_distance2(CheapPointType pt1, CheapPointType pt2);
 void log_point(CheapPointType pt);
 
 void log_pad_or_pin(const PadOrPinType* pp);
-void log_pad(PadTypePtr p);
-void log_pin(PinTypePtr p);
-void log_element(ElementTypePtr e);
+void log_pad (PadType *p);
+void log_pin (PinType *p);
+void log_element (ElementType *e);
 
 #if DEBUG
 #  define debug_log_point(pt) log_point(pt)
@@ -154,7 +154,7 @@ BYTE angle_to_rotation_steps(double rad);
 #define	PAD_LOOP_HYG(element, suffix)                                   \
     do {                                                                \
         Cardinal	n##suffix, sn##suffix;                          \
-        PadTypePtr	pad##suffix;                                    \
+        PadType*	pad##suffix;                                    \
         for (sn##suffix = (element)->PadN, n##suffix = 0;               \
              (element)->PadN > 0 && n##suffix < (element)->PadN ;       \
              sn##suffix == (element)->PadN ? n##suffix++ : 0)           \
@@ -165,7 +165,7 @@ BYTE angle_to_rotation_steps(double rad);
 #define	PIN_LOOP_HYG(element, suffix)                                   \
     do {                                                                \
         Cardinal	n##suffix, sn##suffix;                          \
-        PinTypePtr	pin##suffix;                                    \
+        PinType*	pin##suffix;                                    \
         for (sn##suffix = (element)->PinN, n##suffix = 0;               \
              (element)->PinN > 0 && n##suffix < (element)->PinN ;       \
              sn##suffix == (element)->PinN ? n##suffix++ : 0)           \
@@ -176,7 +176,7 @@ BYTE angle_to_rotation_steps(double rad);
     do {                                                                \
         Cardinal   n##suffix = 0;                                       \
         Cardinal   internal_n##suffix = 0;                              \
-        Boolean    pad_done##suffix = False;                            \
+        bool       pad_done##suffix = false;                            \
         while (1) {                                                     \
             PadOrPinType pp##suffix = make_pad_or_pin(NULL, NULL);      \
             if (! pad_done##suffix) {                                   \
@@ -186,7 +186,7 @@ BYTE angle_to_rotation_steps(double rad);
                         make_pad_or_pin(&(element)->Pad[n##suffix],     \
                                         NULL);                          \
                 } else {                                                \
-                    pad_done##suffix = True;                            \
+                    pad_done##suffix = true;                            \
                     internal_n##suffix = 0;                             \
                 }                                                       \
             }                                                           \

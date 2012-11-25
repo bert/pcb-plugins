@@ -24,26 +24,27 @@
 
 #include "utilities.h"
 
-static Boolean have_two_corresponding_aux(ElementTypePtr old_element,
-                                          ElementTypePtr new_element,
-                                          Boolean unique,
-                                          Boolean non_coincident,
-                                          PadOrPinType* old1_pp_ptr,
-                                          PadOrPinType* old2_pp_ptr,
-                                          PadOrPinType* new1_pp_ptr,
-                                          PadOrPinType* new2_pp_ptr);
+static bool have_two_corresponding_aux (ElementType *old_element,
+                                        ElementType *new_element,
+                                        bool unique,
+                                        bool non_coincident,
+                                        PadOrPinType* old1_pp_ptr,
+                                        PadOrPinType* old2_pp_ptr,
+                                        PadOrPinType* new1_pp_ptr,
+                                        PadOrPinType* new2_pp_ptr);
+
 /*
  * Pad/pin type
  */
 
 PadOrPinType
-make_pad_or_pin(PadTypePtr pad, PinTypePtr pin)
+make_pad_or_pin (GList *pad, GList *pin)
 {
   PadOrPinType pp = { pad, pin };
   return pp;
 }
 
-Boolean
+bool
 is_pad_or_pin(const PadOrPinType* pp)
 {
   return pp->pad || pp->pin;
@@ -87,7 +88,7 @@ number_cmp(const char* number_a, const char* number_b)
   }
 }
 
-Boolean
+bool
 pad_or_pin_test_flag(const PadOrPinType* pp, unsigned long flag)
 {
   if (pp->pad) {
@@ -95,9 +96,10 @@ pad_or_pin_test_flag(const PadOrPinType* pp, unsigned long flag)
   } else if (pp->pin) {
     return TEST_FLAG(flag, pp->pin);
   } else {
-    return False;
+    return false;
   }
 }
+
 void
 pad_or_pin_set_flag(PadOrPinType* pp, unsigned long flag)
 {
@@ -128,20 +130,20 @@ pad_or_pin_center(PadOrPinType* pp)
 }
 
 CheapPointType
-pad_center(PadTypePtr pad)
+pad_center(PadType *pad)
 {
   return make_point((pad->Point1.X + pad->Point2.X) / 2,
                     (pad->Point1.Y + pad->Point2.Y) / 2);
 }
 
 CheapPointType
-pin_center(PinTypePtr pin)
+pin_center(PinType *pin)
 {
   return MAKE_PT(*pin);
 }
 
-Boolean
-find_pad_or_pin(ElementTypePtr element, const char* number,
+bool
+find_pad_or_pin(ElementType *element, const char* number,
                 PadOrPinType* pp_ptr)
 {
   PadOrPinType pp = make_pad_or_pin(NULL, NULL);
@@ -149,14 +151,14 @@ find_pad_or_pin(ElementTypePtr element, const char* number,
       ((pp.pad = find_pad(element, number))
        || (pp.pin = find_pin(element, number)))) {
     *pp_ptr = pp;
-    return True;
+    return true;
   } else {
-    return False;
+    return false;
   }
 }
 
-PadTypePtr
-find_pad(ElementTypePtr element, const char* number)
+PadType *
+find_pad (ElementType *element, const char* number)
 {
   PAD_LOOP(element);
   {
@@ -168,8 +170,8 @@ find_pad(ElementTypePtr element, const char* number)
   return NULL;
 }
 
-PinTypePtr
-find_pin(ElementTypePtr element, const char* number)
+PinType *
+find_pin (ElementType *element, const char* number)
 {
   PIN_LOOP(element);
   {
@@ -181,8 +183,8 @@ find_pin(ElementTypePtr element, const char* number)
   return NULL;
 }
 
-Boolean
-is_number_unique(ElementTypePtr element, const char* number)
+bool
+is_number_unique (ElementType *element, const char* number)
 {
   int count = 0;
   PAD_OR_PIN_LOOP(element);
@@ -190,55 +192,55 @@ is_number_unique(ElementTypePtr element, const char* number)
     const char* pp_number = pad_or_pin_number(&pp);
     if (pp_number && number_cmp(pp_number, number) == 0) {
       if (++count > 1) {
-        return False;
+        return false;
       }
     }
   }
   END_LOOP;
-  return True;
+  return true;
 }
 
-Boolean
-have_two_corresponding_non_coincident(ElementTypePtr old_element,
-                                      ElementTypePtr new_element,
-                                      PadOrPinType* old1_pp_ptr,
-                                      PadOrPinType* old2_pp_ptr,
-                                      PadOrPinType* new1_pp_ptr,
-                                      PadOrPinType* new2_pp_ptr)
+bool
+have_two_corresponding_non_coincident (ElementType *old_element,
+                                       ElementType *new_element,
+                                       PadOrPinType* old1_pp_ptr,
+                                       PadOrPinType* old2_pp_ptr,
+                                       PadOrPinType* new1_pp_ptr,
+                                       PadOrPinType* new2_pp_ptr)
 {
   return have_two_corresponding_aux(old_element, new_element,
-                                    False, True,
+                                    false, true,
                                     old1_pp_ptr, old2_pp_ptr,
                                     new1_pp_ptr, new2_pp_ptr);
 }
 
-Boolean
-have_two_corresponding_unique_non_coincident(ElementTypePtr old_element,
-                                             ElementTypePtr new_element,
-                                             PadOrPinType* old1_pp_ptr,
-                                             PadOrPinType* old2_pp_ptr,
-                                             PadOrPinType* new1_pp_ptr,
-                                             PadOrPinType* new2_pp_ptr)
+bool
+have_two_corresponding_unique_non_coincident (ElementType *old_element,
+                                              ElementType *new_element,
+                                              PadOrPinType* old1_pp_ptr,
+                                              PadOrPinType* old2_pp_ptr,
+                                              PadOrPinType* new1_pp_ptr,
+                                              PadOrPinType* new2_pp_ptr)
 {
   return have_two_corresponding_aux(old_element, new_element,
-                                    True, True,
+                                    true, true,
                                     old1_pp_ptr, old2_pp_ptr,
                                     new1_pp_ptr, new2_pp_ptr);
 }
 
-static Boolean
-have_two_corresponding_aux(ElementTypePtr old_element,
-                           ElementTypePtr new_element,
-                           Boolean unique,
-                           Boolean non_coincident,
-                           PadOrPinType* old1_pp_ptr,
-                           PadOrPinType* old2_pp_ptr,
-                           PadOrPinType* new1_pp_ptr,
-                           PadOrPinType* new2_pp_ptr)
+static bool
+have_two_corresponding_aux (ElementType *old_element,
+                            ElementType *new_element,
+                            bool unique,
+                            bool non_coincident,
+                            PadOrPinType* old1_pp_ptr,
+                            PadOrPinType* old2_pp_ptr,
+                            PadOrPinType* new1_pp_ptr,
+                            PadOrPinType* new2_pp_ptr)
 {
   PadOrPinType old1_pp = make_pad_or_pin(NULL, NULL);
   PadOrPinType new1_pp = make_pad_or_pin(NULL, NULL);
-  Boolean first_found = False;
+  bool first_found = false;
 
   PAD_OR_PIN_LOOP_HYG(old_element, _old);
   {
@@ -257,7 +259,7 @@ have_two_corresponding_aux(ElementTypePtr old_element,
             if (! first_found) {
               old1_pp = pp_old;
               new1_pp = pp_new;
-              first_found = True;
+              first_found = true;
             } else {
               if (old1_pp_ptr) {
                 *old1_pp_ptr = old1_pp;
@@ -271,7 +273,7 @@ have_two_corresponding_aux(ElementTypePtr old_element,
               if (new2_pp_ptr) {
                 *new2_pp_ptr = pp_new;
               }
-              return True;
+              return true;
             }
           }
         }
@@ -280,14 +282,14 @@ have_two_corresponding_aux(ElementTypePtr old_element,
     }
   }
   END_LOOP;
-  return False;
+  return false;
 }
 
-Boolean
-have_any_corresponding_pad_or_pin(ElementTypePtr old_element,
-                                  ElementTypePtr new_element,
-                                  PadOrPinType* old_pp,
-                                  PadOrPinType* new_pp)
+bool
+have_any_corresponding_pad_or_pin (ElementType *old_element,
+                                   ElementType *new_element,
+                                   PadOrPinType* old_pp,
+                                   PadOrPinType* new_pp)
 {
   PAD_OR_PIN_LOOP_HYG(old_element, _old);
   {
@@ -300,13 +302,13 @@ have_any_corresponding_pad_or_pin(ElementTypePtr old_element,
         if (new_pp) {
           *new_pp = pp_new;
         }
-        return True;
+        return true;
       }
     }
     END_LOOP;
   }
   END_LOOP;
-  return False;
+  return false;
 }
 
 /*
@@ -314,7 +316,7 @@ have_any_corresponding_pad_or_pin(ElementTypePtr old_element,
  */
 
 CheapPointType
-make_point(LocationType x, LocationType y)
+make_point (Coord x, Coord y)
 {
   CheapPointType pt = { x, y };
   return pt;
@@ -400,7 +402,7 @@ log_pad_or_pin(const PadOrPinType* pp)
 }
 
 void
-log_pad(PadTypePtr p)
+log_pad(PadType *p)
 {
   base_log("Pad\n");
   base_log("Name: \"%s\"\n", p->Name);
@@ -410,7 +412,7 @@ log_pad(PadTypePtr p)
 }
 
 void
-log_pin(PinTypePtr p)
+log_pin(PinType *p)
 {
   base_log("Pin\n");
   base_log("Name: \"%s\"\n", p->Name);
@@ -419,7 +421,7 @@ log_pin(PinTypePtr p)
 }
 
 void
-log_element(ElementTypePtr e)
+log_element(ElementType *e)
 {
   base_log("Element\n");
   base_log("Description: %s\n", DESCRIPTION_NAME(e));

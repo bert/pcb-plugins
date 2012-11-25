@@ -31,21 +31,21 @@ typedef struct {
   PadOrPinType pp;
   CheapPointType center;
   int shares;
-  Boolean taken;
+  bool taken;
   CheapPointType transformed_center;
 } ElementPadPinData;
 
-ElementPadPinData* alloc_pad_pin_data_array(ElementTypePtr element,
-                                            int* len_ptr);
+ElementPadPinData* alloc_pad_pin_data_array (ElementType *element,
+                                             int* len_ptr);
 double find_non_coincident(const ElementPadPinData* ppd, int len,
                            int* index1_ptr, int* index2_ptr);
-Boolean find_best_corresponding_pads_or_pins(ElementPadPinData* ppd_a,
-                                             int len_a,
-                                             int index1_a, int index2_a,
-                                             Boolean reflect,
-                                             ElementPadPinData* ppd_b,
-                                             int len_b,
-                                             int* index1_ptr,
-                                             int* index2_ptr);
+bool find_best_corresponding_pads_or_pins (ElementPadPinData* ppd_a,
+                                           int len_a,
+                                           int index1_a, int index2_a,
+                                           bool reflect,
+                                           ElementPadPinData* ppd_b,
+                                           int len_b,
+                                           int* index1_ptr,
+                                           int* index2_ptr);
 
 #endif
