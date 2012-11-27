@@ -1,4 +1,5 @@
-include Make.Settings
+PCBDIR=../../../../pcb/
+LIBGCJPATH=/usr/share/java/libgcj.jar
 
 CFLAGS=-O2 -Wall -I$(PCBDIR) -I$(PCBDIR)/src -I. -shared `pkg-config --cflags glib-2.0`
 CPPFLAGS=-O2 -Wall -I.
@@ -25,9 +26,6 @@ RatSel.so: JIFace $(OBJS)
 %.o:%.cpp 
 	g++ -c $(CPPFLAGS) $(INC) $< -o $@
 
-install: plugin
-	cp RatSel.so $(HOME)/.pcb/plugins/.
-
 inst: clean install
 
 java:
@@ -53,9 +51,19 @@ cleanJIFace: cleanClasses
 cleanClasses:
 	rm -f *.o src/ratsel/*.class utst/ratsel/*.class
 
+.PHONY : install
+install :
+	mkdir -p ~/.pcb/plugins
+	mv *.so ~/.pcb/plugins
+
+.PHONY : clean
 clean: cleanJIFace
 	rm -f *.o *~ RatSel.so src/ratsel/*.o
 
+.PHONY : tar
 tar: clean
 	tar -cjf ../RatSel.tar.bz2 *
 
+.PHONY : uninstall
+uninstall:
+	rm ~/.pcb/plugins/RatSel.so
