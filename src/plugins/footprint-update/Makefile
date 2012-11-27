@@ -72,3 +72,6 @@ dist:
            $(DIST_DIR)
 	tar -czf $(DIST_FILE) $(DIST_DIR)
 
+.PHONY : uninstall
+uninstall:
+	rm ~/.pcb/plugins/footprintupdate.so
