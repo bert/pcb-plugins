@@ -25,11 +25,11 @@ autocrop: autocrop.so
 boardflip: boardflip.so
 	
 distalign: distalign.so
-
+	
 distaligntext: distaligntext.so
 	
 elementupdate: elementupdate.so
-
+	
 findelement: findelement.so
 	
 findrat: findrat.so
@@ -55,7 +55,7 @@ smartdisperse: smartdisperse.so
 teardrops: teardrops.so
 	
 upth2pth: upth2pth.so
-
+	
 #
 all: \
 	autocrop \
@@ -92,6 +92,7 @@ uninstall:
 	rm ~/.pcb/plugins/elementupdate.so
 	rm ~/.pcb/plugins/findelement.so
 	rm ~/.pcb/plugins/findrat.so
+	rm ~/.pcb/plugins/ghellopcb.so
 	rm ~/.pcb/plugins/join-found.so
 	rm ~/.pcb/plugins/jostle.so
 	rm ~/.pcb/plugins/lockelements.so
