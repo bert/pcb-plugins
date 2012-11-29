@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(configure.ac)
 AM_INIT_AUTOMAKE(pcb-plugins, 0.0.2)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 AM_MAINTAINER_MODE
 
 # Try to figure out if we are building from git sources.
