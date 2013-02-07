@@ -95,18 +95,15 @@ pcb
 │   │   ├── batch
 │   │   ├── bom
 │   │   ├── common
-│   │   ├── dxf
 │   │   ├── gcode
 │   │   ├── gerber
 │   │   ├── gtk
-│   │   ├── html5
 │   │   ├── lesstif
 │   │   ├── lpr
 │   │   ├── nelma
 │   │   ├── png
 │   │   └── ps
-│   ├── icons
-│   └── updater
+│   └── icons
 ├── tests
 │   ├── golden
 │   │   ├── hid_bom1
