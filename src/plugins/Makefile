@@ -17,6 +17,9 @@ endif
 ghellopcb.so: ghellopcb.c
 	${CC} ${CFLAGS} ghellopcb.c -o ghellopcb.so `pkg-config --cflags gtk+-2.0 --libs gtk+-2.0`
 
+pic.so: pic.c
+	${CC} ${CFLAGS} pic.c -o pic.so `pkg-config --cflags gtk+-2.0 --libs gtk+-2.0`
+
 .DEFAULT_GOAL := all
 
 # Individual target definitions.
@@ -41,6 +44,8 @@ join-found: join-found.so
 jostle: jostle.so
 	
 lockelements: lockelements.so
+	
+pic: pic.so
 	
 polycombine: polycombine.so
 	
@@ -68,6 +73,7 @@ all: \
 	ghellopcb \
 	join-found \
 	jostle \
+	pic \
 	lockelements \
 	polycombine \
 	polystitch \
@@ -96,6 +102,7 @@ uninstall:
 	rm ~/.pcb/plugins/join-found.so
 	rm ~/.pcb/plugins/jostle.so
 	rm ~/.pcb/plugins/lockelements.so
+	rm ~/.pcb/plugins/pic.so
 	rm ~/.pcb/plugins/polycombine.so
 	rm ~/.pcb/plugins/polystitch.so
 	rm ~/.pcb/plugins/renumberblock.so
