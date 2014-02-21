@@ -46,6 +46,8 @@ polycombine: polycombine.so
 	
 polystitch: polystitch.so
 	
+protoboard: protoboard.so
+	
 renumberblock: renumberblock.so
 	
 sedrename: sedrename.so
@@ -71,6 +73,7 @@ all: \
 	lockelements \
 	polycombine \
 	polystitch \
+	protoboard \
 	renumberblock \
 	sedrename \
 	smartdisperse \
@@ -98,6 +101,7 @@ uninstall:
 	rm ~/.pcb/plugins/lockelements.so
 	rm ~/.pcb/plugins/polycombine.so
 	rm ~/.pcb/plugins/polystitch.so
+	rm ~/.pcb/plugins/protoboard.so
 	rm ~/.pcb/plugins/renumberblock.so
 	rm ~/.pcb/plugins/sedrename.so
 	rm ~/.pcb/plugins/smartdisperse.so
