@@ -16,6 +16,10 @@
  
 #include <stdio.h>
 
+#include "config.h"
+#include "global.h"
+#include "hid.h"
+
 #define inch 1.0
 #define mm (inch / 25.4)
 #define mil (inch / 1000.0)
@@ -46,16 +50,21 @@ static char *Poly = Polys;
 static char *Plane = Planes;
 static char *Element = Elements;
 static char *Silk = Silks;
-static FILE *f;
-static int ox, oy;
-static double x1, x2, y1, y2;
+FILE *f;
+int ox;
+int oy;
+double x1;
+double x2;
+double y1;
+double y2;
 double width;
 double height;
 int soldermask;
 double x, y;
 double xmax, ymax;
 double dx, dy;
-int xi, yi;
+int xi;
+int yi;
 int CuPhi;
 int MaskPhi;
 int DrillPhi;
@@ -423,7 +432,7 @@ fprintf(f, "\tLine[%d %d %d %d 700 1400 \"clearline\"]\n",
 
 
 int
-main ()
+protoboard (int argc, char **argv, Coord x, Coord y)
 {
   soldermask = 1;
   width = 6.0 * inch;
@@ -452,3 +461,22 @@ main ()
   EndFile ();
   return 0;
 }
+
+
+static HID_Action protoboard_action_list[] =
+{
+        {"protoboard", NULL, protoboard, "Create a protobord", NULL},
+        {"PB", NULL, protoboard, "Create a protobord", NULL}
+};
+
+
+REGISTER_ACTIONS (protoboard_action_list)
+
+
+void
+pcb_plugin_init()
+{
+        register_protoboard_action_list();
+}
+
+/* EOF */
