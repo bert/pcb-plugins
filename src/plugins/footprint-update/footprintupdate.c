@@ -119,7 +119,7 @@ enum {
  * Plug-in housekeeping.
  */
 
-static int footprint_update (int argc, char **argv, int x, int y);
+static int footprint_update (int argc, char **argv, Coord x, Coord y);
 
 int global_argc = 0;
 char **global_argv = NULL;
@@ -138,7 +138,7 @@ usage()
 }
 
 static int
-footprint_update (int argc, char **argv, int x, int y)
+footprint_update (int argc, char **argv, Coord x, Coord y)
 {
   global_argc = argc;
   global_argv = argv;
