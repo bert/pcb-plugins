@@ -63,7 +63,7 @@ on_destroy (GtkWidget * widget, gpointer data)
  * Usage: gHelloPCB()\n
  */
 static int
-ghellopcb (int argc, char **argv)
+ghellopcb (int argc, char **argv, Coord x, Coord y)
 {
         GtkWidget *window;
         GtkWidget *label;
