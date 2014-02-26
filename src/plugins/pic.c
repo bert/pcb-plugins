@@ -95,18 +95,6 @@ static double mic (double er, double w, double t, double h);
 static double emic (double er, double w, double t, double h);
 static double dsic (double er, double w, double s, double t, double b);
 
-GtkWidget *lookup_widget (GtkWidget *widget, const gchar *widget_name);
-void on_close_button_clicked (GtkButton *button, gpointer user_data);
-static void on_destroy (GtkWidget *widget, gpointer data);
-void on_calculate_button_clicked (GtkWidget *widget, gpointer user_data);
-void on_distance_entry_changed (GtkEditable *editable, gpointer user_data);
-void on_epsilon_entry_changed (GtkEditable *editable, gpointer user_data);
-void on_spacing_entry_changed (GtkEditable *editable, gpointer user_data);
-void on_thickness_entry_changed (GtkEditable *editable, gpointer user_data);
-void on_width_entry_changed (GtkEditable *editable, gpointer user_data);
-static int mic_dialog (int argc, char **argv, Coord x, Coord y);
-static int dsic_dialog (int argc, char **argv, Coord x, Coord y);
-
 
 /* Following global variables contain "unitless" values. */
 double er;
@@ -689,7 +677,23 @@ emic
 }
 
 
-/* =================== GUI code =================== */
+/* =================== GTK UI code =================== */
+
+#include <gtk/gtk.h>
+
+/* Function prototypes. */
+GtkWidget *lookup_widget (GtkWidget *widget, const gchar *widget_name);
+void on_close_button_clicked (GtkButton *button, gpointer user_data);
+static void on_destroy (GtkWidget *widget, gpointer data);
+void on_calculate_button_clicked (GtkWidget *widget, gpointer user_data);
+void on_distance_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_epsilon_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_spacing_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_thickness_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_width_entry_changed (GtkEditable *editable, gpointer user_data);
+static int mic_dialog (int argc, char **argv, Coord x, Coord y);
+static int dsic_dialog (int argc, char **argv, Coord x, Coord y);
+
 
 GtkWidget *
 lookup_widget (GtkWidget *widget, const gchar *widget_name)
