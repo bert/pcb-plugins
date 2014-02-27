@@ -92,7 +92,7 @@ static double Cfp (double x, double er);
 static double Cfp_zt (double er);
 static double er_eff (double er, double w, double h);
 static double mic (double er, double w, double t, double h);
-static double emic (double er, double w, double t, double h);
+static double emic (double er, double w, double t, double h1, double h2);
 static double dsic (double er, double w, double s, double t, double b);
 
 
@@ -115,23 +115,6 @@ double h2;
   /*!< Distance between trace and lower plane (stripline). */
 char *length_unit;
   /*!< Length unit [mm, mils]. */
-
-
-/* Following variables contain values in mils units. */
-double er;
-  /*!< Relative Dielectric constant. */
-double w;
-  /*!< Trace width (mils). */
-double t;
-  /*!< Trace thickness (mils). */
-double s;
-  /*!< Trace spacing (mils). */
-double b;
-  /*!< Distance between planes (mils). */
-double h1;
-  /*!< Distance to upper plane (mils). */
-double h2;
-  /*!< Distance to lower plane (mils). */
 
 
 /* =================== Helper math functions =================== */
@@ -528,13 +511,13 @@ mic
   (
     _("Microstrip Impedance Calculator (version ") "%s).\n", PIC_VERSION,
     _("Input values:\n"
-      "epsilon           = %d\n"), er,
-    _("trace width       = %d %s\n"), w, Settings.grid_unit,
-    _("trace thickness   = %d %s\n"), t, Settings.grid_unit,
-    _("distance to plane = %d %s\n"), h, Settings.grid_unit,
+      "epsilon                 = %d\n"), er,
+    _("trace width             = %d %s\n"), w, Settings.grid_unit,
+    _("trace thickness         = %d %s\n"), t, Settings.grid_unit,
+    _("distance to plane       = %d %s\n"), h, Settings.grid_unit,
     _("Results:\n"
-      "trace impedance   = %d Ohms\n"), result,
-    _("epsilon (eff)     = %d\n\n"), er_eff
+      "trace impedance         = %d Ohms\n"), result,
+    _("epsilon (eff)           = %d\n\n"), er_eff
   );
   return result;
 }
@@ -662,18 +645,37 @@ emic
     /*!< Trace width. */
   double t,
     /*!< Trace thickness. */
-  double h1
+  double h1,
+    /*!< Distance between trace and plane (microstrip). */
+  double h2
     /*!< Distance between trace and plane (microstrip). */
 )
 {
+  double b;
   double zo_embed;
   double zo_surf;
+  double result;
 
-//  zo_surf = microstrip_calc ();
+  zo_surf = mic (er, w, t, h1);
   b = h2 - h1;
   zo_embed = zo_surf * (1 / sqrt ((exp ((-2 * b) / h1))
     + (er / er_eff (er, w, h1)) * (1 - exp ((-2 * b) / h1))));
-  return (zo_embed);
+  result = zo_embed;
+  /* Log input and results in the log window. */
+  Message
+  (
+    _("Embedded Microstrip Impedance Calculator (version ") "%s).\n", PIC_VERSION,
+    _("Input values:\n"
+      "epsilon                 = %d\n"), er,
+    _("trace width             = %d %s\n"), w, Settings.grid_unit,
+    _("trace thickness         = %d %s\n"), t, Settings.grid_unit,
+    _("distance trace to plane = %d %s\n"), h1, Settings.grid_unit,
+    _("distance to plane       = %d %s\n"), h2, Settings.grid_unit,
+    _("Results:\n"
+      "trace impedance         = %d Ohms\n"), result,
+    _("epsilon (eff)           = %d\n\n"), er_eff
+  );
+  return result;
 }
 
 
