@@ -462,9 +462,9 @@ er_eff
 /*!
  * \brief Calculate the impedance for the specified microstrip trace.
  *
- * <h2>Microstrip</h2>.
+ * <h2>Microstrip.</h2>
  *
- * <h3>Introduction</h3>.
+ * <h3>Introduction./h3>
  * The microstrip is a very simple yet useful way to create a
  * transmission line with a PCB.\n
  * There are some advantages to using a microstrip transmission line
@@ -473,7 +473,7 @@ er_eff
  * By understanding the microstrip transmission line, designers can
  * properly build these structures to meet their needs.
  *
- * <h3>Description</h3>.
+ * <h3>Description.</h3>
  * A microstrip is constructed with a flat conductor suspended over a
  * ground plane.
  * The conductor and ground plane are seperated by a dielectric.
@@ -483,7 +483,7 @@ er_eff
  * boards, but will always consist of a conductor separated from a
  * ground plane by some dielectric material.
  *
- * <h3>Microstrip Transmission Line Models</h3>.
+ * <h3>Microstrip Transmission Line Models.</h3>
  * Models have been created to approximate the characteristics of the
  * microstrip transmission line.\n
    \f$ 
@@ -496,7 +496,7 @@ er_eff
  * The source for these formulas are found in the IPC-2141A (2004)
  * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
  *
- * <h3>Output</h3>
+ * <h3>Output.</h3>
  * The outcome of the calculation is shown in the pcb log window.\n
  * If no (valid) argument is passed, no action is carried out.\n
  */
@@ -550,11 +550,17 @@ mic
  * \brief Calculate the impedance for the specified traces
  * (edge coupled stripline).
  *
- * Usage: ecsic(selected)\n
- * Let the Edge Coupled Stripline Impedance Calculator calculate
- * the impedance of the selected differential pair of traces in an
- * embedded layer.\n
- * If no (valid) argument is passed, no action is carried out.
+ * <h2>Edge Coupled Stripline.</h2>
+ *
+ * <h3>Introduction.</h3>
+ *
+
+ * The source for these formulas are found in the IPC-2141A (2004)
+ * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
+ *
+ * <h3>Output.</h3>
+ * The outcome of the calculation is shown in the pcb log window.\n
+ * If no (valid) argument is passed, no action is carried out.\n
  */
 static double
 ecsic
@@ -621,9 +627,17 @@ ecsic
  * \brief Calculate the impedance for the specified embedded microstrip
  * trace.
  *
- * <h2>Microstrip</h2>.
+ * <h2>Embedded Microstrip.</h2>
  *
- * <h3>Introduction</h3>.
+ * <h3>Introduction.</h3>
+ *
+
+ * The source for these formulas are found in the IPC-2141A (2004)
+ * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
+ *
+ * <h3>Output.</h3>
+ * The outcome of the calculation is shown in the pcb log window.\n
+ * If no (valid) argument is passed, no action is carried out.\n
  */
 static double
 emic
