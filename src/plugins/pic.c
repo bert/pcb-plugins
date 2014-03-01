@@ -93,7 +93,7 @@ static double Cfp_zt (double er);
 static double er_eff (double er, double w, double h);
 static double mic (double er, double w, double t, double h);
 static double emic (double er, double w, double t, double h1, double h2);
-static double dsic (double er, double w, double s, double t, double b);
+static double ecsic (double er, double w, double s, double t, double b);
 
 
 /* Following global variables contain "unitless" values. */
@@ -113,8 +113,70 @@ double h1;
   /*!< Distance between trace and upper plane (stripline). */
 double h2;
   /*!< Distance between trace and lower plane (stripline). */
+double impedance;
+  /*!< Calculated impedance. */
 char *length_unit;
-  /*!< Length unit [mm, mils]. */
+  /*!< Length unit [mm, mil]. */
+
+
+/* =================== PCB specific functions =================== */
+
+double
+get_width ()
+{
+  int flag;
+  ArcType *arc;
+  LineType *line;
+  double result;
+
+  result = 0.0;
+  /* Find the width of the selected traces (line or arc). */
+  flag = FOUNDFLAG;
+  ALLLINE_LOOP (PCB->Data);
+  {
+    if (TEST_FLAG (flag, line))
+    {
+      w = line->Thickness;
+      break;
+    }
+  }
+  ENDALL_LOOP; /* ALLLINE_LOOP */
+  ALLARC_LOOP (PCB->Data);
+  {
+    if (TEST_FLAG (flag, arc))
+    {
+      w = arc->Thickness;
+      break;
+    }
+  }
+  ENDALL_LOOP; /* ALLARC_LOOP */
+  if (Settings.grid_unit)
+  {
+    result = COORD_TO_MIL (w);
+  }
+  else
+  {
+    result = COORD_TO_MM (w);
+  }
+  return result;
+}
+
+
+void
+get_length_unit ()
+{
+  /* Find out what length unit to use. */
+  if (Settings.grid_unit)
+  {
+    /* mils. */
+    length_unit = strdup (_("mil"));
+  }
+  else
+  {
+    /* mm.*/
+    length_unit = strdup (_("mm"));
+  }
+}
 
 
 /* =================== Helper math functions =================== */
@@ -434,13 +496,8 @@ er_eff
  * The source for these formulas are found in the IPC-2141A (2004)
  * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
  *
- * <h3>Usage</h3>
- * MIC(Selected)\n
- * mic(selected)\n
- * Let the Microstrip Impedance Calculator calculate the impedance of
- * the selected trace on a surface layer.\n
- * The outcome of the calculation is shown in a plain pop-up dialog
- * window.\n
+ * <h3>Output</h3>
+ * The outcome of the calculation is shown in the pcb log window.\n
  * If no (valid) argument is passed, no action is carried out.\n
  */
 static double
@@ -456,10 +513,6 @@ mic
     /*!< Distance between trace and plane (microstrip). */
 )
 {
-  int flag;
-  int selected;
-  ArcType *arc;
-  LineType *line;
   double w_eff;
   double temp1;
   double temp2;
@@ -467,36 +520,6 @@ mic
   double temp4;
   double result;
 
-  /* Find the width of the selected trace (line or arc). */
-  flag = FOUNDFLAG;
-  ALLLINE_LOOP (PCB->Data);
-  {
-    if (TEST_FLAG (flag, line))
-    {
-      w = line->Thickness;
-      break;
-    }
-  }
-  ENDALL_LOOP; /* ALLLINE_LOOP */
-  ALLARC_LOOP (PCB->Data);
-  {
-    if (TEST_FLAG (flag, arc))
-    {
-      w = arc->Thickness;
-      break;
-    }
-  }
-  ENDALL_LOOP; /* ALLARC_LOOP */
-  if (Settings.grid_unit)
-  {
-    /* mil. */
-    w = COORD_TO_MIL (w);
-  }
-  else
-  {
-    /* mm.*/
-    w = COORD_TO_MM (w);
-  }
   result = 0.0;
   w_eff = w + (t / M_PI) * log (4 * exp (1) / sqrt (pow ((t / h), 2)
     + pow ((t / (w * M_PI + 1.1 * t * M_PI)), 2))) * ((er_eff (er, w, h) + 1) / 2 * er_eff (er, w, h));
@@ -511,13 +534,13 @@ mic
   (
     _("Microstrip Impedance Calculator (version ") "%s).\n", PIC_VERSION,
     _("Input values:\n"
-      "epsilon                 = %d\n"), er,
-    _("trace width             = %d %s\n"), w, Settings.grid_unit,
-    _("trace thickness         = %d %s\n"), t, Settings.grid_unit,
-    _("distance to plane       = %d %s\n"), h, Settings.grid_unit,
+      "Substrate dielectric (Er) = %d \n"), er,
+    _("Trace width (W)           = %d %s\n"), w, Settings.grid_unit,
+    _("Trace thickness (T)       = %d %s\n"), t, Settings.grid_unit,
+    _("Substrate height (H)      = %d %s\n"), h, Settings.grid_unit,
     _("Results:\n"
-      "trace impedance         = %d Ohms\n"), result,
-    _("epsilon (eff)           = %d\n\n"), er_eff
+      "Impedance (Z)             = %d Ohms\n"), result,
+    _("Epsilon (Er_eff)          = %d \n\n"), er_eff
   );
   return result;
 }
@@ -525,33 +548,29 @@ mic
 
 /*!
  * \brief Calculate the impedance for the specified traces
- * (differential stripline).
+ * (edge coupled stripline).
  *
- * Usage: DSIC(Selected)\n
- * Usage: dsic(selected)\n
- * Let the Differential Stripline Impedance Calculator calculate
+ * Usage: ecsic(selected)\n
+ * Let the Edge Coupled Stripline Impedance Calculator calculate
  * the impedance of the selected differential pair of traces in an
  * embedded layer.\n
  * If no (valid) argument is passed, no action is carried out.
  */
 static double
-dsic
+ecsic
 (
   double er,
-    /*!< Relative Dielectric constant. */
+    /*!< Substrate Dielectric constant. */
   double w,
     /*!< Trace width. */
   double s,
-    /*!< Edge to edge trace spacing. */
+    /*!< Trace spacing. */
   double t,
     /*!< Trace thickness. */
   double b
-    /*!< Distance between planes (stripline). */
+    /*!< Substrate height. */
 )
 {
-  int flag;
-  ArcType *arc;
-  LineType *line;
   double A1;
   double A2;
   double A3_even;
@@ -562,36 +581,6 @@ dsic
   double Z0_odd;
   double result;
 
-  /* Find the width of the selected traces (line or arc). */
-  flag = FOUNDFLAG;
-  ALLLINE_LOOP (PCB->Data);
-  {
-    if (TEST_FLAG (flag, line))
-    {
-      w = line->Thickness;
-      break;
-    }
-  }
-  ENDALL_LOOP; /* ALLLINE_LOOP */
-  ALLARC_LOOP (PCB->Data);
-  {
-    if (TEST_FLAG (flag, arc))
-    {
-      w = arc->Thickness;
-      break;
-    }
-  }
-  ENDALL_LOOP; /* ALLARC_LOOP */
-  if (Settings.grid_unit)
-  {
-    /* mil. */
-    w = COORD_TO_MIL (w);
-  }
-  else
-  {
-    /* mm.*/
-    w = COORD_TO_MM (w);
-  }
   /* Sanity check. */
   if ((s / t) < 5)
   {
@@ -614,15 +603,15 @@ dsic
   /* Log input and results in the log window. */
   Message
   (
-    _("Microstrip Impedance Calculator (version ") "%s).\n", PIC_VERSION,
+    _("Edge Coupled Stripline Impedance Calculator (version ") "%s).\n", PIC_VERSION,
     _("Input values:\n"
-      "epsilon           = %d\n"), er,
-    _("trace width       = %d %s\n"), w, Settings.grid_unit,
-    _("trace thickness   = %d %s\n"), t, Settings.grid_unit,
-    _("trace spacing     = %d %s\n"), s, Settings.grid_unit,
-    _("distance to plane = %d %s\n"), b, Settings.grid_unit,
+      "Substrate dielectric (Er) = %d \n"), er,
+    _("Trace width (W)           = %d %s\n"), w, Settings.grid_unit,
+    _("Trace thickness (T)       = %d %s\n"), t, Settings.grid_unit,
+    _("Trace spacing (S)         = %d %s\n"), s, Settings.grid_unit,
+    _("Substrate height (B)      = %d %s\n"), b, Settings.grid_unit,
     _("Results:\n"
-      "trace impedance   = %d Ohms\n"), result
+      "Impedance (Z)             = %d Ohms\n"), result
   );
   return result;
 }
@@ -666,14 +655,14 @@ emic
   (
     _("Embedded Microstrip Impedance Calculator (version ") "%s).\n", PIC_VERSION,
     _("Input values:\n"
-      "epsilon                 = %d\n"), er,
-    _("trace width             = %d %s\n"), w, Settings.grid_unit,
-    _("trace thickness         = %d %s\n"), t, Settings.grid_unit,
-    _("distance trace to plane = %d %s\n"), h1, Settings.grid_unit,
-    _("distance to plane       = %d %s\n"), h2, Settings.grid_unit,
+      "Substrate dielectric (Er) = %d \n"), er,
+    _("Trace width (W)           = %d %s\n"), w, Settings.grid_unit,
+    _("Trace thickness (T)       = %d %s\n"), t, Settings.grid_unit,
+    _("Substrate height (H1)     = %d %s\n"), h1, Settings.grid_unit,
+    _("Substrate height (H2)     = %d %s\n"), h2, Settings.grid_unit,
     _("Results:\n"
-      "trace impedance         = %d Ohms\n"), result,
-    _("epsilon (eff)           = %d\n\n"), er_eff
+      "Impedance (Z)             = %d Ohms\n"), result,
+    _("Epsilon (Er_eff)          = %d \n\n"), er_eff
   );
   return result;
 }
@@ -688,13 +677,19 @@ GtkWidget *lookup_widget (GtkWidget *widget, const gchar *widget_name);
 void on_close_button_clicked (GtkButton *button, gpointer user_data);
 static void on_destroy (GtkWidget *widget, gpointer data);
 void on_calculate_button_clicked (GtkWidget *widget, gpointer user_data);
-void on_distance_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_calculate_mic_button_clicked (GtkWidget *widget, gpointer user_data);
+void on_calculate_emic_button_clicked (GtkWidget *widget, gpointer user_data);
+void on_distance_B_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_distance_H_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_distance_H1_entry_changed (GtkEditable *editable, gpointer user_data);
+void on_distance_H2_entry_changed (GtkEditable *editable, gpointer user_data);
 void on_epsilon_entry_changed (GtkEditable *editable, gpointer user_data);
 void on_spacing_entry_changed (GtkEditable *editable, gpointer user_data);
 void on_thickness_entry_changed (GtkEditable *editable, gpointer user_data);
 void on_width_entry_changed (GtkEditable *editable, gpointer user_data);
 static int mic_dialog (int argc, char **argv, Coord x, Coord y);
-static int dsic_dialog (int argc, char **argv, Coord x, Coord y);
+static int emic_dialog (int argc, char **argv, Coord x, Coord y);
+static int ecsic_dialog (int argc, char **argv, Coord x, Coord y);
 
 
 GtkWidget *
@@ -739,6 +734,60 @@ on_calculate_button_clicked (GtkWidget *widget, gpointer user_data)
 
 
 /*!
+ * \brief The "Calculate" button in the MIC dialog is clicked.
+ *
+ * Calculate the application.
+ *
+ * <b>Parameters:</b> \c *button is the caller widget.\n
+ * \n
+ * <b>Parameters:</b> \c user_data.\n
+ * \n
+ * <b>Returns:</b> none.
+ */
+void
+on_calculate_mic_button_clicked (GtkWidget *widget, gpointer user_data)
+{
+  GtkWidget *impedance_value_label;
+  gchar *impedance_string;
+
+  impedance_value_label = NULL;
+  impedance_value_label = lookup_widget (GTK_WIDGET (impedance_value_label), "impedance_value_label");
+  if (impedance_value_label == NULL)
+    return;
+  impedance = mic (er, w, t, h);
+  impedance_string = g_strdup_printf (" %f ", impedance);
+  gtk_label_set_text (GTK_LABEL (impedance_value_label), impedance_string);
+}
+
+
+/*!
+ * \brief The "Calculate" button in the EMIC dialog is clicked.
+ *
+ * Calculate the application.
+ *
+ * <b>Parameters:</b> \c *button is the caller widget.\n
+ * \n
+ * <b>Parameters:</b> \c user_data.\n
+ * \n
+ * <b>Returns:</b> none.
+ */
+void
+on_calculate_emic_button_clicked (GtkWidget *widget, gpointer user_data)
+{
+  GtkWidget *impedance_value_label;
+  gchar *impedance_string;
+
+  impedance_value_label = NULL;
+  impedance_value_label = lookup_widget (GTK_WIDGET (impedance_value_label), "impedance_value_label");
+  if (impedance_value_label == NULL)
+    return;
+  impedance = emic (er, w, t, h1, h2);
+  impedance_string = g_strdup_printf (" %f ", impedance);
+  gtk_label_set_text (GTK_LABEL (impedance_value_label), impedance_string);
+}
+
+
+/*!
  * \brief The "Close" button is clicked.
  *
  * Close the application.
@@ -771,7 +820,7 @@ on_destroy (GtkWidget *widget, gpointer data)
  *
  * <ul>
  * <li>get the chars from the entry.
- * <li>convert to a double and store in the \c distance variable (global).
+ * <li>convert to a double and store in the \c b distance variable (global).
  * </ul>
  *
  * <b>Parameters:</b> \c *editable is the caller widget.\n
@@ -781,24 +830,105 @@ on_destroy (GtkWidget *widget, gpointer data)
  * <b>Returns:</b> none.
  */
 void
-on_distance_entry_changed (GtkEditable *editable, gpointer user_data)
+on_distance_B_entry_changed (GtkEditable *editable, gpointer user_data)
 {
   gchar *leftovers;
-  GtkWidget *distance_entry;
+  GtkWidget *distance_B_entry;
   const gchar* distance_string;
 
-  distance_entry = lookup_widget (GTK_WIDGET (editable), "distance_entry");
-  distance_string = gtk_entry_get_text (GTK_ENTRY (distance_entry));
+  distance_B_entry = lookup_widget (GTK_WIDGET (editable), "distance_B_entry");
+  distance_string = gtk_entry_get_text (GTK_ENTRY (distance_B_entry));
   b = g_ascii_strtod (distance_string, &leftovers);
 }
 
 
 /*!
- * \brief The "Distance (B)" entry is changed.
+ * \brief The "Distance (H)" entry is changed.
  *
  * <ul>
  * <li>get the chars from the entry.
- * <li>convert to a double and store in the \c distance variable (global).
+ * <li>convert to a double and store in the \c h distance variable (global).
+ * </ul>
+ *
+ * <b>Parameters:</b> \c *editable is the caller widget.\n
+ * \n
+ * <b>Parameters:</b> \c user_data.\n
+ * \n
+ * <b>Returns:</b> none.
+ */
+void
+on_distance_H_entry_changed (GtkEditable *editable, gpointer user_data)
+{
+  gchar *leftovers;
+  GtkWidget *distance_H_entry;
+  const gchar* distance_string;
+
+  distance_H_entry = lookup_widget (GTK_WIDGET (editable), "distance_H_entry");
+  distance_string = gtk_entry_get_text (GTK_ENTRY (distance_H_entry));
+  h = g_ascii_strtod (distance_string, &leftovers);
+}
+
+
+/*!
+ * \brief The "Distance (H1)" entry is changed.
+ *
+ * <ul>
+ * <li>get the chars from the entry.
+ * <li>convert to a double and store in the \c h1 distance variable (global).
+ * </ul>
+ *
+ * <b>Parameters:</b> \c *editable is the caller widget.\n
+ * \n
+ * <b>Parameters:</b> \c user_data.\n
+ * \n
+ * <b>Returns:</b> none.
+ */
+void
+on_distance_H1_entry_changed (GtkEditable *editable, gpointer user_data)
+{
+  gchar *leftovers;
+  GtkWidget *distance_H1_entry;
+  const gchar* distance_string;
+
+  distance_H1_entry = lookup_widget (GTK_WIDGET (editable), "distance_H1_entry");
+  distance_string = gtk_entry_get_text (GTK_ENTRY (distance_H1_entry));
+  h1 = g_ascii_strtod (distance_string, &leftovers);
+}
+
+
+/*!
+ * \brief The "Distance (H2)" entry is changed.
+ *
+ * <ul>
+ * <li>get the chars from the entry.
+ * <li>convert to a double and store in the \c h2 distance variable (global).
+ * </ul>
+ *
+ * <b>Parameters:</b> \c *editable is the caller widget.\n
+ * \n
+ * <b>Parameters:</b> \c user_data.\n
+ * \n
+ * <b>Returns:</b> none.
+ */
+void
+on_distance_H2_entry_changed (GtkEditable *editable, gpointer user_data)
+{
+  gchar *leftovers;
+  GtkWidget *distance_H2_entry;
+  const gchar* distance_string;
+
+  distance_H2_entry = lookup_widget (GTK_WIDGET (editable), "distance_H2_entry");
+  distance_string = gtk_entry_get_text (GTK_ENTRY (distance_H2_entry));
+  h2 = g_ascii_strtod (distance_string, &leftovers);
+}
+
+
+/*!
+ * \brief The "Epsilon" entry is changed.
+ *
+ * <ul>
+ * <li>get the chars from the entry.
+ * <li>convert to a double and store in the \c er variable (global).
  * </ul>
  *
  * <b>Parameters:</b> \c *editable is the caller widget.\n
@@ -902,7 +1032,12 @@ on_width_entry_changed (GtkEditable *editable, gpointer user_data)
 
 
 /*!
- * \brief Show a Microstrip impedance calculator dialog on the screen.
+ * \brief Show a Microstrip Impedance Calculator dialog on the screen.
+ *
+ * <h3>Usage</h3>
+ * MIC()\n
+ * Invoke the GTK Microstrip Impedance Calculator to calculate the
+ * impedance of the selected trace on a surface layer.\n
  */
 static int
 mic_dialog (int argc, char **argv, Coord x, Coord y)
@@ -911,7 +1046,7 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   GtkWidget *table;
   GtkWidget *width_label;
   GtkWidget *thickness_label;
-  GtkWidget *distance_label;
+  GtkWidget *distance_H_label;
   GtkWidget *epsilon_label;
   GtkWidget *impedance_label;
   GtkWidget *impedance_value_label;
@@ -919,7 +1054,7 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   GtkWidget *ohm_label;
   GtkWidget *width_entry;
   GtkWidget *thickness_entry;
-  GtkWidget *distance_entry;
+  GtkWidget *distance_H_entry;
   GtkWidget *epsilon_entry;
   GtkWidget *calculate_button;
   GtkTooltips *tooltips = NULL;
@@ -930,23 +1065,11 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   /* Give the window a 20px wide border */
   gtk_container_set_border_width (GTK_CONTAINER (window), 20);
-  /* Give it the default pcb title */
-  gtk_window_set_title (GTK_WINDOW (window),
-    _("Microstrip Impedance Calculator (version ") PIC_VERSION ")");
-  /* Open it a bit wider so that both the label and title show up */
+  /* Give the window the default title */
+  gtk_window_set_title (GTK_WINDOW (window), PACKAGE " " VERSION " Impedance Calculator");
+  /* Open the window a bit wider so that both the label and title show up */
   gtk_window_resize (GTK_WINDOW (window), 300, 200);
 
-  /* Find out what length unit to use. */
-  if (Settings.grid_unit)
-  {
-    /* mils. */
-    length_unit = strdup ("mil");
-  }
-  else
-  {
-    /* mm.*/
-    length_unit = strdup ("mm");
-  }
   /* Create the needed labels. */
   width_label = gtk_label_new (_("Trace width (W)"));
   gtk_widget_set_name (width_label, "width_label");
@@ -956,15 +1079,15 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   gtk_widget_set_name (thickness_label, "thickness_label");
   gtk_widget_show (thickness_label);
 
-  distance_label = gtk_label_new (_("Distance between planes (B)"));
-  gtk_widget_set_name (distance_label, "distance_label");
-  gtk_widget_show (distance_label);
+  distance_H_label = gtk_label_new (_("Substrate Height (H)"));
+  gtk_widget_set_name (distance_H_label, "distance_H_label");
+  gtk_widget_show (distance_H_label);
 
-  epsilon_label = gtk_label_new (_("Relative Dielectric constant (Er)"));
+  epsilon_label = gtk_label_new (_("Substrate Dielectric (Er)"));
   gtk_widget_set_name (epsilon_label, "epsilon_label");
   gtk_widget_show (epsilon_label);
 
-  impedance_label = gtk_label_new (_("Microstrip trace impedance (Z0)"));
+  impedance_label = gtk_label_new (_("Impedance (Z)"));
   gtk_widget_set_name (impedance_label, "impedance_label");
   gtk_widget_show (impedance_label);
 
@@ -972,6 +1095,8 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   gtk_widget_set_name (impedance_value_label, "impedance_value_label");
   gtk_widget_show (impedance_value_label);
 
+  /* Find out what length unit to use. */
+  get_length_unit();
   length_unit_label = gtk_label_new (strdup (length_unit));
   gtk_widget_set_name (length_unit_label, "length_unit_label");
   gtk_widget_show (length_unit_label);
@@ -981,11 +1106,11 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   gtk_widget_show (ohm_label);
 
   /* Create the needed entries. */
-  distance_entry = gtk_entry_new ();
-  gtk_widget_set_name (distance_entry, "distance_entry");
-  gtk_tooltips_set_tip (tooltips, distance_entry, _("Type the distance between planes here"), NULL);
-  gtk_entry_set_invisible_char (GTK_ENTRY (distance_entry), 8226);
-  gtk_widget_show (distance_entry);
+  distance_H_entry = gtk_entry_new ();
+  gtk_widget_set_name (distance_H_entry, "distance_H_entry");
+  gtk_tooltips_set_tip (tooltips, distance_H_entry, _("Type the distance between planes here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (distance_H_entry), 8226);
+  gtk_widget_show (distance_H_entry);
 
   epsilon_entry = gtk_entry_new ();
   gtk_widget_set_name (epsilon_entry, "epsilon_entry");
@@ -1015,66 +1140,69 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   gtk_widget_set_name (table, "table");
   gtk_widget_show (table);
 
-  /* Attach labels to table (left column). */
+  /* Attach labels to table (first row). */
   gtk_table_attach (GTK_TABLE (table),
     width_label, 0, 1, 0, 1,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (width_label), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
-    thickness_label, 0, 1, 1, 2,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (thickness_label), 0, 0.5);
-  gtk_table_attach (GTK_TABLE (table),
-    distance_label, 0, 1, 2, 3,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (distance_label), 0, 0.5);
-  gtk_table_attach (GTK_TABLE (table),
-    epsilon_label, 0, 1, 3, 4,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (epsilon_label), 0, 0.5);
-
-  /* Attach entries to table (middle column). */
-  gtk_table_attach (GTK_TABLE (table),
     width_entry, 1, 2, 0, 1,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (width_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    length_unit_label, 2, 3, 0, 1,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (second row). */
+  gtk_table_attach (GTK_TABLE (table),
+    thickness_label, 0, 1, 1, 2,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (thickness_label), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
     thickness_entry, 1, 2, 1, 2,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (thickness_entry), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
-    distance_entry, 1, 2, 2, 3,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (distance_entry), 0, 0.5);
-  gtk_table_attach (GTK_TABLE (table),
-    epsilon_entry, 1, 2, 3, 4,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (epsilon_entry), 0, 0.5);
-
-  /* Attach units labels to table (right column). */
-  gtk_table_attach (GTK_TABLE (table),
-    length_unit_label, 2, 3, 0, 1,
-    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
-    (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
-  gtk_table_attach (GTK_TABLE (table),
     length_unit_label, 2, 3, 1, 2,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (third row). */
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H_label, 0, 1, 2, 3,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H_entry, 1, 2, 2, 3,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H_entry), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
     length_unit_label, 2, 3, 2, 3,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (fourth row). */
+  gtk_table_attach (GTK_TABLE (table),
+    epsilon_label, 0, 1, 3, 4,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (epsilon_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    epsilon_entry, 1, 2, 3, 4,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (epsilon_entry), 0, 0.5);
+  /* No unit label. */
 
   /* Attach button to table (accross all columns). */
   gtk_table_attach (GTK_TABLE (table),
@@ -1102,8 +1230,256 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
   /* Hook up signals for the callback functions. */
   g_signal_connect (G_OBJECT (window), "destroy",
     G_CALLBACK (on_destroy), NULL);
-  g_signal_connect (G_OBJECT (distance_entry), "changed",
-    G_CALLBACK (on_distance_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (distance_H_entry), "changed",
+    G_CALLBACK (on_distance_H_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (epsilon_entry), "changed",
+    G_CALLBACK (on_epsilon_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (thickness_entry), "changed",
+    G_CALLBACK (on_thickness_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (width_entry), "changed",
+    G_CALLBACK (on_width_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (calculate_button), "clicked",
+    G_CALLBACK (on_calculate_mic_button_clicked), NULL);
+
+  /* And insert the table into the main window */
+  gtk_container_add (GTK_CONTAINER (window), table);
+
+  /* Make sure that everything is visible */
+  gtk_widget_show_all (window);
+  /* Start the GTK main loop */
+  gtk_main ();
+  return 0;
+}
+
+
+/*!
+ * \brief Show an Embedded Microstrip Impedance Calculator dialog on the screen.
+ */
+static int
+emic_dialog (int argc, char **argv, Coord x, Coord y)
+{
+  GtkWidget *window;
+  GtkWidget *table;
+  GtkWidget *width_label;
+  GtkWidget *thickness_label;
+  GtkWidget *distance_H1_label;
+  GtkWidget *distance_H2_label;
+  GtkWidget *epsilon_label;
+  GtkWidget *impedance_label;
+  GtkWidget *impedance_value_label;
+  GtkWidget *length_unit_label;
+  GtkWidget *ohm_label;
+  GtkWidget *width_entry;
+  GtkWidget *thickness_entry;
+  GtkWidget *distance_H1_entry;
+  GtkWidget *distance_H2_entry;
+  GtkWidget *epsilon_entry;
+  GtkWidget *calculate_button;
+  GtkTooltips *tooltips = NULL;
+
+  /* Initialze GTK. */
+  gtk_init (&argc, &argv);
+  /* Create a new top level window */
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  /* Give the window a 20px wide border */
+  gtk_container_set_border_width (GTK_CONTAINER (window), 20);
+  /* Give the window the default title */
+  gtk_window_set_title (GTK_WINDOW (window), PACKAGE " " VERSION " Impedance Calculator");
+  /* Open the window a bit wider so that both the label and title show up */
+  gtk_window_resize (GTK_WINDOW (window), 300, 200);
+
+  /* Create the needed labels. */
+  width_label = gtk_label_new (_("Trace width (W)"));
+  gtk_widget_set_name (width_label, "width_label");
+  gtk_widget_show (width_label);
+
+  thickness_label = gtk_label_new (_("Trace thickness (T)"));
+  gtk_widget_set_name (thickness_label, "thickness_label");
+  gtk_widget_show (thickness_label);
+
+  distance_H1_label = gtk_label_new (_("Substrate height (H1)"));
+  gtk_widget_set_name (distance_H1_label, "distance_H1_label");
+  gtk_widget_show (distance_H1_label);
+
+  distance_H2_label = gtk_label_new (_("Substrate height (H2)"));
+  gtk_widget_set_name (distance_H2_label, "distance_H2_label");
+  gtk_widget_show (distance_H2_label);
+
+  epsilon_label = gtk_label_new (_("Substrate Dielectric (Er)"));
+  gtk_widget_set_name (epsilon_label, "epsilon_label");
+  gtk_widget_show (epsilon_label);
+
+  impedance_label = gtk_label_new (_("Impedance (Z)"));
+  gtk_widget_set_name (impedance_label, "impedance_label");
+  gtk_widget_show (impedance_label);
+
+  impedance_value_label = gtk_label_new ("...");
+  gtk_widget_set_name (impedance_value_label, "impedance_value_label");
+  gtk_widget_show (impedance_value_label);
+
+  /* Find out what length unit to use. */
+  get_length_unit();
+  length_unit_label = gtk_label_new (strdup (length_unit));
+  gtk_widget_set_name (length_unit_label, "length_unit_label");
+  gtk_widget_show (length_unit_label);
+
+  ohm_label = gtk_label_new (_("Ohm"));
+  gtk_widget_set_name (ohm_label, "ohm_label");
+  gtk_widget_show (ohm_label);
+
+  /* Create the needed entries. */
+  distance_H1_entry = gtk_entry_new ();
+  gtk_widget_set_name (distance_H1_entry, "distance_H1_entry");
+  gtk_tooltips_set_tip (tooltips, distance_H1_entry, _("Type the distance H1 between planes here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (distance_H1_entry), 8226);
+  gtk_widget_show (distance_H1_entry);
+
+  distance_H2_entry = gtk_entry_new ();
+  gtk_widget_set_name (distance_H2_entry, "distance_H2_entry");
+  gtk_tooltips_set_tip (tooltips, distance_H2_entry, _("Type the distance H2 between planes here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (distance_H2_entry), 8226);
+  gtk_widget_show (distance_H2_entry);
+
+  epsilon_entry = gtk_entry_new ();
+  gtk_widget_set_name (epsilon_entry, "epsilon_entry");
+  gtk_tooltips_set_tip (tooltips, epsilon_entry, _("Type the epsilon between planes here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (epsilon_entry), 8226);
+  gtk_widget_show (epsilon_entry);
+
+  thickness_entry = gtk_entry_new ();
+  gtk_widget_set_name (thickness_entry, "thickness_entry");
+  gtk_tooltips_set_tip (tooltips, thickness_entry, _("Type the trace thickness here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (thickness_entry), 8226);
+  gtk_widget_show (thickness_entry);
+
+  width_entry = gtk_entry_new ();
+  gtk_widget_set_name (width_entry, "width_entry");
+  gtk_tooltips_set_tip (tooltips, width_entry, _("Type the trace width here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (width_entry), 8226);
+  gtk_widget_show (width_entry);
+
+  /* Create a "Calculate" button. */
+  calculate_button = gtk_button_new_with_label (_("Calculate"));
+  gtk_tooltips_set_tip (tooltips, calculate_button, _("Calculate the result"), NULL);
+  gtk_widget_show (calculate_button);
+
+  /* Create a table. */
+  table = gtk_table_new (6, 3, FALSE);
+  gtk_widget_set_name (table, "table");
+  gtk_widget_show (table);
+
+  /* Attach labels to table (first row). */
+  gtk_table_attach (GTK_TABLE (table),
+    width_label, 0, 1, 0, 1,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (width_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    width_entry, 1, 2, 0, 1,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (width_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    length_unit_label, 2, 3, 0, 1,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (second row). */
+  gtk_table_attach (GTK_TABLE (table),
+    thickness_label, 0, 1, 1, 2,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (thickness_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    thickness_entry, 1, 2, 1, 2,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (thickness_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    length_unit_label, 2, 3, 1, 2,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (third row). */
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H1_label, 0, 1, 2, 3,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H1_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H1_entry, 1, 2, 2, 3,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H1_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    length_unit_label, 2, 3, 2, 3,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (fourth row). */
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H2_label, 0, 1, 3, 4,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H2_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    distance_H2_entry, 1, 2, 3, 4,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (distance_H2_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    length_unit_label, 2, 3, 3, 4,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (length_unit_label), 0, 0.5);
+
+  /* Attach labels to table (fifth row). */
+  gtk_table_attach (GTK_TABLE (table),
+    epsilon_entry, 1, 2, 4, 5,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (epsilon_entry), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    epsilon_label, 0, 1, 4, 5,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (epsilon_label), 0, 0.5);
+  /* No unit label. */
+
+  /* Attach calculate button across all columns (sixth row). */
+  gtk_table_attach (GTK_TABLE (table),
+    calculate_button, 0, 3, 5, 6,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (calculate_button), 0, 0.5);
+
+  /* Attach the impedance result labels (across bottom row). */
+  gtk_table_attach (GTK_TABLE (table),
+    impedance_label, 0, 1, 5, 6,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (impedance_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    impedance_label, 1, 2, 5, 6,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (impedance_value_label), 0, 0.5);
+  gtk_table_attach (GTK_TABLE (table),
+    ohm_label, 2, 3, 5, 6,
+    (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
+    (GtkAttachOptions) (0), 0, 0);
+  gtk_misc_set_alignment (GTK_MISC (ohm_label), 0, 0.5);
+
+  /* Hook up signals for the callback functions. */
+  g_signal_connect (G_OBJECT (window), "destroy",
+    G_CALLBACK (on_destroy), NULL);
+  g_signal_connect (G_OBJECT (distance_H1_entry), "changed",
+    G_CALLBACK (on_distance_H1_entry_changed), NULL);
+  g_signal_connect (G_OBJECT (distance_H2_entry), "changed",
+    G_CALLBACK (on_distance_H2_entry_changed), NULL);
   g_signal_connect (G_OBJECT (epsilon_entry), "changed",
     G_CALLBACK (on_epsilon_entry_changed), NULL);
   g_signal_connect (G_OBJECT (thickness_entry), "changed",
@@ -1125,17 +1501,17 @@ mic_dialog (int argc, char **argv, Coord x, Coord y)
 
 
 /*!
- * \brief Show a Differential Stripline Impedance Ccalculator dialog on the screen.
+ * \brief Show an Edge Coupled Stripline Impedance Calculator dialog on the screen.
  */
 static int
-dsic_dialog (int argc, char **argv, Coord x, Coord y)
+ecsic_dialog (int argc, char **argv, Coord x, Coord y)
 {
   GtkWidget *window;
   GtkWidget *table;
   GtkWidget *width_label;
   GtkWidget *thickness_label;
   GtkWidget *spacing_label;
-  GtkWidget *distance_label;
+  GtkWidget *distance_B_label;
   GtkWidget *epsilon_label;
   GtkWidget *impedance_label;
   GtkWidget *impedance_value_label;
@@ -1144,7 +1520,7 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
   GtkWidget *width_entry;
   GtkWidget *thickness_entry;
   GtkWidget *spacing_entry;
-  GtkWidget *distance_entry;
+  GtkWidget *distance_B_entry;
   GtkWidget *epsilon_entry;
   GtkWidget *calculate_button;
   GtkTooltips *tooltips = NULL;
@@ -1155,45 +1531,33 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   /* Give the window a 20px wide border */
   gtk_container_set_border_width (GTK_CONTAINER (window), 20);
-  /* Give it the default pcb title */
+  /* Give the window the default title */
   gtk_window_set_title (GTK_WINDOW (window), PACKAGE " " VERSION " Impedance Calculator");
-  /* Open it a bit wider so that both the label and title show up */
+  /* Open the window a bit wider so that both the label and title show up */
   gtk_window_set_default_size (GTK_WINDOW (window), 300, 200);
 
-  /* Find out what length unit to use. */
-  if (Settings.grid_unit)
-  {
-    /* mils. */
-    length_unit = strdup ("mils");
-  }
-  else
-  {
-    /* mm.*/
-    length_unit = strdup ("mm");
-  }
-
   /* Create the needed labels. */
-  width_label = gtk_label_new ("Trace width (W)");
+  width_label = gtk_label_new (_("Trace width (W)"));
   gtk_widget_set_name (width_label, "width_label");
   gtk_widget_show (width_label);
 
-  thickness_label = gtk_label_new ("Trace thickness (T)");
+  thickness_label = gtk_label_new (_("Trace thickness (T)"));
   gtk_widget_set_name (thickness_label, "thickness_label");
   gtk_widget_show (thickness_label);
 
-  spacing_label = gtk_label_new ("Trace spacing (S)");
+  spacing_label = gtk_label_new (_("Trace spacing (S)"));
   gtk_widget_set_name (spacing_label, "spacing_label");
   gtk_widget_show (spacing_label);
 
-  distance_label = gtk_label_new ("Distance between planes (B)");
-  gtk_widget_set_name (distance_label, "distance_label");
-  gtk_widget_show (distance_label);
+  distance_B_label = gtk_label_new (_("Substrate height (B)"));
+  gtk_widget_set_name (distance_B_label, "distance_B_label");
+  gtk_widget_show (distance_B_label);
 
-  epsilon_label = gtk_label_new ("Relative Dielectric constant (Er)");
+  epsilon_label = gtk_label_new (_("Substrate Dielectric (Er)"));
   gtk_widget_set_name (epsilon_label, "epsilon_label");
   gtk_widget_show (epsilon_label);
 
-  impedance_label = gtk_label_new ("Differential trace impedance (Z0)");
+  impedance_label = gtk_label_new (_("Impedance (Z)"));
   gtk_widget_set_name (impedance_label, "impedance_label");
   gtk_widget_show (impedance_label);
 
@@ -1201,20 +1565,22 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
   gtk_widget_set_name (impedance_value_label, "impedance_value_label");
   gtk_widget_show (impedance_value_label);
 
+  /* Find out what length unit to use. */
+  get_length_unit();
   length_unit_label = gtk_label_new (strdup (length_unit));
   gtk_widget_set_name (length_unit_label, "length_unit_label");
   gtk_widget_show (length_unit_label);
 
-  ohm_label = gtk_label_new ("Ohm");
+  ohm_label = gtk_label_new (_("Ohm"));
   gtk_widget_set_name (ohm_label, "ohm_label");
   gtk_widget_show (ohm_label);
 
   /* Create the needed entries. */
-  distance_entry = gtk_entry_new ();
-  gtk_widget_set_name (distance_entry, "distance_entry");
-  gtk_tooltips_set_tip (tooltips, distance_entry, _("Type the distance between planes here"), NULL);
-  gtk_entry_set_invisible_char (GTK_ENTRY (distance_entry), 8226);
-  gtk_widget_show (distance_entry);
+  distance_B_entry = gtk_entry_new ();
+  gtk_widget_set_name (distance_B_entry, "distance_B_entry");
+  gtk_tooltips_set_tip (tooltips, distance_B_entry, _("Type the distance between planes here"), NULL);
+  gtk_entry_set_invisible_char (GTK_ENTRY (distance_B_entry), 8226);
+  gtk_widget_show (distance_B_entry);
 
   epsilon_entry = gtk_entry_new ();
   gtk_widget_set_name (epsilon_entry, "epsilon_entry");
@@ -1267,10 +1633,10 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (spacing_label), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
-    distance_label, 0, 1, 3, 4,
+    distance_B_label, 0, 1, 3, 4,
     (GtkAttachOptions) (GTK_FILL),
     (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (distance_label), 0, 0.5);
+  gtk_misc_set_alignment (GTK_MISC (distance_B_label), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
     epsilon_label, 0, 1, 4, 5,
     (GtkAttachOptions) (GTK_FILL),
@@ -1294,10 +1660,10 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (spacing_entry), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
-    distance_entry, 1, 2, 3, 4,
+    distance_B_entry, 1, 2, 3, 4,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
     (GtkAttachOptions) (0), 0, 0);
-  gtk_misc_set_alignment (GTK_MISC (distance_entry), 0, 0.5);
+  gtk_misc_set_alignment (GTK_MISC (distance_B_entry), 0, 0.5);
   gtk_table_attach (GTK_TABLE (table),
     epsilon_entry, 1, 2, 4, 5,
     (GtkAttachOptions) (GTK_FILL | GTK_EXPAND),
@@ -1352,8 +1718,8 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
   /* Hook up signals for the callback functions. */
   g_signal_connect (G_OBJECT (window), "destroy",
     G_CALLBACK (on_destroy), NULL);
-  g_signal_connect ((gpointer) distance_entry, "changed",
-    G_CALLBACK (on_distance_entry_changed), NULL);
+  g_signal_connect ((gpointer) distance_B_entry, "changed",
+    G_CALLBACK (on_distance_B_entry_changed), NULL);
   g_signal_connect ((gpointer) epsilon_entry, "changed",
     G_CALLBACK (on_epsilon_entry_changed), NULL);
   g_signal_connect ((gpointer) spacing_entry, "changed",
@@ -1380,14 +1746,10 @@ dsic_dialog (int argc, char **argv, Coord x, Coord y)
 
 static HID_Action impedance_action_list[] =
 {
-  {"EMIC", NULL, mic_dialog, "Embedded Microstrip Impedance Calculator", NULL},
-  {"emic", NULL, mic_dialog, "Embedded Microstrip Impedance Calculator", NULL},
-  {"GMIC", NULL, mic_dialog, "Microstrip Impedance Calculator", NULL},
-  {"gmic", NULL, mic_dialog, "Microstrip Impedance Calculator", NULL},
-  {"DSIC", NULL, dsic_dialog, "Differential Stripline Impedance Calculator", NULL},
-  {"dsic", NULL, dsic_dialog, "Differential Stripline Impedance Calculator", NULL},
-  {"OSIC", NULL, dsic_dialog, "Off-Center Stripline Impedance Calculator", NULL},
-  {"osic", NULL, dsic_dialog, "Off-Center Stripline Impedance Calculator", NULL}
+  {"mic", NULL, mic_dialog, "Microstrip Impedance Calculator", NULL},
+  {"emic", NULL, emic_dialog, "Embedded Microstrip Impedance Calculator", NULL},
+  {"ecsic", NULL, ecsic_dialog, "Edge Coupled Stripline Impedance Calculator", NULL},
+  {"osic", NULL, ecsic_dialog, "Off-Center Stripline Impedance Calculator", NULL}
 };
 
 
