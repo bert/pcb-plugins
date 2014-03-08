@@ -1095,9 +1095,11 @@ on_width_entry_changed (GtkEditable *editable, gpointer user_data)
  * \brief Show a Microstrip Impedance Calculator dialog on the screen.
  *
  * <h3>Usage</h3>
- * MIC()\n
+ *
+ * \c MIC()
+ *
  * Invoke the GTK Microstrip Impedance Calculator to calculate the
- * impedance of the selected trace on a surface layer.\n
+ * impedance of a trace on a surface layer.\n
  */
 static int
 mic_dialog (int argc, char **argv, Coord x, Coord y)
