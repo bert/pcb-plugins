@@ -507,10 +507,10 @@ er_eff
 
    \f$
      w_{eff} = w + \left( \frac {t} {\pi} \right)
-     \cdot \ln \left\{ \frac { 4 \cdot e } 
+     \cdot \ln { \left\{ \frac { 4 \cdot e } 
      { \sqrt { { \left( \frac {t} {h} } ^{2} \right) }
      + \left( \frac {t} {w \cdot \pi + 1.1 \cdot t \cdot \pi \right) ^{2} } }
-     \right\} \cdot \frac {er_{eff} + 1} {2 \cdot er_{eff} }
+     \right\} } \cdot \frac {er_{eff} + 1} {2 \cdot er_{eff} }
    \f$
 
  * and when \f$ \frac {w} {h} < 1 \f$
