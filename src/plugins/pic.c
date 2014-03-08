@@ -464,7 +464,8 @@ er_eff
  *
  * <h2>Microstrip.</h2>
  *
- * <h3>Introduction./h3>
+ * <h3>Introduction.</h3>
+ *
  * The microstrip is a very simple yet useful way to create a
  * transmission line with a PCB.\n
  * There are some advantages to using a microstrip transmission line
@@ -474,6 +475,7 @@ er_eff
  * properly build these structures to meet their needs.
  *
  * <h3>Description.</h3>
+ *
  * A microstrip is constructed with a flat conductor suspended over a
  * ground plane.
  * The conductor and ground plane are seperated by a dielectric.
@@ -486,17 +488,60 @@ er_eff
  * <h3>Microstrip Transmission Line Models.</h3>
  * Models have been created to approximate the characteristics of the
  * microstrip transmission line.\n
-   \f$ 
-   w_{eff} = w + \left( \frac {t} {\pi} \right)
-     \cdot \ln \left{ \frac { 4 \cdot \exp } { \sqrt { \left( \frac {t} {h} } ^{2} \right) }
-     + \left ( \frac {t} {w \cdot \pi + 1.1 \cdot t \cdot \pi \right) ^{2}
-     \cdot \frac {er_{eff} + 1} {2 \cdot er_{eff} }
-   \f$ 
+ *
+ * The characteristic impedance, \f$ Z_{0,surf} \f$ is:
 
+   \f$
+     Z_{0,surf} = \frac {\eta_0} {2 \cdot \pi \cdot \sqrt {2} \cdot \sqrt {e_{r,eff} + 1} }
+     \cdot \ln \left\{ {1 + 4 \cdot \left( \frac {h} {w_{eff} } \right)
+     \cdot \left[ 4 \cdot \left( \frac {14 \cdot er_{eff} + 8} {11 \cdot e_{r,eff} } \right)
+     \cdot \left( \frac {h} {w_{eff} \right) }
+     + \sqrt {16 \cdot \left( \frac {h} {w_{eff} } \right) ^ {2}
+     \cdot  \left( \frac {14 \cdot er_{eff} + 8} {11 \cdot e_{r,eff} } \right) ^ {2}
+     + \left( \frac {e_{r,eff} + 1} {2 \cdot e_{r,eff} } \right) \cdot \pi ^ {2} }
+     \right] \right\}
+   \f$
+
+ * where \f$ \eta_0 \f$ is the wave impedance of free space,
+ * \f$ w_{eff} \f$ is the effective signal line width:
+
+   \f$
+     w_{eff} = w + \left( \frac {t} {\pi} \right)
+     \cdot \ln \left\{ \frac { 4 \cdot e } 
+     { \sqrt { { \left( \frac {t} {h} } ^{2} \right) }
+     + \left( \frac {t} {w \cdot \pi + 1.1 \cdot t \cdot \pi \right) ^{2} } }
+     \right\} \cdot \frac {er_{eff} + 1} {2 \cdot er_{eff} }
+   \f$
+
+ * and when \f$ \frac {w} {h} < 1 \f$
+
+   \f$
+     \varepsilon_{r,eff} = \frac {\varepsilon_r + 1} {2} + \frac {\varepsilon_r - 1} {2} \cdot
+     \left\{ \sqrt { \frac {w} {w + 12 \cdot h} } + 0.04 \cdot
+     \left( 1 - \frac {w} {h} \right) ^ {2}
+     \right\}
+   \f$
+
+ * or when \f$ \frac {w} {h} \geq 1 \f$
+
+   \f$
+     \varepsilon_{r,eff} = \frac {\varepsilon_r + 1} {2} + \frac {\varepsilon_r - 1} {2} \cdot
+     \sqrt { \frac {w} {w + 12 \cdot h} }
+   \f$
+
+ * where \f$ w \f$ is the width of the signal line, \f$ t \f$ is the
+ * thickness of the signal line, \f$ h \f$ is the separation between
+ * signal line and the reference plane, and \f$ \varepsilon_r \f$ is the
+ * relative permittivity of the substrate material.\n
+ * The accuracy of these equations is better than \f$ \pm 2 \% \f$.\n
+ * For more accuracy, the effect of the conductor thickness should be
+ * considered.
+ *
  * The source for these formulas are found in the IPC-2141A (2004)
  * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
  *
  * <h3>Output.</h3>
+ *
  * The outcome of the calculation is shown in the pcb log window.\n
  * If no (valid) argument is passed, no action is carried out.\n
  */
@@ -636,6 +681,7 @@ ecsic
  * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
  *
  * <h3>Output.</h3>
+ *
  * The outcome of the calculation is shown in the pcb log window.\n
  * If no (valid) argument is passed, no action is carried out.\n
  */
