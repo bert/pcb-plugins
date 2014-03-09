@@ -699,6 +699,41 @@ ecsic
  *
  * <h3>Introduction.</h3>
  *
+ * The embedded microstrip is similar in construction to the
+ * microstrip transmission line.\n
+ * Modeling approximation can be used to design the embedded microstrip
+ * trace.\n
+ * By understanding the embedded microstrip transmission line, designers
+ * can properly build these structures to meet their needs.
+ *
+ * <h3>Description.</h3>
+ *
+ * An embedded microstrip is constructed with a flat conductor suspended
+ * over a ground plane.\n
+ * The conductor and ground plane are seperated by a dielectric.\n
+ * There is also a layer of dielectric material above the conductor.\n
+ * One case of an embedded microstrip transmision line is a microstrip
+ * trace with soldermask.
+ *
+ * <h3>Embedded Microstrip Transmission Line Models.</h3>
+ *
+ * Models have been created to approximate the characteristics of the
+ * embedded microstrip transmission line.\n
+ * The effect of embedding the signal line in a single dielectric is to
+ * modify the formula  for \f$ Z_{0,surf} \f$ using a modified
+ * \f$ \varepsilon_{r,eff} \f$ :
+
+   \f$
+     Z_{0,embedd} = Z_{0,surf} \cdot \frac {1} {\sqrt { e^{\frac {-2 \cdot b} {h} }
+     + \frac {\varepsilon_{r}} {\varepsilon_{r,eff}}
+     \cdot \left( 1 - e^{ \frac {-2 \cdot b} {h} \right) } } }
+   \f$
+
+* where
+
+   \f$
+     b = h_2 - h_1
+   \f$
 
  * The source for these formulas are found in the IPC-2141A (2004)
  * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
