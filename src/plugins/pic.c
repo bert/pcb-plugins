@@ -989,9 +989,14 @@ static int ecsic_dialog (int argc, char **argv, Coord x, Coord y);
 
 
 GtkWidget *
-lookup_widget (GtkWidget *widget, const gchar *widget_name)
+lookup_widget
+(
+  GtkWidget *widget,
+  const gchar *widget_name
+)
 {
-  GtkWidget *parent, *found_widget;
+  GtkWidget *parent;
+  GtkWidget *found_widget;
 
   for (;;)
   {
@@ -1017,14 +1022,16 @@ lookup_widget (GtkWidget *widget, const gchar *widget_name)
  *
  * Calculate the application.
  *
- * <b>Parameters:</b> \c *button is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_calculate_button_clicked (GtkWidget *widget, gpointer user_data)
+on_calculate_button_clicked
+(
+  GtkWidget *widget,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
 }
 
@@ -1032,16 +1039,18 @@ on_calculate_button_clicked (GtkWidget *widget, gpointer user_data)
 /*!
  * \brief The "Calculate" button in the MIC dialog is clicked.
  *
- * Calculate the application.
+ * Calculate the impedance for the application.
  *
- * <b>Parameters:</b> \c *button is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_calculate_mic_button_clicked (GtkWidget *widget, gpointer user_data)
+on_calculate_mic_button_clicked
+(
+  GtkWidget *widget,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   GtkWidget *impedance_value_label;
   gchar *impedance_string;
@@ -1061,14 +1070,16 @@ on_calculate_mic_button_clicked (GtkWidget *widget, gpointer user_data)
  *
  * Calculate the application.
  *
- * <b>Parameters:</b> \c *button is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_calculate_emic_button_clicked (GtkWidget *widget, gpointer user_data)
+on_calculate_emic_button_clicked
+(
+  GtkWidget *widget,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   GtkWidget *impedance_value_label;
   gchar *impedance_string;
@@ -1088,14 +1099,16 @@ on_calculate_emic_button_clicked (GtkWidget *widget, gpointer user_data)
  *
  * Close the application.
  *
- * <b>Parameters:</b> \c *button is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_close_button_clicked (GtkButton *button, gpointer user_data)
+on_close_button_clicked
+(
+  GtkButton *button,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gtk_main_quit();
 }
@@ -1105,7 +1118,13 @@ on_close_button_clicked (GtkButton *button, gpointer user_data)
  * \brief Terminate the GTK main loop.
  */
 static void
-on_destroy (GtkWidget *widget, gpointer data)
+on_destroy
+(
+  GtkWidget *widget,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gtk_main_quit ();
 }
@@ -1119,14 +1138,16 @@ on_destroy (GtkWidget *widget, gpointer data)
  * <li>convert to a double and store in the \c b distance variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_distance_B_entry_changed (GtkEditable *editable, gpointer user_data)
+on_distance_B_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *distance_B_entry;
@@ -1146,14 +1167,16 @@ on_distance_B_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c h distance variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_distance_H_entry_changed (GtkEditable *editable, gpointer user_data)
+on_distance_H_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *distance_H_entry;
@@ -1173,14 +1196,16 @@ on_distance_H_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c h1 distance variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_distance_H1_entry_changed (GtkEditable *editable, gpointer user_data)
+on_distance_H1_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *distance_H1_entry;
@@ -1200,14 +1225,16 @@ on_distance_H1_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c h2 distance variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_distance_H2_entry_changed (GtkEditable *editable, gpointer user_data)
+on_distance_H2_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *distance_H2_entry;
@@ -1227,14 +1254,16 @@ on_distance_H2_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c er variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_epsilon_entry_changed (GtkEditable *editable, gpointer user_data)
+on_epsilon_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *epsilon_entry;
@@ -1254,14 +1283,16 @@ on_epsilon_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c spacing variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_spacing_entry_changed (GtkEditable *editable, gpointer user_data)
+on_spacing_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *spacing_entry;
@@ -1281,14 +1312,16 @@ on_spacing_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c thickness variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_thickness_entry_changed (GtkEditable *editable, gpointer user_data)
+on_thickness_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *thickness_entry;
@@ -1308,14 +1341,16 @@ on_thickness_entry_changed (GtkEditable *editable, gpointer user_data)
  * <li>convert to a double and store in the \c width variable (global).
  * </ul>
  *
- * <b>Parameters:</b> \c *editable is the caller widget.\n
- * \n
- * <b>Parameters:</b> \c user_data.\n
- * \n
- * <b>Returns:</b> none.
+ * \return none.
  */
 void
-on_width_entry_changed (GtkEditable *editable, gpointer user_data)
+on_width_entry_changed
+(
+  GtkEditable *editable,
+  /*!< is the caller widget.*/
+  gpointer user_data
+  /*!< user data.*/
+)
 {
   gchar *leftovers;
   GtkWidget *width_entry;
