@@ -94,6 +94,7 @@ static double er_eff (double er, double w, double h);
 static double mic (double er, double w, double t, double h);
 static double emic (double er, double w, double t, double h1, double h2);
 static double ecsic (double er, double w, double s, double t, double b);
+static double ssic (double er, double w, double t, double h);
 
 
 /* Following global variables contain "unitless" values. */
@@ -724,6 +725,184 @@ emic
       "Impedance (Z)             = %d Ohms\n"), result,
     _("Epsilon (Er_eff)          = %d \n\n"), er_eff
   );
+  return result;
+}
+
+
+/*!
+ * \brief Calculate the impedance for the specified Symmetric Stripline
+ * trace.
+ *
+ * <h2>Symmetric Stripline.</h2>
+ *
+ * <h3>Introduction.</h3>
+ *
+ * The symmetric stripline is reliable method for creating a
+ * transmission line.\n
+ * The stripline is a TEM (transverse electromagnetic) transmission line.\n
+ * Modeling approximation can be used to design the microstrip trace.\n
+ * By understanding the stripline transmission line, designers can
+ * properly build these structures to meet their needs.
+ *
+ * <h3>Description.</h3>
+ *
+ * A stripline is constructed with a flat conductor suspended between
+ * two ground planes.\n
+ * The conductor and ground planes are separated by a dielectric.\n
+ * One advantage of the stripline is that there is an improved isolation
+ * between adjacent traces when compared with the microstrip.
+ *
+ * <h3>Stripline Transmission Line Models.</h3>
+ *
+ * Models have been created to approximate the characteristics of the
+ * microstrip transmission line.\n
+ * As was the case for microstrip transmission line, the \f$ Z_0 \f$ of
+ * stripline is also dependent on the ratio of the conductor width and
+ * separation between ground planes.\n
+ * There are two commonly used sets of equations for \f$ Z_{0,SS} \f$
+ * of a symmetric stripline.
+ *
+ * <h4>Formula Set 1.</h4>
+ *
+ * The characteristic impedance \f$ Z_{0,SS,1} \f$ is:
+
+   \f$
+     Z_{0,SS,1} = \frac {\eta_0} {2 \cdot \pi \cdot \sqrt {\varepsilon_r} }
+     \cdot \ln { \left\{ 1 + \frac {8 \cdot h} {\pi \cdot w_{eff}}
+     \cdot \left[ \frac {16 \cdot h} {\pi \cdot w_{eff}}
+     + \sqrt {\left( \frac {16 \cdot h} {\pi \cdot w_{eff}} \right) ^2
+     + 6.27 } \right] \right\} }
+   \f$
+
+ * where
+
+   \f$
+     w_{eff} = w + \left( \frac {t} {\pi} \right)
+     \cdot \ln { \left\{ \frac { 4 \cdot e } 
+     { \sqrt { { \left( \frac {t} {4 \cdot h + t} } ^{2} \right) }
+     + \left( \frac {\pi \cdot t} {4 \cdot  \left( w + 1.1 \cdot t \right)
+     \right) ^{m} } } \right\} }
+   \f$
+
+ * and
+
+   \f$
+   m = \frac {6 \cdot h} {3 \cdot h + t}
+   \f$
+
+ * The errors for this set of formulas is less than 1.5 \%.
+ *
+ * <h4>Formula Set 2.</h4>
+ *
+ * Can be further broken down into two cases, one for a narrow signal
+ * conductor and one for a wide signal conductor.\n
+ * For the narrow signal conductor, that is for
+ * \f$ \frac {w} {b} < 0.35 \f$ , the appropriate formula for the
+ * characteristic impedance, \f$ Z_{0,SS,2t} \f$ is:
+
+   \f$
+     Z_{0,SS,2t} = \frac {60} {\sqrt {\varepsilon_r} }
+     \cdot \ln { \left( \frac {4 \cdot b} {\pi \cdot D} \right) }
+   \f$
+
+ * where
+
+   \f$
+     b = 2 \cdot h + t
+   \f$
+
+ * and
+
+   \f$
+     D = \frac {w} {2} \cdot \left\{ 1 + \frac {t} {\pi \cdot w}
+     \left[ 1 + \ln { \left( \frac {4 \cdot \pi \cdot w} {t} \right) }
+     \right] + 0.551 \cdot \frac {t} {w} ^2 \right\}
+   \f$
+
+ * The equation for \f$ Z_{0,SS,t2} \f$ is based on a circular wire
+ * approximation wherein the width of the signal conductor is so small
+ * relative to the other dimensions of the transmission line that the
+ * signal conductor can be approximated as a round wire.\n
+ * This equation is valid for \f$ \frac {t} {b} \leq 0.25 \f$ and
+ * \f$ \frac {t} {w} \leq 0.11 \f$ .
+ *
+ * For the wide signal conductor, that is for
+ * \f$ \frac {w} {b} \geq 0.35 \f$ , the appropriate formula for the
+ * characteristic impedance, \f$ Z_{0,SS,2w} \f$ is:
+
+   \f$
+     Z_{0,SS,2w} = \frac {94.15} { \left( \frac {\frac {w} {b} } 
+     {1 - \frac {t} {b} } + \frac {\theta} {\pi} \right) }
+   \f$
+
+ * where
+
+   \f$
+     \theta = \left( \frac {2 \cdot b} {b - t} \right)
+     \cdot \ln { \left( \frac {2 \cdot b - t} {b - t} \right) }
+     - \left( \frac {t} {b - t} \right)
+     \cdot \ln { \left[ \frac {2 \cdot b \cdot t - t^2} {(b - t)^2} \right] }
+   \f$
+
+ * The stated errors in the above equations is less than 1.3 \%, and the
+ * worst case is at \f$ \frac {w} {b} = 0.35 \f$ .
+ *
+ * \warning The Symmetric Stripline impedance is calculated according
+ * Formula Set 2.
+ *
+ * The source for these formulas are found in the IPC-2141A (2004)
+ * “Design Guide for High-Speed Controlled Impedance Circuit Boards”.
+ *
+ * <h3>Output.</h3>
+ *
+ * The outcome of the calculation is shown in the pcb log window.\n
+ * If no (valid) argument is passed, no action is carried out.\n
+ */
+static double
+ssic
+(
+  double er,
+    /*!< Relative Dielectric constant. */
+  double w,
+    /*!< Trace width. */
+  double t,
+    /*!< Trace thickness. */
+  double h
+    /*!< Substrate height. */
+)
+{
+  double m;
+  double w_eff;
+  double zo_ss;
+  double b;
+  double D;
+  double zo_ss_t2;
+  double theta;
+  double zo_ss_w2;
+  double result;
+
+  result = 0.0;
+  m = (6 * h) / (3 * h + t);
+  w_eff = w + (t / M_PI) * log (exp (1) / sqrt (pow ((t / (4 * h + t)), 2)
+    + pow (((M_PI * t) / (4 * (w + 1.1 * t))), m)));
+  zo_ss = (377 / (2 * M_PI * sqrt (er))) * log (1 + ((8 * h)
+    / (M_PI * w_eff)) * (((16 * h) / (M_PI * w_eff))
+    + sqrt (pow (((16 * h) / (M_PI * w_eff)), 2) + 6.27)));
+  b = 2 * h + t;
+  D = (w / 2) * (1 + (t / (M_PI * w)) * (1 + log ((4 * M_PI * w) / t))
+    + 0.551 * pow ((t / w), 2));
+  zo_ss_t2 = (60 / sqrt (er)) * log ((4 * b) / (M_PI * D));
+  theta = ((2 * b) / (b - t)) * log ((2 * b - t) / (b - t))
+    - (t / (b - t)) * log ((2 * b * t - pow (t, 2)) / (pow ((b - t), 2)));
+  zo_ss_w2 = 94.15 / (((w / b) / (1 - (t / b))) + (theta / M_PI));
+  if (((w / b) < 0.35) || ((t / b) <= 0.25) || ((t / w) <= 0.11))
+  {
+    result = zo_ss_t2;
+  }
+  else
+  {
+    result = zo_ss_w2;
+  }
   return result;
 }
 
