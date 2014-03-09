@@ -184,6 +184,17 @@ get_length_unit ()
 
 /*!
  * \brief Calculate the eliptic integral of the first kind.
+ *
+ * The complete elliptic integral of the first kind is defined as
+ * follows:
+
+   \f$
+     K(x) &= \int_0^{\pi/2}\frac{d\phi}{\sqrt{1-x^2\sin^2\phi}}\\
+          &= \frac{\pi}{2}\sum_{n=0}^{\infty}\left[\frac{(2n-1)!!}{(2n)!!}\right]^2x^{2n}\\
+          &= \frac{\pi}{2}\sum_{n=0}^{\infty}\binom{2n}{n}^2\left(\frac{x}{4}\right)^{2n}\\
+          &= \frac{\pi}{2}\left(1+\frac{x^2}{4}+\frac{9x^4}{64}+\frac{25x^6}{256}+\frac{1225x^8}{16384}+\frac{3969x^{10}}{65536}+\frac{53361x^{12}}{1048576}+\frac{184041x^{14}}{4194304}+\cdots\right)
+   \f$
+
  */
 static double
 eifk (double k)
@@ -207,6 +218,17 @@ eifk (double k)
 
 /*!
  * \brief Calculate the eliptic integral of the second kind.
+ *
+ * The complete elliptic integral of the second kind is defined as
+ * follows:
+
+   \f$
+     E(x) &= \int_0^{\pi/2}{\sqrt{1-x^2\sin^2\phi}\;\;d\phi}\\
+          &= \frac{\pi}{2}\left[1-\sum_{n=1}^{\infty}\left[\frac{(2n-1)!!}{(2n)!!}\right]^2\frac{x^{2n}}{2n-1}\right]\\
+          &= \frac{\pi}{2}\left[1-\sum_{n=1}^{\infty}\binom{2n}{n}^2\frac{1}{2n-1}\left(\frac{x}{4}\right)^{2n}\right]\\
+          &= \frac{\pi}{2}\left[1-\frac{x^2}{4}G(x)\right]
+   \f$
+
  */
 static double
 eisk (double k)
