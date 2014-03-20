@@ -1,8 +1,13 @@
 /*!
  * \file findelement.c
+ *
  * \author Copyright (C) 2009 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
  * with some usefull hints from DJ Delorie to finish this plug-in.
+ *
  * \brief Plug-in for PCB to find the specified element.
+ *
+ * \copyright Licensed under the terms of the GNU General Public
+ * License, version 2 or later.
  *
  * Function to look up the specified PCB element on the screen.\n
  * \n
@@ -61,39 +66,39 @@
 static int
 find_element (int argc, char **argv, Coord x, Coord y)
 {
-        if (argc == 0 || strcasecmp (argv[0], "") == 0)
-        {
-                Message ("WARNING: in FindElement the argument should be a non-empty string value.\n");
-                return 0;
-        }
-        else
-        {
-                SET_FLAG (NAMEONPCBFLAG, PCB);
-                ELEMENT_LOOP(PCB->Data);
-                {
-                        if (NAMEONPCB_NAME(element)
-                                && strcmp (argv[0], NAMEONPCB_NAME(element)) == 0)
-                        {
-                                gui->set_crosshair
-                                (
-                                        element->MarkX,
-                                        element->MarkY,
-                                        HID_SC_PAN_VIEWPORT
-                                );
-                        }
-                }
-                END_LOOP;
-                gui->invalidate_all ();
-                IncrementUndoSerialNumber ();
-                return 0;
-        };
+  if (argc == 0 || strcasecmp (argv[0], "") == 0)
+  {
+    Message ("WARNING: in FindElement the argument should be a non-empty string value.\n");
+      return 0;
+  }
+  else
+  {
+    SET_FLAG (NAMEONPCBFLAG, PCB);
+    ELEMENT_LOOP(PCB->Data);
+    {
+      if (NAMEONPCB_NAME(element)
+        && strcmp (argv[0], NAMEONPCB_NAME(element)) == 0)
+      {
+        gui->set_crosshair
+        (
+          element->MarkX,
+          element->MarkY,
+          HID_SC_PAN_VIEWPORT
+        );
+      }
+    }
+    END_LOOP;
+    gui->invalidate_all ();
+    IncrementUndoSerialNumber ();
+    return 0;
+  };
 }
 
 
 static HID_Action findelement_action_list[] =
 {
-        {"FindElement", NULL, find_element, "Find the specified element", NULL},
-        {"FE", NULL, find_element, "Find the specified element", NULL}
+  {"FindElement", NULL, find_element, "Find the specified element", NULL},
+  {"FE", NULL, find_element, "Find the specified element", NULL}
 };
 
 
@@ -101,9 +106,9 @@ REGISTER_ACTIONS (findelement_action_list)
 
 
 void
-pcb_plugin_init()
+pcb_plugin_init ()
 {
-        register_findelement_action_list();
+        register_findelement_action_list ();
 }
 
 /* EOF */
