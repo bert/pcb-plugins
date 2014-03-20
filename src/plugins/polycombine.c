@@ -1,19 +1,24 @@
-/* PolyCombine plug-in for PCB
-
-   Copyright (C) 2010 Peter Clifton <pcjc2@cam.ac.uk>
-
-   Licensed under the terms of the GNU General Public License, version 2.
-
-   Compile like this:
-
-   gcc -I$HOME/pcbsrc/git/src -I$HOME/pcbsrc/git -O2 -shared polycombine.c -o polycombine.so
-
-   The resulting polycombine.so goes in $HOME/.pcb/plugins/polycombine.so.
-
-   Usage: PolyCombine()
-
-   The selected polygons are combined together according to the ordering of their points.
-*/
+/*!
+ * \file polycombine.c
+ *
+ * \brief PolyCombine plug-in for PCB.
+ *
+ * \author Copyright (C) 2010 Peter Clifton <pcjc2@cam.ac.uk>
+ *
+ * \copyright Licensed under the terms of the GNU General Public
+ * License, version 2.
+ *
+ * Compile like this:
+ *
+ * gcc -I$HOME/pcbsrc/git/src -I$HOME/pcbsrc/git -O2 -shared polycombine.c -o polycombine.so
+ *
+ * The resulting polycombine.so goes in $HOME/.pcb/plugins/polycombine.so.
+ *
+ * Usage: PolyCombine()
+ *
+ * The selected polygons are combined together according to the ordering
+ * of their points.
+ */
 
 #include <stdio.h>
 #include <math.h>
@@ -95,7 +100,8 @@ original_poly (PolygonType * p, bool *forward)
 
 typedef struct poly_tree poly_tree;
 
-struct poly_tree {
+struct poly_tree
+{
   PolygonType *polygon;
   bool forward;
   POLYAREA *polyarea;
@@ -105,7 +111,9 @@ struct poly_tree {
   poly_tree *next;
 };
 
-/*                      ______
+/*!
+ * <pre>
+ *                      ______
  *  ___________________|_  P6 |             +P1 ____ +P6
  * | P1                | |    |              |
  * |   _____      ____ |_|____|             -P2 ____ -P4 ____ -P5
@@ -120,6 +128,7 @@ struct poly_tree {
  * |                     |
  * |_____________________|
  *
+ * </pre>
  * As we encounter each polygon, it gets a record. We need to check
  * whether it contains any of the polygons existing in our tree. If
  * it does, it will become the parent of them. (Check breadth first).
@@ -128,7 +137,6 @@ struct poly_tree {
  * contours can be assumed not to overlap, we can drill down in this
  * order: P1, P2, P3, P4, P5, P6.
  */
-
 static bool
 PolygonContainsPolygon (POLYAREA *outer, POLYAREA *inner)
 {
