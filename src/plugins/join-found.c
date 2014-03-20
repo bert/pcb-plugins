@@ -1,16 +1,18 @@
-/* Join found plug-in for PCB
+/*!
+ * \file join-found.c
  *
- * Copyright (C) 2009 Peter Clifton <pcjc2@cam.ac.uk>
+ * \brief Join found plug-in for PCB.
  *
- * Licensed under the terms of the GNU General Public License, version
- * 2 or later.
+ * \author Copyright (C) 2009 Peter Clifton <pcjc2@cam.ac.uk>
+ *
+ * \copyright Licensed under the terms of the GNU General Public
+ * License, version 2 or later.
  *
  * Compile like this:
-
- * gcc -Wall -I$HOME/pcbsrc/pcb.clean/src -I$HOME/pcbsrc/pcb.clean -O2 -shared join-found.c -o join-found.so
- *
+ * <pre>
+gcc -Wall -I$HOME/pcbsrc/pcb.clean/src -I$HOME/pcbsrc/pcb.clean -O2 -shared join-found.c -o join-found.so
+ * </pre>
  *  The resulting join-found.so goes in $HOME/.pcb/plugins/join-found.so
- *
  */
 
 #include <stdio.h>
@@ -86,7 +88,6 @@ joinfound (int argc, char **argv, Coord x, Coord y)
   int TheFlag = FOUNDFLAG;
 
   changed = 0;
-
   /* FIXME: PCB API STOPS ME DOING THIS */
 #if 0
   TheFlag = FOUNDFLAG; // | DRCFLAG;
@@ -96,77 +97,69 @@ joinfound (int argc, char **argv, Coord x, Coord y)
   SelectedOperation (init_funcs, False, LINE_TYPE | ARC_TYPE | PIN_TYPE | VIA_TYPE | PAD_TYPE);
   DoIt (true, False);
 #endif
-
   VISIBLELINE_LOOP (PCB->Data);
   {
     if (TEST_FLAG (TheFlag, line))
-      {
-        ChangeObjectJoin (LINE_TYPE, layer, line, line);
-        changed = true;
-      }
+    {
+      ChangeObjectJoin (LINE_TYPE, layer, line, line);
+      changed = true;
+    }
   }
   ENDALL_LOOP;
-
   VISIBLEARC_LOOP (PCB->Data);
   {
     if (TEST_FLAG (TheFlag, arc))
-      {
-        ChangeObjectJoin (ARC_TYPE, layer, arc, arc);
-        changed = true;
-      }
+    {
+      ChangeObjectJoin (ARC_TYPE, layer, arc, arc);
+      changed = true;
+    }
   }
   ENDALL_LOOP;
-
   if (PCB->PinOn)
     ELEMENT_LOOP (PCB->Data);
   {
     PIN_LOOP (element);
     {
       if (TEST_FLAG (TheFlag, pin))
-        {
-          ChangeObjectThermal (PIN_TYPE, element, pin, pin, THERMAL_STYLE);
-          changed = true;
-        }
+      {
+        ChangeObjectThermal (PIN_TYPE, element, pin, pin, THERMAL_STYLE);
+        changed = true;
+      }
     }
-    END_LOOP;
+    END_LOOP; /* PIN_LOOP */
   }
-  END_LOOP;
-
+  END_LOOP; /* ELEMENT_LOOP */
   if (PCB->ViaOn)
     VIA_LOOP (PCB->Data);
   {
     if (TEST_FLAG (TheFlag, via))
-      {
-        ChangeObjectThermal (VIA_TYPE, via, via, via, THERMAL_STYLE);
-        changed = true;
-      }
+    {
+      ChangeObjectThermal (VIA_TYPE, via, via, via, THERMAL_STYLE);
+      changed = true;
+    }
   }
   END_LOOP;
-
   /* FIXME: PCB API STOPS ME DOING THIS */
 #if 0
   ResetConnections (False);
   FreeConnectionLookupMemory ();
   RestoreFindFlag ();
 #endif
-
   gui->invalidate_all ();
-
   if (changed)
     IncrementUndoSerialNumber ();
-
   return 0;
 }
 
-static HID_Action joinfound_action_list[] = {
-  {"JoinFound", NULL, joinfound,
-   NULL, NULL}
+static HID_Action joinfound_action_list[] =
+{
+  {"JoinFound", NULL, joinfound, NULL, NULL}
 };
 
 REGISTER_ACTIONS (joinfound_action_list)
 
 void
-pcb_plugin_init()
+pcb_plugin_init ()
 {
-  register_joinfound_action_list();
+  register_joinfound_action_list ();
 }
