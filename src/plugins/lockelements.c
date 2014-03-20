@@ -1,6 +1,8 @@
 /*!
  * \file lockelements.c
+ *
  * \author Copyright (C) 2008 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ *
  * \brief Unlocking/locking elements plug-in for PCB.
  *
  * Function to lock all or a selection of PCB elements.\n
