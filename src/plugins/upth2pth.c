@@ -1,7 +1,9 @@
 /*!
  * \file upth2pth.c
+ *
  * \author Copyright (C) 2009 .. 2011 by Bert Timmerman <bert.timmerman@xs4all.nl>
- * \brief A p[lug-in for pcb to change UnPlated Through Holes to Plated
+ *
+ * \brief A plug-in for pcb to change UnPlated Through Holes to Plated
  * Through Holes or vice versa.
  *
  * Function to change all (or a selection) of the unplated holes into plated holes.\n
@@ -64,56 +66,56 @@
 static int
 upth2pth (int argc, char **argv, Coord x, Coord y)
 {
-        int selected = 0;
-        int all = 0;
-        if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
-                selected = 1;
-        else if (argc >0 && strcasecmp (argv[0], "All") == 0)
-                all = 1;
-        else
+  int selected = 0;
+  int all = 0;
+  if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
+    selected = 1;
+  else if (argc >0 && strcasecmp (argv[0], "All") == 0)
+    all = 1;
+  else
+  {
+    Message ("ERROR: in Upth2pth the argument should be either Selected or All.\n");
+    return 1;
+  }
+  SET_FLAG (NAMEONPCBFLAG, PCB);
+  VIA_LOOP(PCB->Data);
+  {
+    if (!TEST_FLAG (LOCKFLAG, via))
+    {
+      /* via is not locked */
+      if (all)
+      {
+        CLEAR_FLAG(HOLEFLAG, via);
+      }
+      else if (selected)
+      {
+        if (TEST_FLAG (SELECTEDFLAG, via))
         {
-                Message ("ERROR: in Upth2pth the argument should be either Selected or All.\n");
-                return 1;
+          CLEAR_FLAG(HOLEFLAG, via);
         }
-        SET_FLAG (NAMEONPCBFLAG, PCB);
-        VIA_LOOP(PCB->Data);
+      }
+    }
+  }
+  END_LOOP; /* VIA_LOOP */
+  ELEMENT_LOOP(PCB->Data);
+  {
+    if (!TEST_FLAG (LOCKFLAG, element))
+    {
+      /* element is not locked */
+      if (all)
+      {
+        PIN_LOOP(element);
         {
-                if (!TEST_FLAG (LOCKFLAG, via))
-                {
-                        /* via is not locked */
-                        if (all)
-                        {
-                                CLEAR_FLAG(HOLEFLAG, via);
-                        }
-                        else if (selected)
-                        {
-                                if (TEST_FLAG (SELECTEDFLAG, via))
-                                {
-                                        CLEAR_FLAG(HOLEFLAG, via);
-                                }
-                        }
-                }
+          CLEAR_FLAG(HOLEFLAG, pin);
         }
-        END_LOOP; /* VIA_LOOP */
-        ELEMENT_LOOP(PCB->Data);
-        {
-                if (!TEST_FLAG (LOCKFLAG, element))
-                {
-                        /* element is not locked */
-                        if (all)
-                        {
-                                PIN_LOOP(element);
-                                {
-                                        CLEAR_FLAG(HOLEFLAG, pin);
-                                }
-                                END_LOOP; /* PIN_LOOP */
-                        }
-                }
-        }
-        END_LOOP; /* ELEMENT_LOOP */
-        gui->invalidate_all ();
-        IncrementUndoSerialNumber ();
-        return 0;
+        END_LOOP; /* PIN_LOOP */
+      }
+    }
+  }
+  END_LOOP; /* ELEMENT_LOOP */
+  gui->invalidate_all ();
+  IncrementUndoSerialNumber ();
+  return 0;
 }
 
 
@@ -127,73 +129,70 @@ upth2pth (int argc, char **argv, Coord x, Coord y)
 static int
 pth2upth (int argc, char **argv, Coord x, Coord y)
 {
-        int selected = 0;
-        int all = 0;
-        if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
-                selected = 1;
-        else if (argc >0 && strcasecmp (argv[0], "All") == 0)
-                all = 1;
-        else
+  int selected = 0;
+  int all = 0;
+  if (argc > 0 && strcasecmp (argv[0], "Selected") == 0)
+    selected = 1;
+  else if (argc >0 && strcasecmp (argv[0], "All") == 0)
+    all = 1;
+  else
+  {
+    Message ("ERROR: in Upth2pth the argument should be either Selected or All.\n");
+    return 1;
+  }
+  SET_FLAG (NAMEONPCBFLAG, PCB);
+  VIA_LOOP(PCB->Data);
+  {
+    if (!TEST_FLAG (LOCKFLAG, via))
+    {
+      /* via is not locked */
+      if (all)
+      {
+        SET_FLAG(HOLEFLAG, via);
+      }
+      else if (selected)
+      {
+        if (TEST_FLAG (SELECTEDFLAG, via))
         {
-                Message ("ERROR: in Upth2pth the argument should be either Selected or All.\n");
-                return 1;
+          SET_FLAG(HOLEFLAG, via);
         }
-        SET_FLAG (NAMEONPCBFLAG, PCB);
-        VIA_LOOP(PCB->Data);
+      }
+    }
+  }
+  END_LOOP; /* VIA_LOOP */
+  ELEMENT_LOOP(PCB->Data);
+  {
+    if (!TEST_FLAG (LOCKFLAG, element))
+    {
+      /* element is not locked */
+      if (all)
+      {
+        PIN_LOOP(element);
         {
-                if (!TEST_FLAG (LOCKFLAG, via))
-                {
-                        /* via is not locked */
-                        if (all)
-                        {
-                                SET_FLAG(HOLEFLAG, via);
-                        }
-                        else if (selected)
-                        {
-                                if (TEST_FLAG (SELECTEDFLAG, via))
-                                {
-                                        SET_FLAG(HOLEFLAG, via);
-                                }
-                        }
-                }
+          SET_FLAG(HOLEFLAG, pin);
         }
-        END_LOOP; /* VIA_LOOP */
-        ELEMENT_LOOP(PCB->Data);
-        {
-                if (!TEST_FLAG (LOCKFLAG, element))
-                {
-                        /* element is not locked */
-                        if (all)
-                        {
-                                PIN_LOOP(element);
-                                {
-                                        SET_FLAG(HOLEFLAG, pin);
-                                }
-                                END_LOOP; /* PIN_LOOP */
-                        }
-                }
-        }
-        END_LOOP; /* ELEMENT_LOOP */
-        gui->invalidate_all ();
-        IncrementUndoSerialNumber ();
-        return 0;
+        END_LOOP; /* PIN_LOOP */
+      }
+    }
+  }
+  END_LOOP; /* ELEMENT_LOOP */
+  gui->invalidate_all ();
+  IncrementUndoSerialNumber ();
+  return 0;
 }
-
 
 static HID_Action upth2pth_action_list[] =
 {
-        {"Upth2pth", NULL, upth2pth, "Change selected or all unplated holes to plated holes", NULL},
-        {"Pth2upth", NULL, pth2upth, "Change selected or all plated holes to unplated holes", NULL}
+  {"Upth2pth", NULL, upth2pth, "Change selected or all unplated holes to plated holes", NULL},
+  {"Pth2upth", NULL, pth2upth, "Change selected or all plated holes to unplated holes", NULL}
 };
-
 
 REGISTER_ACTIONS (upth2pth_action_list)
 
-
 void
-pcb_plugin_init()
+pcb_plugin_init ()
 {
-        register_upth2pth_action_list();
+  register_upth2pth_action_list ();
 }
 
 /* EOF */
