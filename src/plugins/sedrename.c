@@ -1,17 +1,19 @@
-/* Sed rename plug-in for PCB
-
-   Copyright (C) 2008 Peter Clifton <pcjc2@cam.ac.uk>
-
-   Licensed under the terms of the GNU General Public License, version
-   2 or later.
-
-   Compile like this:
-
-   gcc -Wall -I$HOME/pcbsrc/pcb.clean/src -I$HOME/pcbsrc/pcb.clean -O2 -shared sedrename.c -o sedrename.so
-
-   The resulting sedrename.so goes in $HOME/.pcb/plugins/sedrename.so.
-
-*/
+/*!
+ * \file sedrename.c
+ *
+ * \brief Sed rename plug-in for PCB.
+ *
+ * \author Copyright (C) 2008 Peter Clifton <pcjc2@cam.ac.uk>
+ *
+ * \copyright Licensed under the terms of the GNU General Public
+ * License, version 2 or later.
+ *
+ * Compile like this:
+ *
+ * gcc -Wall -I$HOME/pcbsrc/pcb.clean/src -I$HOME/pcbsrc/pcb.clean -O2 -shared sedrename.c -o sedrename.so
+ *
+ * The resulting sedrename.so goes in $HOME/.pcb/plugins/sedrename.so.
+ */
 
 #include <stdio.h>
 
@@ -42,20 +44,23 @@ sedrename (int argc, char **argv, Coord x, Coord y)
     last_argument = strdup ("s///");
 
 #if 0
-  if (argc != 1) {
+  if (argc != 1)
+  {
     Message("Usage: sedrename sed_expression");
     return 1;
   }
 
   sed_arguments = argv[0];
 #else
-  if (argc != 0) {
+  if (argc != 0)
+  {
     Message("Usage: sedrename");
     return 1;
   }
 
   sed_arguments = gui->prompt_for ("sedrename", last_argument);
-  if (sed_arguments == NULL) {
+  if (sed_arguments == NULL)
+  {
     Message("Got null for sed arguments");
     return 1;
   }
@@ -70,7 +75,8 @@ sedrename (int argc, char **argv, Coord x, Coord y)
 
   printf ("Calling sed: '%s'\n", sed_cmd);
 
-  if ((fp = popen (sed_cmd, "w")) == NULL) {
+  if ((fp = popen (sed_cmd, "w")) == NULL)
+  {
     PopenErrorMessage (sed_cmd);
     free (sed_cmd);
     return STATUS_ERROR;
@@ -94,7 +100,8 @@ sedrename (int argc, char **argv, Coord x, Coord y)
   if (pclose (fp))
    return STATUS_ERROR;
 
-  if ((fp = fopen ("sedrename.tmp", "rb")) == NULL) {
+  if ((fp = fopen ("sedrename.tmp", "rb")) == NULL)
+  {
     Message("Cannot open sedrename.tmp for reading");
     return STATUS_ERROR;
   }
@@ -106,7 +113,8 @@ sedrename (int argc, char **argv, Coord x, Coord y)
     if (!TEST_FLAG (SELECTEDFLAG, element))
       continue;
 
-    if (fscanf (fp, "%as", &new_ref) != EOF) {
+    if (fscanf (fp, "%as", &new_ref) != EOF)
+    {
       printf ("Send '%s', got '%s'\n", element->Name[1].TextString, new_ref);
 
       AddObjectToChangeNameUndoList (ELEMENT_TYPE, NULL, NULL,
