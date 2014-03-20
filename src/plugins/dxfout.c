@@ -43,6 +43,7 @@
 #include <time.h>
 #include <math.h>
 
+#include "config.h"
 #include "global.h"
 #include "data.h"
 #include "hid.h"
@@ -1132,7 +1133,7 @@ dxf_write_section
  * If no argument is passed, no action is carried out.
  */
 static int
-dxfout_element (int argc, char **argv, int x, int y)
+dxfout_element (int argc, char **argv, Coord x, Coord y)
 {
         int i;
         char utcTime[64];
@@ -1158,7 +1159,7 @@ dxfout_element (int argc, char **argv, int x, int y)
         {
                 SET_FLAG (NAMEONPCBFLAG, PCB);
                 i = strlen (PCB->Filename);
-                dxfout_xref_filename = MyRealloc (dxfout_xref_filename, i + 40, "dxf");
+                dxfout_xref_filename = realloc (dxfout_xref_filename, i + 40);
                 dxfout_xref_filename = PCB->Filename;
                 if (!dxfout_xref_filename)
                 {
@@ -1193,7 +1194,7 @@ dxfout_element (int argc, char **argv, int x, int y)
                 {
                         fprintf (stderr, "DXFOUT: using Imperial coordinates [mil].\n");
                 }
-                fprintf (stderr, "DXFOUT: pcb dimensions: %d %d.\n",
+                fprintf (stderr, "DXFOUT: pcb dimensions: %ld %ld .\n",
                         PCB->MaxWidth,
                         PCB->MaxHeight);
                 fprintf (stderr, "DXFOUT: XREF coordinate origin for pcb is lower left corner.\n");
