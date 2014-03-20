@@ -1,9 +1,12 @@
 /*!
  * \file ghellopcb.c
+ *
  * \author Copyright (C) 2009 by Bert Timmerman <bert.timmerman@xs4all.nl>
+ *
  * \brief Plug-in for PCB to say "Hello world".
  *
- * Function to show a GTK dialog with a "Hello world" message on the screen.\n
+ * Function to show a GTK dialog with a "Hello world" message on the
+ * screen.\n
  * \n
  * Compile like this:\n
  * \n
@@ -54,7 +57,7 @@
 static void
 on_destroy (GtkWidget * widget, gpointer data)
 {
-        gtk_main_quit ();
+  gtk_main_quit ();
 }
 
 /*!
@@ -65,37 +68,37 @@ on_destroy (GtkWidget * widget, gpointer data)
 static int
 ghellopcb (int argc, char **argv, Coord x, Coord y)
 {
-        GtkWidget *window;
-        GtkWidget *label;
-        gtk_init (&argc, &argv);
-        /* create a new top level window */
-        window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-        /* give the window a 20px wide border */
-        gtk_container_set_border_width (GTK_CONTAINER (window), 20);
-        /* give it the title */
-        gtk_window_set_title (GTK_WINDOW (window), PACKAGE " " VERSION);
-        /* open it a bit wider so that both the label and title show up */
-        gtk_window_set_default_size (GTK_WINDOW (window), 200, 50);
-        /* Connect the destroy event of the window with our on_destroy function
-         * When the window is about to be destroyed we get a notificaton and
-         * stop the main GTK loop
-         */
-        g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (on_destroy), NULL);
-        /* Create the "Hello, PCB World" label  */
-        label = gtk_label_new ("Hello, PCB World");
-        /* and insert it into the main window  */
-        gtk_container_add (GTK_CONTAINER (window), label);
-        /* make sure that everything, window and label, are visible */
-        gtk_widget_show_all (window);
-        /* start the main loop */
-        gtk_main ();
-        return 0;
+  GtkWidget *window;
+  GtkWidget *label;
+  gtk_init (&argc, &argv);
+  /* create a new top level window */
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  /* give the window a 20px wide border */
+  gtk_container_set_border_width (GTK_CONTAINER (window), 20);
+  /* give it the title */
+  gtk_window_set_title (GTK_WINDOW (window), PACKAGE " " VERSION);
+  /* open it a bit wider so that both the label and title show up */
+  gtk_window_set_default_size (GTK_WINDOW (window), 200, 50);
+  /* Connect the destroy event of the window with our on_destroy function
+   * When the window is about to be destroyed we get a notificaton and
+   * stop the main GTK loop
+   */
+  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (on_destroy), NULL);
+  /* Create the "Hello, PCB World" label  */
+  label = gtk_label_new ("Hello, PCB World");
+  /* and insert it into the main window  */
+  gtk_container_add (GTK_CONTAINER (window), label);
+  /* make sure that everything, window and label, are visible */
+  gtk_widget_show_all (window);
+  /* start the main loop */
+  gtk_main ();
+  return 0;
 }
 
 
 static HID_Action ghellopcb_action_list[] =
 {
-        {"gHelloPCB", NULL, ghellopcb, "show a GTK dialog with a Hello world message on the screen", NULL}
+  {"gHelloPCB", NULL, ghellopcb, "show a GTK dialog with a Hello world message on the screen", NULL}
 };
 
 
@@ -103,9 +106,9 @@ REGISTER_ACTIONS (ghellopcb_action_list)
 
 
 void
-pcb_plugin_init()
+pcb_plugin_init ()
 {
-        register_ghellopcb_action_list();
+  register_ghellopcb_action_list ();
 }
 
 /* EOF */
