@@ -66,6 +66,9 @@ AC_CONFIG_FILES([
 Makefile
 ])
 
+# FIXME: add Makefile.in files to get the following
+#src/plugins/Makefile
+
 AC_OUTPUT
 
 # Print some results.
@@ -88,7 +91,3 @@ LIBS:                        $LIBS
 ])
 
 # EOF
-
-# FIXME: add Makefile.in files to get the following
-#src/plugins/Makefile
-
