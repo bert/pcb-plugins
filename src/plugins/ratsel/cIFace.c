@@ -31,13 +31,18 @@
 #include "undo.h"
 
 /*
-	see macro.h const.h
-	ONSOLDERFLAG - Pad should have it
+        see pcb/src/macro.h:
+        ON_SIDE(element, side) \
+        (TEST_FLAG (ONSOLDERFLAG, element) == (side == BOTTOM_SIDE))
 
-	TEST_FLAG (ONSOLDERFLAG, pad) ? SOLDER_LAYER : COMPONENT_LAYER
-	int layer = GetLayerNumber (PCB->Data, (LayerTypePtr) ptr1);
-	const.h:#define SOLDER_LAYER            0
-	const.h:#define COMPONENT_LAYER         1
+        #define TEST_FLAG(F,P) ((P)->Flags.f & (F) ? 1 : 0)
+
+        see pcd/src/?:
+        int layer = GetLayerNumber (PCB->Data, (LayerTypePtr) ptr1);
+
+        see pcb/src/const.h:
+        #define BOTTOM_SIDE 0
+        #define TOP_SIDE 1
  */
 
 void msg(const char * fmt,...) {
@@ -136,7 +141,7 @@ void freePins(CPin ** pinA) {
 
 /* FIXME: this layer mapping may not be right */
 #define SIDEMASK(group) \
-	group == COMPONENT_LAYER ? SIDE_SOLDER : SIDE_COMPONENT;
+	group == TOP_SIDE ? SIDE_SOLDER : SIDE_COMPONENT;
 
 CRat ** getRats() {
 	Vec ratVec;
