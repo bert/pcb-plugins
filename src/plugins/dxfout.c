@@ -1184,11 +1184,9 @@ dxf_write_insert
   int columns,
     /*!< group code = 70\n
      * optional, if omitted defaults to 1. */
-  int rows,
+  int rows
     /*!< group code = 71\n
      * optional, if omitted defaults to 1. */
-  int acad_version_number
-    /*!< AutoCAD version number. */
 )
 {
 #if DEBUG
@@ -1489,6 +1487,33 @@ dxfout_element (int argc, char **argv, Coord x, Coord y)
     /* Second walk of all the elements for the insertion of all instances. */
     ELEMENT_LOOP(PCB->Data);
     {
+      dxf_write_insert
+      (
+        fp, /* file pointer to output file (or device) */
+        dxf_id_code, /* group code = 5 */
+        dxf_block_name, /* group code = 2 and 3 */
+        DXF_DEFAULT_LINETYPE, /*linetype */
+        DXF_DEFAULT_LAYER, /* layer */
+        0.0, /* x0, base point */
+        0.0, /* y0, base point */
+        0.0, /* z0, base point */
+        0.0, /* extr_x0, base point */
+        0.0, /* extr_y0, base point */
+        1.0, /* extr_z0, base point */
+        0.0, /* thickness */
+        1.0, /* rel_x_scale */
+        1.0, /* rel_y_scale */
+        1.0, /* rel_z_scale */
+        0.0, /* column_spacing */
+        0.0, /* row_spacing */
+        rot_angle, /* rot_angle */
+        DXF_COLOR_BYLAYER, /* color */
+        0, /* attributes_follow */
+        DXF_MODELSPACE, /* paperspace */
+        0, /* columns */
+        0 /* rows */
+);
+
     }
     END_LOOP;
     /* Write ENDSEC marker to close the ENTITIES section. */
