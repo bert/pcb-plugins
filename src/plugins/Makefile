@@ -50,10 +50,6 @@ renumberblock: renumberblock.so
 	
 sedrename: sedrename.so
 	
-smartdisperse: smartdisperse.so
-	
-teardrops: teardrops.so
-	
 upth2pth: upth2pth.so
 	
 #
@@ -73,8 +69,6 @@ all: \
 	polystitch \
 	renumberblock \
 	sedrename \
-	smartdisperse \
-	teardrops \
 	upth2pth
 
 install:
@@ -100,8 +94,6 @@ uninstall:
 	rm ~/.pcb/plugins/polystitch.so
 	rm ~/.pcb/plugins/renumberblock.so
 	rm ~/.pcb/plugins/sedrename.so
-	rm ~/.pcb/plugins/smartdisperse.so
-	rm ~/.pcb/plugins/teardrops.so
 	rm ~/.pcb/plugins/upth2pth.so
 	
 # EOF #
