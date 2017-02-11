@@ -46,8 +46,6 @@ polycombine: polycombine.so
 	
 polystitch: polystitch.so
 	
-renumberblock: renumberblock.so
-	
 sedrename: sedrename.so
 	
 upth2pth: upth2pth.so
@@ -67,7 +65,6 @@ all: \
 	lockelements \
 	polycombine \
 	polystitch \
-	renumberblock \
 	sedrename \
 	upth2pth
 
@@ -92,7 +89,6 @@ uninstall:
 	rm ~/.pcb/plugins/lockelements.so
 	rm ~/.pcb/plugins/polycombine.so
 	rm ~/.pcb/plugins/polystitch.so
-	rm ~/.pcb/plugins/renumberblock.so
 	rm ~/.pcb/plugins/sedrename.so
 	rm ~/.pcb/plugins/upth2pth.so
 	
