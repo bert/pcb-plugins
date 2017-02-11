@@ -3,7 +3,8 @@
 SUBDIRS = src/plugins/ src/plugins/ratsel/ src/plugins/footprint-update/
 
 EXTRA_DIST = \
-	autogen.sh
+	autogen.sh \
+	configure.ac
 
 install-data-local:
 	@$(NORMAL_INSTALL)
